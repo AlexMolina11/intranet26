@@ -1,0 +1,99 @@
+Convención de nombres de tablas
+
+Reglas:
+
+- snake_case
+- plural
+- prefijo por módulo
+
+Ejemplo:
+
+-seg_usuarios
+-seg_roles
+-seg_permisos
+-org_departamentos
+-org_proyectos
+-tik_tickets
+-bib_libros
+-mnt_mantenimientos
+-veh_vehiculos
+-sgc_capsulas
+-exp_experiencias
+
+Convención de campos
+
+Siempre snake_case
+
+Ejemplo:
+
+-id
+-nombre
+-descripcion
+-estado
+-fecha_creacion
+-fecha_actualizacion
+-usuario_creacion
+-usuario_actualizacion
+
+Llave primaria
+
+Siempre:
+-id
+
+Llaves foráneas
+Formato:
+
+-usuario_id
+-rol_id
+-departamento_id
+-proyecto_id
+-menu_id
+
+Convención de código Laravel
+
+Controladores
+Formato:
+
+-UsuarioController
+-RolController
+-TicketController
+
+Ubicación ejemplo:
+-app/Modules/Seg/Controllers/UsuarioController.php
+
+Modelos
+Formato singular:
+
+-Usuario
+-Rol
+-Ticket
+-Libro
+-Vehiculo
+
+Ubicación:
+
+- app/Modules/Seg/Models/Usuario.php
+
+Requests
+Formato:
+
+-StoreUsuarioRequest
+-UpdateUsuarioRequest
+
+Services
+Formato:
+
+-UsuarioService
+-TicketService
+-VehiculoService
+
+## Prefijos por módulo
+
+seg* → Seguridad
+org* → Organización
+tik* → Tickets
+bib* → Biblioteca
+mnt* → Mantenimiento
+veh* → Vehículos
+sgc* → Sistema de Gestión de Calidad
+exp* → Experiencia institucional
