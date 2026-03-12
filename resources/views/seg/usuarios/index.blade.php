@@ -20,6 +20,7 @@
                     <th>Nombres</th>
                     <th>Correo</th>
                     <th>Usuario</th>
+                    <th>Organización</th>
                     <th>Estado</th>
                     <th>Último acceso</th>
                     <th>Acciones</th>
@@ -32,6 +33,27 @@
                         <td>{{ $usuario->nombre_completo }}</td>
                         <td>{{ $usuario->correo }}</td>
                         <td>{{ $usuario->nombre_usuario }}</td>
+                        <td>
+                            @if ($usuario->areaPrincipalAsignada && $usuario->areaPrincipalAsignada->area)
+                                <div>
+                                    <strong>Principal:</strong><br>
+                                    {{ $usuario->areaPrincipalAsignada->area->nombre_organizacional }}
+                                </div>
+                            @else
+                                <div>Sin área principal</div>
+                            @endif
+
+                            @if ($usuario->areasSecundariasAsignadas->count())
+                                <div style="margin-top:8px;">
+                                    <strong>Secundarias:</strong><br>
+                                    @foreach ($usuario->areasSecundariasAsignadas as $asignacion)
+                                        @if ($asignacion->area)
+                                            <div>- {{ $asignacion->area->nombre_organizacional }}</div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            @endif
+                        </td>
                         <td>
                             @if ($usuario->activo)
                                 <span class="badge badge-success">Activo</span>
@@ -48,9 +70,11 @@
                                     Editar
                                 </a>
 
-                                <form method="POST"
-                                      action="{{ route('seg.usuarios.toggle', $usuario) }}"
-                                      class="inline-form">
+                                <a href="{{ route('org.usuarios.organizacion.edit', $usuario) }}" class="btn btn-secondary">
+                                    Organización
+                                </a>
+
+                                <form method="POST" action="{{ route('seg.usuarios.toggle', $usuario) }}" class="inline-form">
                                     @csrf
                                     @method('PATCH')
 
@@ -65,7 +89,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7">No hay usuarios registrados.</td>
+                        <td colspan="8">No hay usuarios registrados.</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -5,6 +5,7 @@ namespace App\Modules\Seg\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Org\Models\UsuarioArea;
 
 class Usuario extends Authenticatable
 {
@@ -50,5 +51,22 @@ class Usuario extends Authenticatable
     public function getNombreCompletoAttribute(): string
     {
         return trim($this->nombres . ' ' . $this->apellidos);
+    }
+
+    public function usuarioAreas()
+    {
+        return $this->hasMany(UsuarioArea::class, 'id_usuario', 'id_usuario');
+    }
+
+    public function areaPrincipalAsignada()
+    {
+        return $this->hasOne(UsuarioArea::class, 'id_usuario', 'id_usuario')
+            ->where('es_principal', true);
+    }
+
+    public function areasSecundariasAsignadas()
+    {
+        return $this->hasMany(UsuarioArea::class, 'id_usuario', 'id_usuario')
+            ->where('es_principal', false);
     }
 }

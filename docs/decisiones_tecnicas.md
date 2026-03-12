@@ -127,3 +127,11 @@ Se definió un usuario administrador técnico inicial para pruebas, configuraci�
 - El nombre de usuario ya no se captura manualmente.
 - El campo `nombre_usuario` se genera automáticamente a partir del prefijo del correo electrónico.
 - Se agregó validación adicional para evitar duplicidad de `nombre_usuario` derivada de correos con el mismo prefijo.
+
+## Día 10 - Organización de usuarios
+
+- La relación usuario-área se implementó mediante la tabla pivote `org_usuario_area`.
+- Se decidió utilizar el campo `es_principal` para distinguir entre área principal y áreas secundarias.
+- Se descartó guardar el área principal directamente en `seg_usuarios` para evitar duplicidad de fuentes de verdad.
+- La asignación organizacional se actualiza reemplazando completamente los registros previos del usuario para simplificar consistencia.
+- La visualización organizacional usa el formato `departamento / proyecto / área`.

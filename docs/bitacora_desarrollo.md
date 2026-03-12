@@ -86,3 +86,14 @@ Esto permitirá mantener consistencia a medida que el sistema crezca.
 - El campo `nombre_usuario` ahora se genera automáticamente a partir del prefijo del correo.
 - Se agregó validación para evitar colisiones entre prefijos de correo y nombres de usuario existentes.
 - Se validó para que el usuario logeado no pueda desactivarse a si mismo.
+
+## Día 10 - Asignación organizacional
+
+- Se implementó la asignación organizacional de usuarios.
+- Se agregó soporte para área principal y áreas secundarias.
+- Se utilizó la tabla `org_usuario_area` como relación entre usuario y área.
+- El campo `es_principal` permite distinguir la adscripción principal del usuario.
+- Se creó el controlador `UsuarioOrganizacionController`.
+- Se creó el request `UpdateUsuarioOrganizacionRequest`.
+- Se agregaron relaciones entre usuario, áreas, departamentos y proyectos.
+- Se habilitó la visualización organizacional en el listado de usuarios.

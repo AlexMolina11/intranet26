@@ -12,7 +12,14 @@ class UsuarioController extends Controller
 {
     public function index()
     {
-        $usuarios = Usuario::orderBy('id_usuario', 'desc')->paginate(10);
+        $usuarios = Usuario::with([
+                'areaPrincipalAsignada.area.departamento',
+                'areaPrincipalAsignada.area.proyecto',
+                'areasSecundariasAsignadas.area.departamento',
+                'areasSecundariasAsignadas.area.proyecto',
+            ])
+            ->orderBy('id_usuario', 'desc')
+            ->paginate(10);
 
         return view('seg.usuarios.index', compact('usuarios'));
     }
