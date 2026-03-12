@@ -97,3 +97,15 @@ mnt* → Mantenimiento
 veh* → Vehículos
 sgc* → Sistema de Gestión de Calidad
 exp* → Experiencia institucional
+
+## Seeders base por módulo
+
+Los seeders iniciales del sistema se organizaron por módulo dentro de `database/seeders/Seg/`, manteniendo consistencia con la arquitectura modular del proyecto.
+
+## Uso de updateOrInsert
+
+Se utilizó `updateOrInsert` en los seeders base para permitir reejecuciones controladas sin duplicar registros.
+
+## Usuario administrador inicial
+
+Se definió un usuario administrador técnico inicial para pruebas, configuración del sistema y arranque del desarrollo funcional.
