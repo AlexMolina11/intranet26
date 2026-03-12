@@ -62,3 +62,14 @@ Esto permitirá mantener consistencia a medida que el sistema crezca.
 - Se asignó al administrador el sistema principal, el rol principal y los permisos base.
 - Se validó correctamente el proceso con `php artisan migrate:fresh --seed`.
 - Con esto quedó cerrado técnicamente el núcleo de semana 1.
+
+## Día 8 - Autenticación
+
+- Se configuró la autenticación de Laravel para trabajar con la tabla `seg_usuarios`.
+- Se adaptó el modelo `Usuario` para extender `Authenticatable`.
+- Se definió la columna `clave` como fuente de contraseña mediante `getAuthPassword()`.
+- Se implementó login por correo o nombre de usuario.
+- Se implementó logout.
+- Se protegieron rutas privadas con middleware `auth`.
+- Se configuró redirección al dashboard.
+- Se validó el flujo completo de acceso con el usuario administrador inicial.

@@ -13,9 +13,5 @@ require __DIR__.'/sgc.php';
 require __DIR__.'/exp.php';
 
 Route::get('/', function () {
-    return redirect('/dashboard');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard.index');
-})->name('dashboard');
+    return redirect()->route('dashboard');
+})->name('inicio');
