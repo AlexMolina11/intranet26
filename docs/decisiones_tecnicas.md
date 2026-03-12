@@ -109,3 +109,11 @@ Se utilizó `updateOrInsert` en los seeders base para permitir reejecuciones con
 ## Usuario administrador inicial
 
 Se definió un usuario administrador técnico inicial para pruebas, configuración del sistema y arranque del desarrollo funcional.
+
+## Día 8 - Autenticación
+
+- La autenticación se implementó con el sistema nativo de Laravel.
+- Se utilizó un modelo autenticable personalizado para `seg_usuarios`.
+- Se mantuvo el campo `clave` por compatibilidad con el modelo de datos.
+- Las rutas de autenticación se separaron en `routes/auth.php`.
+- El controlador de autenticación se ubicó dentro del módulo `Seg`.
