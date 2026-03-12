@@ -170,6 +170,9 @@
         <div>
             <a href="{{ route('dashboard') }}"><strong>Intranet 2026</strong></a>
             <a href="{{ route('seg.usuarios.index') }}">Usuarios</a>
+            <a href="{{ route('org.departamentos.index') }}">Departamentos</a>
+            <a href="{{ route('org.proyectos.index') }}">Proyectos</a>
+            <a href="{{ route('org.areas.index') }}">Áreas</a>
         </div>
 
         <div>

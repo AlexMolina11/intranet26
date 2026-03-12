@@ -97,3 +97,19 @@ Esto permitirá mantener consistencia a medida que el sistema crezca.
 - Se creó el request `UpdateUsuarioOrganizacionRequest`.
 - Se agregaron relaciones entre usuario, áreas, departamentos y proyectos.
 - Se habilitó la visualización organizacional en el listado de usuarios.
+
+## Día 10 - Seeders de prueba organizacional
+
+- Se crearon seeders para departamentos, proyectos y áreas.
+- Se crearon usuarios demo para pruebas funcionales.
+- Se crearon asignaciones de usuario-área para validar área principal y áreas secundarias.
+- Los seeders permiten probar rápidamente la interfaz del módulo organizacional.
+
+## Día 10 - Catálogos organizacionales
+
+- Se implementó el CRUD de departamentos.
+- Se implementó el CRUD de proyectos.
+- Se implementó el CRUD de áreas.
+- Las áreas ahora se administran como combinación de departamento, proyecto y nombre.
+- Se preparó la base funcional para la futura asignación organizacional guiada de usuarios.
+- Se agregaron validaciones para evitar duplicidad en catálogos.

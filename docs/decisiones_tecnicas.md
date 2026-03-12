@@ -135,3 +135,10 @@ Se definió un usuario administrador técnico inicial para pruebas, configuraci�
 - Se descartó guardar el área principal directamente en `seg_usuarios` para evitar duplicidad de fuentes de verdad.
 - La asignación organizacional se actualiza reemplazando completamente los registros previos del usuario para simplificar consistencia.
 - La visualización organizacional usa el formato `departamento / proyecto / área`.
+
+## Día 10 - Catálogos del módulo organizacional
+
+- Se decidió implementar primero los catálogos de departamentos, proyectos y áreas antes de la asignación de usuarios.
+- La tabla `org_areas` representa una combinación de `departamento + proyecto + nombre del área`.
+- La asignación futura de usuarios seguirá guardando únicamente `id_area`, aunque la interfaz de usuario será guiada por departamento y proyecto.
+- Se aplicaron Form Requests para centralizar validaciones y mantener controladores simples.
