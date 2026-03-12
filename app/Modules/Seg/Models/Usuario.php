@@ -41,4 +41,14 @@ class Usuario extends Authenticatable
     {
         return $this->clave;
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'id_usuario';
+    }
+
+    public function getNombreCompletoAttribute(): string
+    {
+        return trim($this->nombres . ' ' . $this->apellidos);
+    }
 }

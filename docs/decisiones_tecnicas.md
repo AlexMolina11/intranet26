@@ -117,3 +117,13 @@ Se definió un usuario administrador técnico inicial para pruebas, configuraci�
 - Se mantuvo el campo `clave` por compatibilidad con el modelo de datos.
 - Las rutas de autenticación se separaron en `routes/auth.php`.
 - El controlador de autenticación se ubicó dentro del módulo `Seg`.
+
+## Día 9 - CRUD de usuarios
+
+- Se implementó el CRUD de usuarios dentro del módulo `Seg`.
+- Se usaron Form Requests para centralizar validaciones.
+- La contraseña solo se actualiza cuando el campo `clave` viene informado en edición.
+- La activación y desactivación se maneja de forma lógica con el campo `activo`.
+- El nombre de usuario ya no se captura manualmente.
+- El campo `nombre_usuario` se genera automáticamente a partir del prefijo del correo electrónico.
+- Se agregó validación adicional para evitar duplicidad de `nombre_usuario` derivada de correos con el mismo prefijo.

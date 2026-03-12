@@ -73,3 +73,16 @@ Esto permitirá mantener consistencia a medida que el sistema crezca.
 - Se protegieron rutas privadas con middleware `auth`.
 - Se configuró redirección al dashboard.
 - Se validó el flujo completo de acceso con el usuario administrador inicial.
+
+## Día 9 - Modelo y CRUD de usuarios
+
+- Se implementó el CRUD base de usuarios del módulo de seguridad.
+- Se creó el controlador `UsuarioController`.
+- Se crearon las vistas de listado, creación y edición.
+- Se implementó activación y desactivación lógica mediante el campo `activo`.
+- Se agregaron validaciones con Form Requests.
+- Se validó unicidad de `correo`.
+- Se eliminó el ingreso manual de `nombre_usuario`.
+- El campo `nombre_usuario` ahora se genera automáticamente a partir del prefijo del correo.
+- Se agregó validación para evitar colisiones entre prefijos de correo y nombres de usuario existentes.
+- Se validó para que el usuario logeado no pueda desactivarse a si mismo.
