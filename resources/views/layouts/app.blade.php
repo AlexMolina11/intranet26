@@ -19,12 +19,26 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .header a {
             color: white;
             text-decoration: none;
             margin-right: 12px;
+        }
+
+        .nav-link-active {
+            font-weight: bold;
+            text-decoration: underline;
         }
 
         .container {
@@ -167,21 +181,33 @@
 </head>
 <body>
     <div class="header">
-        <div>
-            <a href="{{ route('dashboard') }}"><strong>Intranet 2026</strong></a>
-            <a href="{{ route('seg.usuarios.index') }}">Usuarios</a>
-            <a href="{{ route('org.departamentos.index') }}">Departamentos</a>
-            <a href="{{ route('org.proyectos.index') }}">Proyectos</a>
-            <a href="{{ route('org.areas.index') }}">Áreas</a>
+        <div class="nav-links">
+            <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'nav-link-active' : '' }}">
+                <strong>Intranet 2026</strong>
+            </a>
+            <a href="{{ route('seg.usuarios.index') }}" class="{{ request()->routeIs('seg.usuarios.*') ? 'nav-link-active' : '' }}">
+                Usuarios
+            </a>
+            <a href="{{ route('org.departamentos.index') }}" class="{{ request()->routeIs('org.departamentos.*') ? 'nav-link-active' : '' }}">
+                Departamentos
+            </a>
+            <a href="{{ route('org.proyectos.index') }}" class="{{ request()->routeIs('org.proyectos.*') ? 'nav-link-active' : '' }}">
+                Proyectos
+            </a>
+            <a href="{{ route('org.areas.index') }}" class="{{ request()->routeIs('org.areas.*') ? 'nav-link-active' : '' }}">
+                Áreas
+            </a>
         </div>
 
         <div>
-            {{ auth()->user()->nombre_completo }}
+            @auth
+                {{ auth()->user()->nombre_completo }}
 
-            <form method="POST" action="{{ route('logout') }}" style="display:inline-block; margin-left:12px;">
-                @csrf
-                <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-            </form>
+                <form method="POST" action="{{ route('logout') }}" style="display:inline-block; margin-left:12px;">
+                    @csrf
+                    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+                </form>
+            @endauth
         </div>
     </div>
 
