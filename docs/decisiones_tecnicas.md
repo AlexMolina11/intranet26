@@ -142,3 +142,11 @@ Se definió un usuario administrador técnico inicial para pruebas, configuraci�
 - La tabla `org_areas` representa una combinación de `departamento + proyecto + nombre del área`.
 - La asignación futura de usuarios seguirá guardando únicamente `id_area`, aunque la interfaz de usuario será guiada por departamento y proyecto.
 - Se aplicaron Form Requests para centralizar validaciones y mantener controladores simples.
+
+## Día 11 - Asignación organizacional de usuarios
+
+- La interfaz de asignación organizacional se diseñó de forma guiada usando selects dependientes.
+- Aunque el usuario selecciona departamento, proyecto y área, en persistencia solo se guarda `id_area`.
+- Se mantuvo la tabla `org_usuario_area` como única fuente de verdad para la relación usuario-área.
+- El campo `es_principal` distingue entre área principal y áreas secundarias.
+- Se incorporó validación para evitar duplicidad entre principal y secundarias.

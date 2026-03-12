@@ -113,3 +113,12 @@ Esto permitirá mantener consistencia a medida que el sistema crezca.
 - Las áreas ahora se administran como combinación de departamento, proyecto y nombre.
 - Se preparó la base funcional para la futura asignación organizacional guiada de usuarios.
 - Se agregaron validaciones para evitar duplicidad en catálogos.
+
+## Día 11 - Asignación organizacional guiada
+
+- Se implementó la asignación organizacional guiada de usuarios.
+- La selección se realiza por departamento, proyecto y área.
+- Se agregó soporte para un área principal y múltiples áreas secundarias.
+- La información se guarda en la tabla `org_usuario_area`.
+- Se creó un endpoint para cargar áreas filtradas por departamento y proyecto.
+- Se actualizó el listado de usuarios para mostrar la información organizacional.

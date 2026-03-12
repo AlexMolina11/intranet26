@@ -37,7 +37,7 @@
                             @if ($usuario->areaPrincipalAsignada && $usuario->areaPrincipalAsignada->area)
                                 <div>
                                     <strong>Principal:</strong><br>
-                                    {{ $usuario->areaPrincipalAsignada->area->nombre_organizacional }}
+                                    {{ $usuario->areaPrincipalAsignada->area->nombre_completo }}
                                 </div>
                             @else
                                 <div>Sin área principal</div>
@@ -48,7 +48,7 @@
                                     <strong>Secundarias:</strong><br>
                                     @foreach ($usuario->areasSecundariasAsignadas as $asignacion)
                                         @if ($asignacion->area)
-                                            <div>- {{ $asignacion->area->nombre_organizacional }}</div>
+                                            <div>- {{ $asignacion->area->nombre_completo }}</div>
                                         @endif
                                     @endforeach
                                 </div>

@@ -20,6 +20,9 @@ Route::middleware('auth')
                     ->name('organizacion.update');
             });
 
+        Route::get('/areas-por-filtro', [UsuarioOrganizacionController::class, 'obtenerAreas'])
+            ->name('areas.por-filtro');
+
         Route::prefix('departamentos')
             ->as('departamentos.')
             ->group(function () {
