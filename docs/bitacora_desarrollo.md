@@ -122,3 +122,20 @@ Esto permitirá mantener consistencia a medida que el sistema crezca.
 - La información se guarda en la tabla `org_usuario_area`.
 - Se creó un endpoint para cargar áreas filtradas por departamento y proyecto.
 - Se actualizó el listado de usuarios para mostrar la información organizacional.
+
+Ajuste de soft deletes en tablas núcleo
+
+Se realizó una actualización del modelo físico de la base de datos para alinearlo con las decisiones recientes del proyecto sobre el uso de soft delete.
+A partir de esta revisión, se confirmó que las tablas pivote, de relación vigente y de auditoría del núcleo del sistema no deben manejar deleted_at, ya que esto puede generar conflictos con índices únicos, complicar reasignaciones y no aporta valor funcional en registros históricos o bitácoras.
+
+En esta fase se aplicaron migraciones para eliminar la columna deleted_at de las siguientes tablas:
+
+- seg_usuario_sistema
+- seg_usuario_rol
+- seg_rol_permiso
+- seg_usuario_permiso
+- seg_bitacora_accesos
+- seg_bitacora_acciones
+- org_dependencias
+
+Este ajuste deja la estructura física de la base de datos consistente con el modelo lógico y el diccionario de datos actualizados.

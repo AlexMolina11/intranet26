@@ -150,3 +150,26 @@ Se definió un usuario administrador técnico inicial para pruebas, configuraci�
 - Se mantuvo la tabla `org_usuario_area` como única fuente de verdad para la relación usuario-área.
 - El campo `es_principal` distingue entre área principal y áreas secundarias.
 - Se incorporó validación para evitar duplicidad entre principal y secundarias.
+
+Política de uso de soft delete en la base de datos
+
+Se definió una política más precisa para el uso de deleted_at dentro de la base de datos del proyecto.
+
+La decisión técnica es la siguiente:
+
+- deleted_at se conserva únicamente en entidades maestras, catálogos o registros que requieran baja lógica
+- las tablas pivote o de relación vigente no deben usar deleted_at
+- las tablas de auditoría, bitácora o histórico no deben usar deleted_at
+
+Esta decisión se tomó porque el uso de soft delete en tablas relacionales puede provocar inconsistencias con índices únicos compuestos, dificultar la reinserción de relaciones y agregar complejidad innecesaria al modelo.
+En consecuencia, se eliminará deleted_at de tablas como:
+
+- relaciones usuario-sistema
+- relaciones usuario-rol
+- relaciones rol-permiso
+- permisos directos a usuario
+- bitácoras de accesos
+- bitácoras de acciones
+- dependencias jerárquicas vigentes
+
+Con esto se mejora la coherencia entre el modelo lógico, el modelo físico y la implementación futura del sistema.
