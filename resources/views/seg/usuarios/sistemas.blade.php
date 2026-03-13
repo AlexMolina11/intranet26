@@ -29,14 +29,22 @@
                         @endphp
                         <tr>
                             <td>
-                                <input type="checkbox"
-                                    name="sistemas[{{ $loop->index }}][id_sistema]"
-                                    value="{{ $sistema->id_sistema }}"
-                                    {{ $tieneAsignacion ? 'checked' : '' }}>
+                                <input
+                                    type="checkbox"
+                                    name="sistemas[{{ $sistema->id_sistema }}][asignado]"
+                                    value="1"
+                                    {{ $tieneAsignacion ? 'checked' : '' }}
+                                >
                             </td>
                             <td>{{ $sistema->nombre }}</td>
                             <td>
-                                <select name="sistemas[{{ $loop->index }}][activo]" class="form-control">
+                                <input
+                                    type="hidden"
+                                    name="sistemas[{{ $sistema->id_sistema }}][id_sistema]"
+                                    value="{{ $sistema->id_sistema }}"
+                                >
+
+                                <select name="sistemas[{{ $sistema->id_sistema }}][activo]" class="form-control">
                                     <option value="1" {{ $activoAsignado === 1 ? 'selected' : '' }}>Activo</option>
                                     <option value="0" {{ $activoAsignado === 0 ? 'selected' : '' }}>Inactivo</option>
                                 </select>

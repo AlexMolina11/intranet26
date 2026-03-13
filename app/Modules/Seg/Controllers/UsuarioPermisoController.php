@@ -34,13 +34,17 @@ class UsuarioPermisoController extends Controller
     {
         $request->validate([
             'permisos' => ['nullable', 'array'],
-            'permisos.*' => ['in:1,0'],
+            'permisos.*' => ['nullable', 'in:1,0'],
         ]);
 
         $syncData = [];
 
         foreach ($request->input('permisos', []) as $idPermiso => $permitido) {
             if (!is_numeric($idPermiso)) {
+                continue;
+            }
+
+            if ($permitido === '' || $permitido === null) {
                 continue;
             }
 

@@ -25,14 +25,19 @@ class UsuarioSistemaController extends Controller
         $request->validate([
             'sistemas' => ['nullable', 'array'],
             'sistemas.*.id_sistema' => ['required', 'integer', 'exists:seg_sistemas,id_sistema'],
-            'sistemas.*.activo' => ['nullable', 'boolean'],
+            'sistemas.*.activo' => ['required', 'in:1,0'],
+            'sistemas.*.asignado' => ['nullable', 'in:1'],
         ]);
 
         $syncData = [];
 
         foreach ($request->input('sistemas', []) as $item) {
+            if (!isset($item['asignado']) || $item['asignado'] != '1') {
+                continue;
+            }
+
             $syncData[$item['id_sistema']] = [
-                'activo' => isset($item['activo']) ? (bool) $item['activo'] : false,
+                'activo' => (bool) $item['activo'],
             ];
         }
 
