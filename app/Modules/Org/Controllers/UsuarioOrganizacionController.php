@@ -40,6 +40,7 @@ class UsuarioOrganizacionController extends Controller
                 'id_departamento' => $area->id_departamento,
                 'id_proyecto' => $area->id_proyecto,
                 'id_area' => $area->id_area,
+                'nombre_area' => $area->nombre,
             ];
         }
 
@@ -54,6 +55,7 @@ class UsuarioOrganizacionController extends Controller
                 'id_departamento' => $asignacion->area->id_departamento,
                 'id_proyecto' => $asignacion->area->id_proyecto,
                 'id_area' => $asignacion->area->id_area,
+                'nombre_area' => $asignacion->area->nombre,
             ];
         }
 
@@ -107,19 +109,58 @@ class UsuarioOrganizacionController extends Controller
             ->with('success', 'Asignación organizacional guardada correctamente.');
     }
 
-    public function obtenerAreas(Request $request)
+    public function obtenerProyectosPorDepartamento(Request $request)
+    {
+        $request->validate([
+            'id_departamento' => ['required', 'integer'],
+        ]);
+
+        $proyectos = Proyecto::query()
+            ->select('org_proyectos.id_proyecto', 'org_proyectos.nombre')
+            ->join('org_areas', 'org_areas.id_proyecto', '=', 'org_proyectos.id_proyecto')
+            ->where('org_areas.id_departamento', $request->id_departamento)
+            ->whereNull('org_areas.deleted_at')
+            ->whereNull('org_proyectos.deleted_at')
+            ->where('org_proyectos.activo', true)
+            ->distinct()
+            ->orderBy('org_proyectos.nombre')
+            ->get();
+
+        return response()->json($proyectos);
+    }
+
+    public function obtenerDepartamentosPorProyecto(Request $request)
+    {
+        $request->validate([
+            'id_proyecto' => ['required', 'integer'],
+        ]);
+
+        $departamentos = Departamento::query()
+            ->select('org_departamentos.id_departamento', 'org_departamentos.nombre')
+            ->join('org_areas', 'org_areas.id_departamento', '=', 'org_departamentos.id_departamento')
+            ->where('org_areas.id_proyecto', $request->id_proyecto)
+            ->whereNull('org_areas.deleted_at')
+            ->whereNull('org_departamentos.deleted_at')
+            ->where('org_departamentos.activo', true)
+            ->distinct()
+            ->orderBy('org_departamentos.nombre')
+            ->get();
+
+        return response()->json($departamentos);
+    }
+
+    public function resolverArea(Request $request)
     {
         $request->validate([
             'id_departamento' => ['required', 'integer'],
             'id_proyecto' => ['required', 'integer'],
         ]);
 
-        $areas = Area::where('activo', true)
+        $area = Area::where('activo', true)
             ->where('id_departamento', $request->id_departamento)
             ->where('id_proyecto', $request->id_proyecto)
-            ->orderBy('nombre')
-            ->get(['id_area', 'nombre']);
+            ->first(['id_area', 'nombre']);
 
-        return response()->json($areas);
+        return response()->json($area);
     }
 }

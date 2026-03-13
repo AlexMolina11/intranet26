@@ -20,8 +20,14 @@ Route::middleware('auth')
                     ->name('organizacion.update');
             });
 
-        Route::get('/areas-por-filtro', [UsuarioOrganizacionController::class, 'obtenerAreas'])
-            ->name('areas.por-filtro');
+        Route::get('/proyectos-por-departamento', [UsuarioOrganizacionController::class, 'obtenerProyectosPorDepartamento'])
+            ->name('proyectos.por-departamento');
+
+        Route::get('/departamentos-por-proyecto', [UsuarioOrganizacionController::class, 'obtenerDepartamentosPorProyecto'])
+            ->name('departamentos.por-proyecto');
+
+        Route::get('/resolver-area', [UsuarioOrganizacionController::class, 'resolverArea'])
+            ->name('areas.resolver');
 
         Route::prefix('departamentos')
             ->as('departamentos.')

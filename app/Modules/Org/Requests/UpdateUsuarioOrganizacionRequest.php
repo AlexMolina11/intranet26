@@ -45,23 +45,57 @@ class UpdateUsuarioOrganizacionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'principal_id_departamento' => ['nullable', 'integer', Rule::exists('org_departamentos', 'id_departamento')->whereNull('deleted_at')],
-            'principal_id_proyecto' => ['nullable', 'integer', Rule::exists('org_proyectos', 'id_proyecto')->whereNull('deleted_at')],
-            'principal_id_area' => ['nullable', 'integer', Rule::exists('org_areas', 'id_area')->whereNull('deleted_at')],
+            'principal_id_departamento' => [
+                'nullable',
+                'integer',
+                Rule::exists('org_departamentos', 'id_departamento')->whereNull('deleted_at'),
+            ],
+            'principal_id_proyecto' => [
+                'nullable',
+                'integer',
+                Rule::exists('org_proyectos', 'id_proyecto')->whereNull('deleted_at'),
+            ],
+            'principal_id_area' => [
+                'nullable',
+                'integer',
+                Rule::exists('org_areas', 'id_area')->whereNull('deleted_at'),
+            ],
 
             'secundarias' => ['nullable', 'array'],
-            'secundarias.*.id_departamento' => ['nullable', 'integer', Rule::exists('org_departamentos', 'id_departamento')->whereNull('deleted_at')],
-            'secundarias.*.id_proyecto' => ['nullable', 'integer', Rule::exists('org_proyectos', 'id_proyecto')->whereNull('deleted_at')],
-            'secundarias.*.id_area' => ['nullable', 'integer', Rule::exists('org_areas', 'id_area')->whereNull('deleted_at')],
+            'secundarias.*.id_departamento' => [
+                'nullable',
+                'integer',
+                Rule::exists('org_departamentos', 'id_departamento')->whereNull('deleted_at'),
+            ],
+            'secundarias.*.id_proyecto' => [
+                'nullable',
+                'integer',
+                Rule::exists('org_proyectos', 'id_proyecto')->whereNull('deleted_at'),
+            ],
+            'secundarias.*.id_area' => [
+                'nullable',
+                'integer',
+                Rule::exists('org_areas', 'id_area')->whereNull('deleted_at'),
+            ],
         ];
     }
 
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
+            $principalDep = $this->input('principal_id_departamento');
+            $principalProy = $this->input('principal_id_proyecto');
             $principalArea = $this->input('principal_id_area');
-            $secundarias = $this->input('secundarias', []);
 
+            if (($principalDep || $principalProy || $principalArea) &&
+                (!$principalDep || !$principalProy || !$principalArea)) {
+                $validator->errors()->add(
+                    'principal_id_area',
+                    'El área principal debe quedar completamente definida.'
+                );
+            }
+
+            $secundarias = $this->input('secundarias', []);
             $idsSecundarias = [];
 
             foreach ($secundarias as $index => $fila) {
@@ -74,7 +108,7 @@ class UpdateUsuarioOrganizacionRequest extends FormRequest
                 if (empty($fila['id_departamento']) || empty($fila['id_proyecto']) || empty($fila['id_area'])) {
                     $validator->errors()->add(
                         "secundarias.$index.id_area",
-                        'Cada área secundaria debe tener departamento, proyecto y área.'
+                        'Cada área secundaria debe quedar completamente definida.'
                     );
                     continue;
                 }
@@ -103,7 +137,7 @@ class UpdateUsuarioOrganizacionRequest extends FormRequest
         return [
             'principal_id_departamento.exists' => 'El departamento principal seleccionado no es válido.',
             'principal_id_proyecto.exists' => 'El proyecto principal seleccionado no es válido.',
-            'principal_id_area.exists' => 'El área principal seleccionada no es válida.',
+            'principal_id_area.exists' => 'El área principal resuelta no es válida.',
             'secundarias.array' => 'Las áreas secundarias deben enviarse como lista.',
         ];
     }

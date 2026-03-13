@@ -42,20 +42,13 @@
                     <label class="form-label" for="principal_id_proyecto">Proyecto</label>
                     <select name="principal_id_proyecto" id="principal_id_proyecto" class="form-control">
                         <option value="">-- Seleccione proyecto --</option>
-                        @foreach ($proyectos as $proyecto)
-                            <option value="{{ $proyecto->id_proyecto }}"
-                                {{ (string) old('principal_id_proyecto', $principal['id_proyecto'] ?? '') === (string) $proyecto->id_proyecto ? 'selected' : '' }}>
-                                {{ $proyecto->nombre }}
-                            </option>
-                        @endforeach
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="principal_id_area">Área</label>
-                    <select name="principal_id_area" id="principal_id_area" class="form-control">
-                        <option value="">-- Seleccione área --</option>
-                    </select>
+                    <label class="form-label">Área resuelta automáticamente</label>
+                    <input type="text" id="principal_nombre_area" class="form-control" value="" readonly>
+                    <input type="hidden" name="principal_id_area" id="principal_id_area" value="{{ old('principal_id_area', $principal['id_area'] ?? '') }}">
                     @error('principal_id_area')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
@@ -100,20 +93,22 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Área</label>
-                <select class="form-control secundaria-area"></select>
+                <label class="form-label">Área resuelta automáticamente</label>
+                <input type="text" class="form-control secundaria-nombre-area" readonly>
+                <input type="hidden" class="secundaria-id-area">
             </div>
         </div>
     </template>
 
     <script>
-        const departamentos = @json($departamentos->map(fn($d) => ['id' => $d->id_departamento, 'nombre' => $d->nombre])->values());
-        const proyectos = @json($proyectos->map(fn($p) => ['id' => $p->id_proyecto, 'nombre' => $p->nombre])->values());
+        const departamentosBase = @json($departamentos->map(fn($d) => ['id' => $d->id_departamento, 'nombre' => $d->nombre])->values());
+        const proyectosBase = @json($proyectos->map(fn($p) => ['id' => $p->id_proyecto, 'nombre' => $p->nombre])->values());
 
         const principalInicial = {
             id_departamento: @json(old('principal_id_departamento', $principal['id_departamento'] ?? '')),
             id_proyecto: @json(old('principal_id_proyecto', $principal['id_proyecto'] ?? '')),
-            id_area: @json(old('principal_id_area', $principal['id_area'] ?? ''))
+            id_area: @json(old('principal_id_area', $principal['id_area'] ?? '')),
+            nombre_area: @json($principal['nombre_area'] ?? '')
         };
 
         const secundariasIniciales = @json(old('secundarias', $secundarias));
@@ -136,38 +131,74 @@
             });
         }
 
-        async function cargarAreas(selectArea, idDepartamento, idProyecto, selectedArea = '') {
-            llenarSelect(selectArea, [], '', '-- Seleccione área --');
-
-            if (!idDepartamento || !idProyecto) {
-                return;
-            }
-
-            const url = `{{ route('org.areas.por-filtro') }}?id_departamento=${idDepartamento}&id_proyecto=${idProyecto}`;
+        async function fetchJson(url) {
             const response = await fetch(url, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
 
-            const areas = await response.json();
-            llenarSelect(selectArea, areas, selectedArea, '-- Seleccione área --', 'id_area', 'nombre');
+            return await response.json();
+        }
+
+        async function cargarProyectosPorDepartamento(selectProyecto, idDepartamento, selectedProyecto = '') {
+            llenarSelect(selectProyecto, [], '', '-- Seleccione proyecto --');
+
+            if (!idDepartamento) {
+                return;
+            }
+
+            const url = `{{ route('org.proyectos.por-departamento') }}?id_departamento=${idDepartamento}`;
+            const proyectos = await fetchJson(url);
+
+            llenarSelect(selectProyecto, proyectos, selectedProyecto, '-- Seleccione proyecto --', 'id_proyecto', 'nombre');
+        }
+
+        async function resolverArea(idDepartamento, idProyecto) {
+            if (!idDepartamento || !idProyecto) {
+                return null;
+            }
+
+            const url = `{{ route('org.areas.resolver') }}?id_departamento=${idDepartamento}&id_proyecto=${idProyecto}`;
+            return await fetchJson(url);
         }
 
         async function inicializarPrincipal() {
             const dep = document.getElementById('principal_id_departamento');
             const proy = document.getElementById('principal_id_proyecto');
-            const area = document.getElementById('principal_id_area');
+            const hiddenArea = document.getElementById('principal_id_area');
+            const nombreArea = document.getElementById('principal_nombre_area');
 
-            await cargarAreas(area, dep.value, proy.value, principalInicial.id_area);
+            if (principalInicial.id_departamento) {
+                await cargarProyectosPorDepartamento(proy, principalInicial.id_departamento, principalInicial.id_proyecto);
+            }
+
+            async function actualizarPrincipal() {
+                const area = await resolverArea(dep.value, proy.value);
+
+                if (area && area.id_area) {
+                    hiddenArea.value = area.id_area;
+                    nombreArea.value = area.nombre;
+                } else {
+                    hiddenArea.value = '';
+                    nombreArea.value = '';
+                }
+            }
 
             dep.addEventListener('change', async function () {
-                await cargarAreas(area, dep.value, proy.value, '');
+                await cargarProyectosPorDepartamento(proy, dep.value, '');
+                await actualizarPrincipal();
             });
 
             proy.addEventListener('change', async function () {
-                await cargarAreas(area, dep.value, proy.value, '');
+                await actualizarPrincipal();
             });
+
+            await actualizarPrincipal();
+
+            if (!nombreArea.value && principalInicial.nombre_area) {
+                nombreArea.value = principalInicial.nombre_area;
+            }
         }
 
         async function agregarSecundaria(valores = {}) {
@@ -178,23 +209,41 @@
             const item = clon.querySelector('.secundaria-item');
             const selectDepartamento = clon.querySelector('.secundaria-departamento');
             const selectProyecto = clon.querySelector('.secundaria-proyecto');
-            const selectArea = clon.querySelector('.secundaria-area');
+            const inputNombreArea = clon.querySelector('.secundaria-nombre-area');
+            const inputIdArea = clon.querySelector('.secundaria-id-area');
             const btnEliminar = clon.querySelector('.btn-eliminar-secundaria');
 
             selectDepartamento.name = `secundarias[${index}][id_departamento]`;
             selectProyecto.name = `secundarias[${index}][id_proyecto]`;
-            selectArea.name = `secundarias[${index}][id_area]`;
+            inputIdArea.name = `secundarias[${index}][id_area]`;
 
-            llenarSelect(selectDepartamento, departamentos, valores.id_departamento || '', '-- Seleccione departamento --');
-            llenarSelect(selectProyecto, proyectos, valores.id_proyecto || '', '-- Seleccione proyecto --');
-            await cargarAreas(selectArea, valores.id_departamento || '', valores.id_proyecto || '', valores.id_area || '');
+            llenarSelect(selectDepartamento, departamentosBase, valores.id_departamento || '', '-- Seleccione departamento --');
+
+            if (valores.id_departamento) {
+                await cargarProyectosPorDepartamento(selectProyecto, valores.id_departamento, valores.id_proyecto || '');
+            } else {
+                llenarSelect(selectProyecto, [], '', '-- Seleccione proyecto --');
+            }
+
+            async function actualizarAreaSecundaria() {
+                const area = await resolverArea(selectDepartamento.value, selectProyecto.value);
+
+                if (area && area.id_area) {
+                    inputIdArea.value = area.id_area;
+                    inputNombreArea.value = area.nombre;
+                } else {
+                    inputIdArea.value = '';
+                    inputNombreArea.value = '';
+                }
+            }
 
             selectDepartamento.addEventListener('change', async function () {
-                await cargarAreas(selectArea, selectDepartamento.value, selectProyecto.value, '');
+                await cargarProyectosPorDepartamento(selectProyecto, selectDepartamento.value, '');
+                await actualizarAreaSecundaria();
             });
 
             selectProyecto.addEventListener('change', async function () {
-                await cargarAreas(selectArea, selectDepartamento.value, selectProyecto.value, '');
+                await actualizarAreaSecundaria();
             });
 
             btnEliminar.addEventListener('click', function () {
@@ -203,16 +252,25 @@
             });
 
             document.getElementById('contenedorSecundarias').appendChild(clon);
+
+            await actualizarAreaSecundaria();
+
+            if (!inputNombreArea.value && valores.nombre_area) {
+                inputNombreArea.value = valores.nombre_area;
+            }
         }
 
         function reindexarSecundarias() {
             const items = document.querySelectorAll('.secundaria-item');
 
             items.forEach((item, index) => {
-                const selects = item.querySelectorAll('select');
-                selects[0].name = `secundarias[${index}][id_departamento]`;
-                selects[1].name = `secundarias[${index}][id_proyecto]`;
-                selects[2].name = `secundarias[${index}][id_area]`;
+                const selectDepartamento = item.querySelector('.secundaria-departamento');
+                const selectProyecto = item.querySelector('.secundaria-proyecto');
+                const inputIdArea = item.querySelector('.secundaria-id-area');
+
+                selectDepartamento.name = `secundarias[${index}][id_departamento]`;
+                selectProyecto.name = `secundarias[${index}][id_proyecto]`;
+                inputIdArea.name = `secundarias[${index}][id_area]`;
             });
         }
 

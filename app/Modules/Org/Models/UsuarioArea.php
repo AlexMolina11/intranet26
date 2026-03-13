@@ -3,13 +3,10 @@
 namespace App\Modules\Org\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Seg\Models\Usuario;
 
 class UsuarioArea extends Model
 {
-    use SoftDeletes;
-
     protected $table = 'org_usuario_area';
     protected $primaryKey = 'id_usuario_area';
 
@@ -23,7 +20,6 @@ class UsuarioArea extends Model
         'es_principal' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
     ];
 
     public function usuario()
