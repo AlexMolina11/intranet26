@@ -6,10 +6,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Org\Models\UsuarioArea;
+use App\Modules\Seg\Support\HasPermissions;
 
 class Usuario extends Authenticatable
 {
-    use Notifiable, SoftDeletes;
+    use Notifiable, SoftDeletes, HasPermissions;
 
     protected $table = 'seg_usuarios';
     protected $primaryKey = 'id_usuario';
@@ -68,5 +69,41 @@ class Usuario extends Authenticatable
     {
         return $this->hasMany(UsuarioArea::class, 'id_usuario', 'id_usuario')
             ->where('es_principal', false);
+    }
+
+    public function sistemas()
+    {
+        return $this->belongsToMany(
+            Sistema::class,
+            'seg_usuario_sistema',
+            'id_usuario',
+            'id_sistema',
+            'id_usuario',
+            'id_sistema'
+        )->withPivot('activo')->withTimestamps();
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(
+            Rol::class,
+            'seg_usuario_rol',
+            'id_usuario',
+            'id_rol',
+            'id_usuario',
+            'id_rol'
+        )->withTimestamps();
+    }
+
+    public function permisosDirectos()
+    {
+        return $this->belongsToMany(
+            Permiso::class,
+            'seg_usuario_permiso',
+            'id_usuario',
+            'id_permiso',
+            'id_usuario',
+            'id_permiso'
+        )->withPivot('permitido')->withTimestamps();
     }
 }

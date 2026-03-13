@@ -57,6 +57,10 @@
                                         <button type="submit" class="btn btn-success">Activar</button>
                                     @endif
                                 </form>
+
+                                <a href="{{ route('seg.sistemas.roles.permisos.edit', [$sistema, $rol]) }}" class="btn btn-primary">
+                                    Permisos
+                                </a>
                             </div>
                         </td>
                     </tr>

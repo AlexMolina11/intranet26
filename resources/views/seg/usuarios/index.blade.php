@@ -84,6 +84,10 @@
                                         <button type="submit" class="btn btn-success">Activar</button>
                                     @endif
                                 </form>
+
+                                <a href="{{ route('seg.usuarios.sistemas.edit', $usuario) }}" class="btn btn-secondary">Sistemas</a>
+                                <a href="{{ route('seg.usuarios.roles.edit', $usuario) }}" class="btn btn-warning">Roles</a>
+                                <a href="{{ route('seg.usuarios.permisos.edit', $usuario) }}" class="btn btn-primary">Permisos</a>
                             </div>
                         </td>
                     </tr>

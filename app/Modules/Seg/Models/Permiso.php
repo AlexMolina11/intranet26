@@ -5,22 +5,21 @@ namespace App\Modules\Seg\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Rol extends Model
+class Permiso extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'seg_roles';
-    protected $primaryKey = 'id_rol';
+    protected $table = 'seg_permisos';
+    protected $primaryKey = 'id_permiso';
 
     protected $fillable = [
         'id_sistema',
+        'codigo',
         'nombre',
         'descripcion',
-        'activo',
     ];
 
     protected $casts = [
-        'activo' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -31,27 +30,27 @@ class Rol extends Model
         return $this->belongsTo(Sistema::class, 'id_sistema', 'id_sistema');
     }
 
-    public function permisos()
+    public function roles()
     {
         return $this->belongsToMany(
-            Permiso::class,
+            Rol::class,
             'seg_rol_permiso',
-            'id_rol',
             'id_permiso',
             'id_rol',
-            'id_permiso'
+            'id_permiso',
+            'id_rol'
         )->withTimestamps();
     }
 
-    public function usuarios()
+    public function usuariosDirectos()
     {
         return $this->belongsToMany(
             Usuario::class,
-            'seg_usuario_rol',
-            'id_rol',
+            'seg_usuario_permiso',
+            'id_permiso',
             'id_usuario',
-            'id_rol',
+            'id_permiso',
             'id_usuario'
-        )->withTimestamps();
+        )->withPivot('permitido')->withTimestamps();
     }
 }

@@ -181,3 +181,15 @@ Con esto se mejora la coherencia entre el modelo lógico, el modelo físico y la
 - La entidad `seg_roles` depende directamente de `seg_sistemas`.
 - La validación de unicidad de roles se aplica por sistema, no de forma global.
 - El estado activo/inactivo se usa como mecanismo de control funcional sin eliminar registros.
+
+## Día 13 - Modelo de autorización
+
+- Los permisos se definen como entidades atómicas asociadas a un sistema.
+- Los roles agrupan permisos y se mantienen dependientes del sistema al que pertenecen.
+- El acceso a un sistema es requisito previo para que un permiso pueda resolverse como válido.
+- Los permisos directos de usuario tienen prioridad sobre los permisos heredados por rol.
+- La tabla `seg_usuario_permiso` permite tanto concesión directa como denegación explícita mediante el campo `permitido`.
+- La resolución base de autorización sigue este orden:
+    1. validar acceso activo al sistema
+    2. verificar excepción directa
+    3. verificar permisos heredados por roles

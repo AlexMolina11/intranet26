@@ -4,6 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\Seg\Controllers\UsuarioController;
 use App\Modules\Seg\Controllers\SistemaController;
 use App\Modules\Seg\Controllers\RolController;
+use App\Modules\Seg\Controllers\PermisoController;
+use App\Modules\Seg\Controllers\RolPermisoController;
+use App\Modules\Seg\Controllers\UsuarioSistemaController;
+use App\Modules\Seg\Controllers\UsuarioRolController;
+use App\Modules\Seg\Controllers\UsuarioPermisoController;
 
 Route::middleware('auth')
     ->prefix('seg')
@@ -41,5 +46,44 @@ Route::middleware('auth')
                         Route::put('/{rol}', [RolController::class, 'update'])->name('update');
                         Route::patch('/{rol}/toggle', [RolController::class, 'toggle'])->name('toggle');
                     });
+            });
+
+        Route::prefix('permisos')
+            ->as('permisos.')
+            ->group(function () {
+                Route::get('/', [PermisoController::class, 'index'])->name('index');
+                Route::get('/crear', [PermisoController::class, 'create'])->name('create');
+                Route::post('/', [PermisoController::class, 'store'])->name('store');
+                Route::get('/{permiso}/editar', [PermisoController::class, 'edit'])->name('edit');
+                Route::put('/{permiso}', [PermisoController::class, 'update'])->name('update');
+                Route::delete('/{permiso}', [PermisoController::class, 'destroy'])->name('destroy');
+            });
+
+        Route::prefix('sistemas/{sistema}/roles/{rol}/permisos')
+            ->as('sistemas.roles.permisos.')
+            ->group(function () {
+                Route::get('/editar', [RolPermisoController::class, 'edit'])->name('edit');
+                Route::put('/', [RolPermisoController::class, 'update'])->name('update');
+            });
+
+        Route::prefix('usuarios/{usuario}/sistemas')
+            ->as('usuarios.sistemas.')
+            ->group(function () {
+                Route::get('/editar', [UsuarioSistemaController::class, 'edit'])->name('edit');
+                Route::put('/', [UsuarioSistemaController::class, 'update'])->name('update');
+            });
+
+        Route::prefix('usuarios/{usuario}/roles')
+            ->as('usuarios.roles.')
+            ->group(function () {
+                Route::get('/editar', [UsuarioRolController::class, 'edit'])->name('edit');
+                Route::put('/', [UsuarioRolController::class, 'update'])->name('update');
+            });
+
+        Route::prefix('usuarios/{usuario}/permisos')
+            ->as('usuarios.permisos.')
+            ->group(function () {
+                Route::get('/editar', [UsuarioPermisoController::class, 'edit'])->name('edit');
+                Route::put('/', [UsuarioPermisoController::class, 'update'])->name('update');
             });
     });

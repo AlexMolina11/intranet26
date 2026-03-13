@@ -148,3 +148,12 @@ Este ajuste deja la estructura física de la base de datos consistente con el mo
 - Se añadieron validaciones para código, nombre, slug y estado en sistemas.
 - Se añadieron validaciones para nombre único de rol dentro de cada sistema.
 - Se implementó activación y desactivación lógica de sistemas y roles.
+
+## Día 13 - Permisos y relaciones
+
+- Se implementó el CRUD de permisos del módulo de seguridad.
+- Se agregó asignación de permisos a roles por sistema.
+- Se incorporó la asignación de acceso de usuarios a sistemas.
+- Se añadió la asignación de roles a usuarios.
+- Se implementó la administración de permisos directos por usuario.
+- Se creó la lógica base para resolver permisos por acceso a sistema, rol y excepción directa.

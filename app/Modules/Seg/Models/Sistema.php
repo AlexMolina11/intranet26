@@ -41,4 +41,21 @@ class Sistema extends Model
         return $this->hasMany(Rol::class, 'id_sistema', 'id_sistema')
             ->where('activo', true);
     }
+
+    public function permisos()
+    {
+        return $this->hasMany(Permiso::class, 'id_sistema', 'id_sistema');
+    }
+
+    public function usuariosConAcceso()
+    {
+        return $this->belongsToMany(
+            Usuario::class,
+            'seg_usuario_sistema',
+            'id_sistema',
+            'id_usuario',
+            'id_sistema',
+            'id_usuario'
+        )->withPivot('activo')->withTimestamps();
+    }
 }
