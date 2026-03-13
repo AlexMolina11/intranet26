@@ -157,3 +157,13 @@ Este ajuste deja la estructura física de la base de datos consistente con el mo
 - Se añadió la asignación de roles a usuarios.
 - Se implementó la administración de permisos directos por usuario.
 - Se creó la lógica base para resolver permisos por acceso a sistema, rol y excepción directa.
+
+## Día 14 - Menús y submenús
+
+- Se implementó el CRUD de menús principales del módulo de seguridad.
+- Se implementó el CRUD de opciones y submenús de navegación.
+- Se asoció cada menú y opción a un sistema.
+- Se añadió orden visual para menús y opciones.
+- Se incorporó control de visibilidad para navegación.
+- Se agregó soporte para permiso requerido por opción de menú.
+- Se dejó preparada la base para construir navegación dinámica filtrada por permisos.

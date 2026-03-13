@@ -9,6 +9,8 @@ use App\Modules\Seg\Controllers\RolPermisoController;
 use App\Modules\Seg\Controllers\UsuarioSistemaController;
 use App\Modules\Seg\Controllers\UsuarioRolController;
 use App\Modules\Seg\Controllers\UsuarioPermisoController;
+use App\Modules\Seg\Controllers\MenuController;
+use App\Modules\Seg\Controllers\MenuItemController;
 
 Route::middleware('auth')
     ->prefix('seg')
@@ -85,5 +87,27 @@ Route::middleware('auth')
             ->group(function () {
                 Route::get('/editar', [UsuarioPermisoController::class, 'edit'])->name('edit');
                 Route::put('/', [UsuarioPermisoController::class, 'update'])->name('update');
+            });
+
+        Route::prefix('menus')
+            ->as('menus.')
+            ->group(function () {
+                Route::get('/', [MenuController::class, 'index'])->name('index');
+                Route::get('/crear', [MenuController::class, 'create'])->name('create');
+                Route::post('/', [MenuController::class, 'store'])->name('store');
+                Route::get('/{menu}/editar', [MenuController::class, 'edit'])->name('edit');
+                Route::put('/{menu}', [MenuController::class, 'update'])->name('update');
+                Route::delete('/{menu}', [MenuController::class, 'destroy'])->name('destroy');
+            });
+
+        Route::prefix('menu-items')
+            ->as('menu-items.')
+            ->group(function () {
+                Route::get('/', [MenuItemController::class, 'index'])->name('index');
+                Route::get('/crear', [MenuItemController::class, 'create'])->name('create');
+                Route::post('/', [MenuItemController::class, 'store'])->name('store');
+                Route::get('/{menuItem}/editar', [MenuItemController::class, 'edit'])->name('edit');
+                Route::put('/{menuItem}', [MenuItemController::class, 'update'])->name('update');
+                Route::delete('/{menuItem}', [MenuItemController::class, 'destroy'])->name('destroy');
             });
     });

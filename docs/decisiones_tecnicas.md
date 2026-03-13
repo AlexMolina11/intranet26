@@ -193,3 +193,14 @@ Con esto se mejora la coherencia entre el modelo lógico, el modelo físico y la
     1. validar acceso activo al sistema
     2. verificar excepción directa
     3. verificar permisos heredados por roles
+
+## Día 14 - Navegación dinámica
+
+- Los menús principales se gestionan en `seg_menus` y dependen directamente de un sistema.
+- Las opciones de navegación se gestionan en `seg_menu_items`.
+- Un `menu_item` puede ser opción principal o subopción según el campo `id_menu_item_padre`.
+- El campo `orden` define el orden visual de menús y submenús.
+- El campo `visible` controla si la opción debe mostrarse en la navegación.
+- El campo `permiso_requerido` almacena el código técnico del permiso necesario para acceder a la opción.
+- Se validó que menú, permiso y submenú padre sean coherentes con el sistema seleccionado.
+- Se dejó lista la estructura para construir un menú dinámico basado en acceso a sistema y permisos del usuario.

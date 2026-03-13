@@ -7,6 +7,10 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Org\Models\UsuarioArea;
 use App\Modules\Seg\Support\HasPermissions;
+use App\Modules\Seg\Support\Sistema;
+use App\Modules\Seg\Support\Rol;
+use App\Modules\Seg\Support\Permiso;
+
 
 class Usuario extends Authenticatable
 {

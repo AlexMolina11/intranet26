@@ -4,6 +4,10 @@ namespace App\Modules\Seg\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Seg\Models\Rol;
+use App\Modules\Seg\Models\Permiso;
+use App\Modules\Seg\Models\Menu;
+use App\Modules\Seg\Models\MenuItem;
 
 class Sistema extends Model
 {
@@ -57,5 +61,19 @@ class Sistema extends Model
             'id_sistema',
             'id_usuario'
         )->withPivot('activo')->withTimestamps();
+    }
+
+    public function menus()
+    {
+        return $this->hasMany(Menu::class, 'id_sistema', 'id_sistema')
+            ->orderBy('orden')
+            ->orderBy('nombre');
+    }
+
+    public function menuItems()
+    {
+        return $this->hasMany(MenuItem::class, 'id_sistema', 'id_sistema')
+            ->orderBy('orden')
+            ->orderBy('nombre');
     }
 }
