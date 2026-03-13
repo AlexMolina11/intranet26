@@ -139,3 +139,12 @@ En esta fase se aplicaron migraciones para eliminar la columna deleted_at de las
 - org_dependencias
 
 Este ajuste deja la estructura física de la base de datos consistente con el modelo lógico y el diccionario de datos actualizados.
+
+## Día 12 - Sistemas y roles
+
+- Se implementó el CRUD de sistemas del módulo de seguridad.
+- Se agregó administración de roles vinculados a cada sistema.
+- Se incorporó el listado de roles por sistema.
+- Se añadieron validaciones para código, nombre, slug y estado en sistemas.
+- Se añadieron validaciones para nombre único de rol dentro de cada sistema.
+- Se implementó activación y desactivación lógica de sistemas y roles.

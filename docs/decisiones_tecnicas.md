@@ -173,3 +173,11 @@ En consecuencia, se eliminará deleted_at de tablas como:
 - dependencias jerárquicas vigentes
 
 Con esto se mejora la coherencia entre el modelo lógico, el modelo físico y la implementación futura del sistema.
+
+## Día 12 - Administración macro de acceso
+
+- Los roles se administran por sistema para mantener separación clara entre contextos funcionales.
+- La entidad `seg_sistemas` funciona como raíz del acceso macro dentro de la intranet.
+- La entidad `seg_roles` depende directamente de `seg_sistemas`.
+- La validación de unicidad de roles se aplica por sistema, no de forma global.
+- El estado activo/inactivo se usa como mecanismo de control funcional sin eliminar registros.
