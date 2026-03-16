@@ -12,7 +12,7 @@ use App\Modules\Seg\Controllers\UsuarioPermisoController;
 use App\Modules\Seg\Controllers\MenuController;
 use App\Modules\Seg\Controllers\MenuItemController;
 
-Route::middleware('auth')
+Route::middleware(['auth', 'route.access'])
     ->prefix('seg')
     ->as('seg.')
     ->group(function () {

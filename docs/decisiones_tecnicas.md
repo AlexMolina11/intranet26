@@ -204,3 +204,12 @@ Con esto se mejora la coherencia entre el modelo lógico, el modelo físico y la
 - El campo `permiso_requerido` almacena el código técnico del permiso necesario para acceder a la opción.
 - Se validó que menú, permiso y submenú padre sean coherentes con el sistema seleccionado.
 - Se dejó lista la estructura para construir un menú dinámico basado en acceso a sistema y permisos del usuario.
+
+## Día 15 - Dashboard y autorización dinámica
+
+- La navegación del sistema se genera dinámicamente a partir de `seg_sistemas`, `seg_menus` y `seg_menu_items`.
+- Solo se muestran sistemas con acceso activo para el usuario autenticado.
+- Un item de navegación solo se muestra si está visible y el usuario cumple el permiso requerido.
+- La autorización se valida también en backend mediante middleware, no solo en frontend.
+- Se usó un archivo de configuración `config/access.php` para proteger rutas que no forman parte directa del menú visible.
+- Se adoptó una interfaz con sidebar para soportar crecimiento de módulos y submenús sin saturar el encabezado.

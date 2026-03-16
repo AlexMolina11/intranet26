@@ -76,4 +76,12 @@ class Sistema extends Model
             ->orderBy('orden')
             ->orderBy('nombre');
     }
+
+    public function menusVisibles()
+    {
+        return $this->hasMany(Menu::class, 'id_sistema', 'id_sistema')
+            ->where('visible', true)
+            ->orderBy('orden')
+            ->orderBy('nombre');
+    }
 }

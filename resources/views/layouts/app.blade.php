@@ -5,170 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Intranet 2026')</title>
     <style>
-        :root {
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --text: #0f172a;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            --dark: #0f172a;
-            --dark-soft: #1e293b;
-            --primary: #2563eb;
-            --primary-soft: #dbeafe;
-            --danger: #dc2626;
-            --success-bg: #dcfce7;
-            --success-text: #166534;
-            --error-bg: #fee2e2;
-            --error-text: #991b1b;
-        }
-
         * {
             box-sizing: border-box;
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: var(--bg);
             margin: 0;
-            padding: 0;
-            color: var(--text);
+            font-family: Arial, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
         }
 
         .topbar {
-            background: var(--dark);
+            height: 64px;
+            background: #0f172a;
             color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
             border-bottom: 1px solid #1e293b;
         }
 
-        .topbar-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px 16px;
+        .topbar-brand a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .topbar-user {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
         }
 
-        .brand {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
+        .app-shell {
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            min-height: calc(100vh - 64px);
         }
 
-        .brand a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 1.1;
+        .sidebar {
+            background: #111827;
+            color: #e5e7eb;
+            padding: 18px 14px;
+            border-right: 1px solid #1f2937;
+            overflow-y: auto;
         }
 
-        .brand span {
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-system {
             font-size: 12px;
-            color: #94a3b8;
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .user-pill {
-            background: rgba(255,255,255,0.08);
-            color: #e2e8f0;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .subnav {
-            background: white;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .subnav-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-
-        .nav-section {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .nav-label {
-            font-size: 11px;
-            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: .04em;
-            color: var(--muted);
-            margin-right: 2px;
+            color: #93c5fd;
+            font-weight: bold;
+            margin: 18px 8px 8px;
         }
 
-        .nav-divider {
-            width: 1px;
-            height: 22px;
-            background: var(--border);
+        .sidebar-menu-title {
+            display: block;
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: bold;
+            margin: 12px 8px 6px;
         }
 
         .nav-link {
+            display: block;
+            color: #e5e7eb;
             text-decoration: none;
-            color: #334155;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 7px 10px;
-            border-radius: 999px;
-            transition: 0.2s ease;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            font-size: 14px;
         }
 
         .nav-link:hover {
-            background: #f1f5f9;
-            color: var(--text);
+            background: #1f2937;
         }
 
-        .nav-link-active {
-            background: var(--primary-soft);
-            color: var(--primary);
+        .nav-link.active {
+            background: #2563eb;
+            color: white;
+            font-weight: bold;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 24px auto;
-            padding: 0 16px;
+        .nav-submenu {
+            margin-left: 14px;
+            padding-left: 10px;
+            border-left: 1px solid #374151;
+            margin-bottom: 8px;
+        }
+
+        .nav-submenu .nav-link {
+            font-size: 13px;
+            padding: 8px 10px;
+        }
+
+        .content {
+            padding: 24px;
         }
 
         .card {
-            background: var(--surface);
+            background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
-            padding: 22px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            padding: 24px;
+            margin-bottom: 20px;
         }
 
         .btn {
             display: inline-block;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: 8px;
             border: none;
             cursor: pointer;
             text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: #2563eb;
             color: white;
         }
 
@@ -182,33 +149,51 @@
             color: white;
         }
 
-        .btn-danger {
-            background: var(--danger);
-            color: white;
+        .alert {
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
         }
 
-        .btn-success {
-            background: #16a34a;
-            color: white;
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
         }
 
         .table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 18px;
+            margin-top: 20px;
         }
 
         .table th,
         .table td {
             padding: 12px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #e5e7eb;
             text-align: left;
             vertical-align: middle;
         }
 
         .table th {
             background: #f8fafc;
-            font-size: 13px;
         }
 
         .form-group {
@@ -218,52 +203,21 @@
         .form-label {
             display: block;
             margin-bottom: 6px;
-            font-weight: 700;
-            font-size: 14px;
+            font-weight: bold;
         }
 
         .form-control {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            border-radius: 6px;
             box-sizing: border-box;
-            background: white;
         }
 
-        .alert {
-            padding: 12px 14px;
-            border-radius: 10px;
-            margin-bottom: 16px;
-            font-size: 14px;
-        }
-
-        .alert-success {
-            background: var(--success-bg);
-            color: var(--success-text);
-        }
-
-        .alert-danger {
-            background: var(--error-bg);
-            color: var(--error-text);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .badge-success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .badge-danger {
-            background: #fee2e2;
-            color: #991b1b;
+        .text-danger {
+            color: #b91c1c;
+            font-size: 13px;
+            margin-top: 4px;
         }
 
         .actions {
@@ -277,142 +231,143 @@
             display: inline;
         }
 
-        .text-danger {
-            color: #b91c1c;
-            font-size: 13px;
-            margin-top: 4px;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
-        small {
-            display: block;
-            margin-top: 6px;
-            color: var(--muted);
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
         }
 
-        @media (max-width: 768px) {
-            .topbar-inner,
-            .subnav-inner {
-                align-items: flex-start;
-                flex-direction: column;
+        .stat-title {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .system-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .app-shell {
+                grid-template-columns: 1fr;
             }
 
-            .nav-divider {
-                display: none;
-            }
-
-            .nav-section {
-                width: 100%;
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #1f2937;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="topbar">
-            <div class="topbar-inner">
-                <div class="brand">
-                    <a href="{{ route('dashboard') }}">Intranet 2026</a>
-                    <span>Sistema interno institucional</span>
-                </div>
-
-                <div class="topbar-right">
-                    @auth
-                        <span class="user-pill">{{ auth()->user()->nombre_completo }}</span>
-
-                        <form method="POST" action="{{ route('logout') }}" class="inline-form">
-                            @csrf
-                            <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-                        </form>
-                    @endauth
-                </div>
-            </div>
+    <header class="topbar">
+        <div class="topbar-brand">
+            <a href="{{ route('dashboard') }}">Intranet 2026</a>
         </div>
 
-        <div class="subnav">
-            <div class="subnav-inner">
-                <div class="nav-section">
-                    <span class="nav-label">Inicio</span>
-                    <a href="{{ route('dashboard') }}"
-                       class="nav-link {{ request()->routeIs('dashboard') ? 'nav-link-active' : '' }}">
-                        Dashboard
-                    </a>
-                </div>
+        <div class="topbar-user">
+            @auth
+                <span>{{ auth()->user()->nombre_completo }}</span>
 
-                <div class="nav-divider"></div>
-
-                <div class="nav-section">
-                    <span class="nav-label">Seguridad</span>
-
-                    <a href="{{ route('seg.usuarios.index') }}"
-                       class="nav-link {{ request()->routeIs('seg.usuarios.*') ? 'nav-link-active' : '' }}">
-                        Usuarios
-                    </a>
-
-                    <a href="{{ route('seg.sistemas.index') }}"
-                       class="nav-link {{ request()->routeIs('seg.sistemas.*') ? 'nav-link-active' : '' }}">
-                        Sistemas
-                    </a>
-
-                    <a href="{{ route('seg.permisos.index') }}"
-                       class="nav-link {{ request()->routeIs('seg.permisos.*') ? 'nav-link-active' : '' }}">
-                        Permisos
-                    </a>
-
-                    <a href="{{ route('seg.menus.index') }}"
-                       class="nav-link {{ request()->routeIs('seg.menus.*') ? 'nav-link-active' : '' }}">
-                        Menús
-                    </a>
-
-                    <a href="{{ route('seg.menu-items.index') }}"
-                       class="nav-link {{ request()->routeIs('seg.menu-items.*') ? 'nav-link-active' : '' }}">
-                        Submenús
-                    </a>
-                </div>
-
-                <div class="nav-divider"></div>
-
-                <div class="nav-section">
-                    <span class="nav-label">Organización</span>
-
-                    <a href="{{ route('org.departamentos.index') }}"
-                       class="nav-link {{ request()->routeIs('org.departamentos.*') ? 'nav-link-active' : '' }}">
-                        Departamentos
-                    </a>
-
-                    <a href="{{ route('org.proyectos.index') }}"
-                       class="nav-link {{ request()->routeIs('org.proyectos.*') ? 'nav-link-active' : '' }}">
-                        Proyectos
-                    </a>
-
-                    <a href="{{ route('org.areas.index') }}"
-                       class="nav-link {{ request()->routeIs('org.areas.*') ? 'nav-link-active' : '' }}">
-                        Áreas
-                    </a>
-                </div>
-            </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+                </form>
+            @endauth
         </div>
     </header>
 
-    <div class="container">
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <a href="{{ route('dashboard') }}"
+                   class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    Dashboard
+                </a>
             </div>
-        @endif
 
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
+            @forelse ($navigation as $system)
+                <div class="sidebar-system">{{ $system['nombre'] }}</div>
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                {{ $errors->first() }}
-            </div>
-        @endif
+                @foreach ($system['menus'] as $menu)
+                    <div class="sidebar-menu-title">{{ $menu['nombre'] }}</div>
 
-        @yield('content')
+                    @foreach ($menu['items'] as $item)
+                        @php
+                            $isActive = !$item['externo'] && request()->routeIs($item['route_name']);
+                            $hasChildrenActive = collect($item['hijos'])->contains(function ($child) {
+                                return !$child['externo'] && request()->routeIs($child['route_name']);
+                            });
+                        @endphp
+
+                        <a href="{{ $item['url'] }}"
+                           class="nav-link {{ $isActive || $hasChildrenActive ? 'active' : '' }}"
+                           @if($item['externo'] && $item['nueva_pestana']) target="_blank" @endif>
+                            {{ $item['nombre'] }}
+                        </a>
+
+                        @if (!empty($item['hijos']))
+                            <div class="nav-submenu">
+                                @foreach ($item['hijos'] as $child)
+                                    <a href="{{ $child['url'] }}"
+                                       class="nav-link {{ !$child['externo'] && request()->routeIs($child['route_name']) ? 'active' : '' }}"
+                                       @if($child['externo'] && $child['nueva_pestana']) target="_blank" @endif>
+                                        {{ $child['nombre'] }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
+                    @endforeach
+                @endforeach
+            @empty
+                <div style="color:#9ca3af; font-size:14px;">
+                    No hay navegación disponible.
+                </div>
+            @endforelse
+        </aside>
+
+        <main class="content">
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            @yield('content')
+        </main>
     </div>
 </body>
 </html>

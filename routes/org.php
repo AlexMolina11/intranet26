@@ -6,7 +6,7 @@ use App\Modules\Org\Controllers\DepartamentoController;
 use App\Modules\Org\Controllers\ProyectoController;
 use App\Modules\Org\Controllers\AreaController;
 
-Route::middleware('auth')
+Route::middleware(['auth', 'route.access'])
     ->prefix('org')
     ->as('org.')
     ->group(function () {

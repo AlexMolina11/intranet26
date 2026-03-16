@@ -167,3 +167,13 @@ Este ajuste deja la estructura física de la base de datos consistente con el mo
 - Se incorporó control de visibilidad para navegación.
 - Se agregó soporte para permiso requerido por opción de menú.
 - Se dejó preparada la base para construir navegación dinámica filtrada por permisos.
+
+## Día 15 - Dashboard dinámico
+
+- Se implementó el dashboard principal de la intranet.
+- Se incorporó el conteo de sistemas autorizados y permisos efectivos por usuario.
+- Se construyó un sidebar dinámico basado en sistemas, menús y submenús visibles.
+- La navegación se filtra según permisos efectivos y acceso a sistemas.
+- Se protegieron rutas sensibles mediante middleware personalizado.
+- Se centralizó la autorización por nombre de ruta en `config/access.php`.
+- Se reemplazó el navbar superior por un layout con sidebar para mejorar escalabilidad y experiencia de usuario.

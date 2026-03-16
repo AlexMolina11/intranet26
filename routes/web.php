@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 
 require __DIR__.'/auth.php';
 require __DIR__.'/seg.php';
@@ -11,6 +12,10 @@ require __DIR__.'/mnt.php';
 require __DIR__.'/veh.php';
 require __DIR__.'/sgc.php';
 require __DIR__.'/exp.php';
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'route.access'])
+    ->name('dashboard');
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
