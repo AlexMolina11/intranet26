@@ -52,6 +52,7 @@ class NavigationService
                         $hijos[] = [
                             'id' => $hijo->id_menu_item,
                             'nombre' => $hijo->nombre,
+                            'icono' => $hijo->icono,
                             'url' => $this->resolveUrl($hijo->ruta, (bool) $hijo->es_externo),
                             'route_name' => $hijo->ruta,
                             'externo' => (bool) $hijo->es_externo,
@@ -66,6 +67,7 @@ class NavigationService
                     $items[] = [
                         'id' => $item->id_menu_item,
                         'nombre' => $item->nombre,
+                        'icono' => $item->icono,
                         'url' => $this->resolveUrl($item->ruta, (bool) $item->es_externo),
                         'route_name' => $item->ruta,
                         'externo' => (bool) $item->es_externo,
@@ -78,6 +80,7 @@ class NavigationService
                     $menus[] = [
                         'id' => $menu->id_menu,
                         'nombre' => $menu->nombre,
+                        'icono' => $menu->icono,
                         'items' => $items,
                     ];
                 }

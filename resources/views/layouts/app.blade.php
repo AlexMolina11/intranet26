@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Intranet 2026')</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
     <style>
         :root {
             --topbar-height: 64px;
@@ -153,12 +156,23 @@
         }
 
         .sidebar-menu-title {
-            display: block;
+            display: flex;
+            align-items: center;
             font-size: 13px;
             color: #e5efd0;
             font-weight: bold;
             margin: 12px 8px 6px;
             line-height: 1.3;
+        }
+
+        .sidebar-menu-title-icon {
+            width: 18px;
+            min-width: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-size: 14px;
         }
 
         .nav-link {
@@ -183,6 +197,15 @@
             background: var(--color-accent);
             color: var(--color-black);
             font-weight: bold;
+        }
+
+        .nav-link-icon {
+            width: 20px;
+            min-width: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
         }
 
         .nav-link-label {
@@ -214,6 +237,10 @@
         body.sidebar-collapsed .nav-link {
             justify-content: center;
             padding: 10px;
+        }
+
+        body.sidebar-collapsed .nav-link-icon {
+            margin: 0;
         }
 
         .content {
@@ -653,6 +680,9 @@
             <div class="sidebar-section">
                 <a href="{{ route('dashboard') }}"
                    class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <span class="nav-link-icon">
+                        <i class="fa-solid fa-house"></i>
+                    </span>
                     <span class="nav-link-label">Dashboard</span>
                 </a>
             </div>
@@ -661,11 +691,18 @@
                 <div class="sidebar-system">{{ $system['nombre'] }}</div>
 
                 @foreach ($system['menus'] as $menu)
-                    <div class="sidebar-menu-title">{{ $menu['nombre'] }}</div>
+                    <div class="sidebar-menu-title">
+                        @if(!empty($menu['icono']))
+                            <span class="sidebar-menu-title-icon">
+                                <i class="{{ $menu['icono'] }}"></i>
+                            </span>
+                        @endif
+                        {{ $menu['nombre'] }}
+                    </div>
 
                     @foreach ($menu['items'] as $item)
                         @php
-                            $isActive = !$item['externo'] && $item['route_name'] && request()->routeIs($item['route_name']);
+                            $isActive = !$item['externo'] && !empty($item['route_name']) && request()->routeIs($item['route_name']);
                             $hasChildrenActive = collect($item['hijos'])->contains(function ($child) {
                                 return !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']);
                             });
@@ -674,6 +711,13 @@
                         <a href="{{ $item['url'] }}"
                            class="nav-link {{ $isActive || $hasChildrenActive ? 'active' : '' }}"
                            @if($item['externo'] && $item['nueva_pestana']) target="_blank" @endif>
+                            <span class="nav-link-icon">
+                                @if(!empty($item['icono']))
+                                    <i class="{{ $item['icono'] }}"></i>
+                                @else
+                                    <i class="fa-solid fa-circle"></i>
+                                @endif
+                            </span>
                             <span class="nav-link-label">{{ $item['nombre'] }}</span>
                         </a>
 
@@ -683,6 +727,13 @@
                                     <a href="{{ $child['url'] }}"
                                        class="nav-link {{ !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']) ? 'active' : '' }}"
                                        @if($child['externo'] && $child['nueva_pestana']) target="_blank" @endif>
+                                        <span class="nav-link-icon">
+                                            @if(!empty($child['icono']))
+                                                <i class="{{ $child['icono'] }}"></i>
+                                            @else
+                                                <i class="fa-regular fa-circle"></i>
+                                            @endif
+                                        </span>
                                         <span class="nav-link-label">{{ $child['nombre'] }}</span>
                                     </a>
                                 @endforeach
