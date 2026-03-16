@@ -1,30 +1,32 @@
-<div class="form-group">
-    <label class="form-label" for="codigo">Código</label>
-    <input
-        type="text"
-        name="codigo"
-        id="codigo"
-        class="form-control"
-        value="{{ old('codigo', $departamento->codigo ?? '') }}"
-    >
-    @error('codigo')
-        <div class="text-danger">{{ $message }}</div>
-    @enderror
-</div>
+<div class="form-grid">
+    <div class="form-group">
+        <label class="form-label" for="codigo">Código</label>
+        <input
+            type="text"
+            name="codigo"
+            id="codigo"
+            class="form-control"
+            value="{{ old('codigo', $departamento->codigo ?? '') }}"
+        >
+        @error('codigo')
+            <div class="text-danger">{{ $message }}</div>
+        @enderror
+    </div>
 
-<div class="form-group">
-    <label class="form-label" for="nombre">Nombre</label>
-    <input
-        type="text"
-        name="nombre"
-        id="nombre"
-        class="form-control"
-        value="{{ old('nombre', $departamento->nombre ?? '') }}"
-        required
-    >
-    @error('nombre')
-        <div class="text-danger">{{ $message }}</div>
-    @enderror
+    <div class="form-group">
+        <label class="form-label" for="nombre">Nombre</label>
+        <input
+            type="text"
+            name="nombre"
+            id="nombre"
+            class="form-control"
+            value="{{ old('nombre', $departamento->nombre ?? '') }}"
+            required
+        >
+        @error('nombre')
+            <div class="text-danger">{{ $message }}</div>
+        @enderror
+    </div>
 </div>
 
 <div class="form-group">

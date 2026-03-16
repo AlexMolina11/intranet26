@@ -4,13 +4,13 @@
 
 @section('content')
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:20px;">
-            <div>
+        <div class="page-header">
+            <div class="page-header-text">
                 <h1 style="margin:0;">Asignación organizacional</h1>
-                <p style="margin:6px 0 0 0; color:#64748b;">
+                <p class="page-subtitle">
                     Usuario: <strong>{{ $usuario->nombre_completo }}</strong>
                 </p>
-                <p style="margin:6px 0 0 0; color:#64748b;">
+                <p class="page-subtitle">
                     Correo: {{ $usuario->correo }}
                 </p>
             </div>
@@ -22,7 +22,7 @@
             @csrf
             @method('PUT')
 
-            <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:24px;">
+            <div class="card-section">
                 <h3 style="margin-top:0;">Área principal</h3>
 
                 <div class="form-group">
@@ -55,8 +55,8 @@
                 </div>
             </div>
 
-            <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div class="card-section">
+                <div class="page-header" style="margin-bottom:16px;">
                     <h3 style="margin:0;">Áreas secundarias</h3>
                     <button type="button" class="btn btn-secondary" id="btnAgregarSecundaria">Agregar secundaria</button>
                 </div>
@@ -68,7 +68,7 @@
                 <div id="contenedorSecundarias"></div>
             </div>
 
-            <div style="margin-top:20px; display:flex; gap:8px;">
+            <div class="stack-mobile" style="margin-top:20px;">
                 <button type="submit" class="btn btn-primary">Guardar asignación</button>
                 <a href="{{ route('seg.usuarios.index') }}" class="btn btn-secondary">Cancelar</a>
             </div>
@@ -76,8 +76,8 @@
     </div>
 
     <template id="template-secundaria">
-        <div class="secundaria-item" style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div class="secundaria-item card-section">
+            <div class="page-header" style="margin-bottom:12px;">
                 <strong>Área secundaria</strong>
                 <button type="button" class="btn btn-danger btn-eliminar-secundaria">Quitar</button>
             </div>

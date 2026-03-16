@@ -4,57 +4,61 @@
 
 @section('content')
     <div class="card">
-        <h1>Acceso a sistemas</h1>
-        <p style="color:#64748b;">
-            Usuario: <strong>{{ $usuario->nombres }} {{ $usuario->apellidos }}</strong>
-        </p>
+        <div class="page-header">
+            <div class="page-header-text">
+                <h1 style="margin:0;">Acceso a sistemas</h1>
+                <p class="page-subtitle">Usuario: <strong>{{ $usuario->nombres }} {{ $usuario->apellidos }}</strong></p>
+            </div>
+        </div>
 
         <form method="POST" action="{{ route('seg.usuarios.sistemas.update', $usuario) }}">
             @csrf
             @method('PUT')
 
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Asignar</th>
-                        <th>Sistema</th>
-                        <th>Estado de acceso</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($sistemas as $sistema)
-                        @php
-                            $tieneAsignacion = array_key_exists($sistema->id_sistema, $asignados);
-                            $activoAsignado = $tieneAsignacion ? (int) $asignados[$sistema->id_sistema] : 1;
-                        @endphp
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td>
-                                <input
-                                    type="checkbox"
-                                    name="sistemas[{{ $sistema->id_sistema }}][asignado]"
-                                    value="1"
-                                    {{ $tieneAsignacion ? 'checked' : '' }}
-                                >
-                            </td>
-                            <td>{{ $sistema->nombre }}</td>
-                            <td>
-                                <input
-                                    type="hidden"
-                                    name="sistemas[{{ $sistema->id_sistema }}][id_sistema]"
-                                    value="{{ $sistema->id_sistema }}"
-                                >
-
-                                <select name="sistemas[{{ $sistema->id_sistema }}][activo]" class="form-control">
-                                    <option value="1" {{ $activoAsignado === 1 ? 'selected' : '' }}>Activo</option>
-                                    <option value="0" {{ $activoAsignado === 0 ? 'selected' : '' }}>Inactivo</option>
-                                </select>
-                            </td>
+                            <th>Asignar</th>
+                            <th>Sistema</th>
+                            <th>Estado de acceso</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($sistemas as $sistema)
+                            @php
+                                $tieneAsignacion = array_key_exists($sistema->id_sistema, $asignados);
+                                $activoAsignado = $tieneAsignacion ? (int) $asignados[$sistema->id_sistema] : 1;
+                            @endphp
+                            <tr>
+                                <td>
+                                    <input
+                                        type="checkbox"
+                                        name="sistemas[{{ $sistema->id_sistema }}][asignado]"
+                                        value="1"
+                                        {{ $tieneAsignacion ? 'checked' : '' }}
+                                    >
+                                </td>
+                                <td>{{ $sistema->nombre }}</td>
+                                <td>
+                                    <input
+                                        type="hidden"
+                                        name="sistemas[{{ $sistema->id_sistema }}][id_sistema]"
+                                        value="{{ $sistema->id_sistema }}"
+                                    >
 
-            <div style="margin-top:20px; display:flex; gap:8px;">
+                                    <select name="sistemas[{{ $sistema->id_sistema }}][activo]" class="form-control">
+                                        <option value="1" {{ $activoAsignado === 1 ? 'selected' : '' }}>Activo</option>
+                                        <option value="0" {{ $activoAsignado === 0 ? 'selected' : '' }}>Inactivo</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="stack-mobile" style="margin-top:20px;">
                 <button type="submit" class="btn btn-primary">Guardar cambios</button>
                 <a href="{{ route('seg.usuarios.index') }}" class="btn btn-secondary">Cancelar</a>
             </div>

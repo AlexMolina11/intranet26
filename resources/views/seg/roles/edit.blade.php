@@ -13,7 +13,7 @@
 
             @include('seg.roles.partials.form', ['rol' => $rol])
 
-            <div style="margin-top:20px; display:flex; gap:8px;">
+            <div class="stack-mobile" style="margin-top:20px;">
                 <button type="submit" class="btn btn-primary">Actualizar</button>
                 <a href="{{ route('seg.sistemas.roles.index', $sistema) }}" class="btn btn-secondary">Cancelar</a>
             </div>

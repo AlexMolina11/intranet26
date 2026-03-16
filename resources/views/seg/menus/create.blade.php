@@ -11,7 +11,7 @@
 
             @include('seg.menus.partials.form')
 
-            <div style="margin-top:20px; display:flex; gap:8px;">
+            <div class="stack-mobile" style="margin-top:20px;">
                 <button type="submit" class="btn btn-primary">Guardar</button>
                 <a href="{{ route('seg.menus.index') }}" class="btn btn-secondary">Cancelar</a>
             </div>

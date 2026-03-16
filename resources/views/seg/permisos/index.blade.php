@@ -4,13 +4,15 @@
 
 @section('content')
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <div>
+        <div class="page-header">
+            <div class="page-header-text">
                 <h1 style="margin:0;">Permisos</h1>
-                <p style="margin:6px 0 0 0; color:#64748b;">Catálogo de permisos del sistema</p>
+                <p class="page-subtitle">Administración de permisos</p>
             </div>
 
-            <a href="{{ route('seg.permisos.create') }}" class="btn btn-primary">Nuevo permiso</a>
+            <div class="page-header-actions">
+                <a href="{{ route('seg.permisos.create') }}" class="btn btn-primary">Nuevo permiso</a>
+            </div>
         </div>
 
         <form method="GET" action="{{ route('seg.permisos.index') }}" style="margin-bottom:20px;">
@@ -27,45 +29,47 @@
             </div>
         </form>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Sistema</th>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($permisos as $permiso)
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>{{ $permiso->id_permiso }}</td>
-                        <td>{{ $permiso->sistema->nombre ?? 'N/A' }}</td>
-                        <td>{{ $permiso->codigo }}</td>
-                        <td>{{ $permiso->nombre }}</td>
-                        <td>{{ $permiso->descripcion ?: 'Sin descripción' }}</td>
-                        <td>
-                            <div class="actions">
-                                <a href="{{ route('seg.permisos.edit', $permiso) }}" class="btn btn-warning">Editar</a>
+                        <th>ID</th>
+                        <th>Sistema</th>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($permisos as $permiso)
+                        <tr>
+                            <td>{{ $permiso->id_permiso }}</td>
+                            <td>{{ $permiso->sistema->nombre ?? 'N/A' }}</td>
+                            <td>{{ $permiso->codigo }}</td>
+                            <td>{{ $permiso->nombre }}</td>
+                            <td>{{ $permiso->descripcion ?: 'Sin descripción' }}</td>
+                            <td>
+                                <div class="actions">
+                                    <a href="{{ route('seg.permisos.edit', $permiso) }}" class="btn btn-warning">Editar</a>
 
-                                <form method="POST" action="{{ route('seg.permisos.destroy', $permiso) }}" class="inline-form"
-                                    onsubmit="return confirm('¿Deseas eliminar este permiso?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6">No hay permisos registrados.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                                    <form method="POST" action="{{ route('seg.permisos.destroy', $permiso) }}" class="inline-form"
+                                        onsubmit="return confirm('¿Deseas eliminar este permiso?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6">No hay permisos registrados.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
         <div style="margin-top:20px;">
             {{ $permisos->links() }}

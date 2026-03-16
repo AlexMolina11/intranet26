@@ -12,7 +12,7 @@
 
             @include('org.departamentos._form', ['departamento' => $departamento])
 
-            <div style="margin-top:20px; display:flex; gap:8px;">
+            <div class="stack-mobile" style="margin-top:20px;">
                 <button type="submit" class="btn btn-primary">Actualizar</button>
                 <a href="{{ route('org.departamentos.index') }}" class="btn btn-secondary">Cancelar</a>
             </div>
