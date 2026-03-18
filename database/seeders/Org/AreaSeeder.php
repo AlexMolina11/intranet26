@@ -10,60 +10,63 @@ class AreaSeeder extends Seeder
 {
     public function run(): void
     {
-        $ahora = Carbon::now();
+        $now = Carbon::now();
 
         $departamentos = DB::table('org_departamentos')
             ->pluck('id_departamento', 'codigo');
 
-        $proyectos = DB::table('org_proyectos')
-            ->pluck('id_proyecto', 'codigo');
+        $proyecto = DB::table('org_proyectos')
+            ->where('codigo', 'NA')
+            ->first();
 
-        DB::table('org_areas')->insert([
+        if (!$proyecto) {
+            return;
+        }
+
+        $areas = [
             [
-                'id_departamento' => $departamentos['DIR'],
-                'id_proyecto' => $proyectos['INST'],
-                'nombre' => 'Planificación',
-                'descripcion' => 'Área de planificación estratégica',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
+                'codigo_departamento' => 'DIR',
+                'nombre' => 'Dirección General',
+                'descripcion' => 'Área general para Dirección General',
             ],
             [
-                'id_departamento' => $departamentos['FIN'],
-                'id_proyecto' => $proyectos['ADM'],
-                'nombre' => 'Presupuesto',
-                'descripcion' => 'Área de presupuesto institucional',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
+                'codigo_departamento' => 'FIN',
+                'nombre' => 'Finanzas',
+                'descripcion' => 'Área general para Finanzas',
             ],
             [
-                'id_departamento' => $departamentos['TIC'],
-                'id_proyecto' => $proyectos['SOP'],
-                'nombre' => 'Mesa de ayuda',
-                'descripcion' => 'Área de soporte técnico',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
+                'codigo_departamento' => 'TIC',
+                'nombre' => 'Tecnología',
+                'descripcion' => 'Área general para Tecnología',
             ],
             [
-                'id_departamento' => $departamentos['TIC'],
-                'id_proyecto' => $proyectos['TD'],
-                'nombre' => 'Desarrollo',
-                'descripcion' => 'Área de desarrollo de sistemas',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
+                'codigo_departamento' => 'RRHH',
+                'nombre' => 'Recursos Humanos',
+                'descripcion' => 'Área general para Recursos Humanos',
             ],
-            [
-                'id_departamento' => $departamentos['RRHH'],
-                'id_proyecto' => $proyectos['ADM'],
-                'nombre' => 'Talento humano',
-                'descripcion' => 'Área de gestión humana',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
-            ],
-        ]);
+        ];
+
+        foreach ($areas as $area) {
+            $idDepartamento = $departamentos[$area['codigo_departamento']] ?? null;
+
+            if (!$idDepartamento) {
+                continue;
+            }
+
+            DB::table('org_areas')->updateOrInsert(
+                [
+                    'id_departamento' => $idDepartamento,
+                    'id_proyecto' => $proyecto->id_proyecto,
+                ],
+                [
+                    'nombre' => $area['nombre'],
+                    'descripcion' => $area['descripcion'],
+                    'activo' => 1,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                    'deleted_at' => null,
+                ]
+            );
+        }
     }
 }

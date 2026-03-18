@@ -22,19 +22,16 @@ class RolSeeder extends Seeder
 
         $roles = [
             [
-                'id_sistema' => $sistema->id_sistema,
                 'nombre' => 'Super Administrador',
                 'descripcion' => 'Acceso total al sistema',
                 'activo' => 1,
             ],
             [
-                'id_sistema' => $sistema->id_sistema,
                 'nombre' => 'Administrador',
                 'descripcion' => 'Administrador funcional del sistema',
                 'activo' => 1,
             ],
             [
-                'id_sistema' => $sistema->id_sistema,
                 'nombre' => 'Consulta',
                 'descripcion' => 'Usuario solo lectura',
                 'activo' => 1,
@@ -44,14 +41,15 @@ class RolSeeder extends Seeder
         foreach ($roles as $rol) {
             DB::table('seg_roles')->updateOrInsert(
                 [
-                    'id_sistema' => $rol['id_sistema'],
+                    'id_sistema' => $sistema->id_sistema,
                     'nombre' => $rol['nombre'],
                 ],
                 [
                     'descripcion' => $rol['descripcion'],
                     'activo' => $rol['activo'],
-                    'updated_at' => $now,
                     'created_at' => $now,
+                    'updated_at' => $now,
+                    'deleted_at' => null,
                 ]
             );
         }

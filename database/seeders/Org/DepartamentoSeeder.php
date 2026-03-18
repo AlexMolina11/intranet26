@@ -10,41 +10,47 @@ class DepartamentoSeeder extends Seeder
 {
     public function run(): void
     {
-        $ahora = Carbon::now();
+        $now = Carbon::now();
 
-        DB::table('org_departamentos')->insert([
+        $departamentos = [
             [
                 'codigo' => 'DIR',
                 'nombre' => 'Dirección General',
                 'descripcion' => 'Departamento de dirección institucional',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
+                'activo' => 1,
             ],
             [
                 'codigo' => 'FIN',
                 'nombre' => 'Finanzas',
                 'descripcion' => 'Departamento financiero',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
+                'activo' => 1,
             ],
             [
                 'codigo' => 'TIC',
                 'nombre' => 'Tecnología',
                 'descripcion' => 'Departamento de tecnología',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
+                'activo' => 1,
             ],
             [
                 'codigo' => 'RRHH',
                 'nombre' => 'Recursos Humanos',
                 'descripcion' => 'Departamento de talento humano',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
+                'activo' => 1,
             ],
-        ]);
+        ];
+
+        foreach ($departamentos as $departamento) {
+            DB::table('org_departamentos')->updateOrInsert(
+                ['codigo' => $departamento['codigo']],
+                [
+                    'nombre' => $departamento['nombre'],
+                    'descripcion' => $departamento['descripcion'],
+                    'activo' => $departamento['activo'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                    'deleted_at' => null,
+                ]
+            );
+        }
     }
 }

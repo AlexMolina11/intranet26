@@ -15,13 +15,16 @@ class SistemaSeeder extends Seeder
         DB::table('seg_sistemas')->updateOrInsert(
             ['codigo' => 'INTRANET'],
             [
-                'codigo' => 'INTRANET',
                 'nombre' => 'Intranet 2026',
                 'slug' => 'intranet-2026',
                 'descripcion' => 'Sistema base institucional',
+                'icono' => 'fa-solid fa-building-columns',
+                'url_base' => null,
+                'orden' => 1,
                 'activo' => 1,
-                'updated_at' => $now,
                 'created_at' => $now,
+                'updated_at' => $now,
+                'deleted_at' => null,
             ]
         );
     }

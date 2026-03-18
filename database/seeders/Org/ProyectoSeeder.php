@@ -10,41 +10,18 @@ class ProyectoSeeder extends Seeder
 {
     public function run(): void
     {
-        $ahora = Carbon::now();
+        $now = Carbon::now();
 
-        DB::table('org_proyectos')->insert([
+        DB::table('org_proyectos')->updateOrInsert(
+            ['codigo' => 'NA'],
             [
-                'codigo' => 'INST',
-                'nombre' => 'Institucional',
-                'descripcion' => 'Proyecto institucional general',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
-            ],
-            [
-                'codigo' => 'ADM',
-                'nombre' => 'Administrativo',
-                'descripcion' => 'Proyecto administrativo',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
-            ],
-            [
-                'codigo' => 'SOP',
-                'nombre' => 'Soporte Interno',
-                'descripcion' => 'Proyecto de soporte interno',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
-            ],
-            [
-                'codigo' => 'TD',
-                'nombre' => 'Transformación Digital',
-                'descripcion' => 'Proyecto de transformación digital',
-                'activo' => true,
-                'created_at' => $ahora,
-                'updated_at' => $ahora,
-            ],
-        ]);
+                'nombre' => 'No aplica',
+                'descripcion' => 'Proyecto base para asignaciones generales',
+                'activo' => 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+                'deleted_at' => null,
+            ]
+        );
     }
 }

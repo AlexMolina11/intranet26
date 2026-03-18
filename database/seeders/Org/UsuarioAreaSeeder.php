@@ -10,58 +10,43 @@ class UsuarioAreaSeeder extends Seeder
 {
     public function run(): void
     {
-        $ahora = Carbon::now();
+        $now = Carbon::now();
 
-        $usuarios = DB::table('seg_usuarios')->pluck('id_usuario', 'correo');
-        $areas = DB::table('org_areas')->pluck('id_area', 'nombre');
+        $usuario = DB::table('seg_usuarios')
+            ->where('correo', 'admin@intranet.local')
+            ->first();
 
-        $registros = [
-            [
-                'id_usuario' => $usuarios['ana.lopez@intranet.local'] ?? null,
-                'id_area' => $areas['Desarrollo'] ?? null,
-                'es_principal' => true,
-            ],
-            [
-                'id_usuario' => $usuarios['ana.lopez@intranet.local'] ?? null,
-                'id_area' => $areas['Mesa de ayuda'] ?? null,
-                'es_principal' => false,
-            ],
-            [
-                'id_usuario' => $usuarios['carlos.martinez@intranet.local'] ?? null,
-                'id_area' => $areas['Presupuesto'] ?? null,
-                'es_principal' => true,
-            ],
-            [
-                'id_usuario' => $usuarios['maria.perez@intranet.local'] ?? null,
-                'id_area' => $areas['Talento humano'] ?? null,
-                'es_principal' => true,
-            ],
-            [
-                'id_usuario' => $usuarios['maria.perez@intranet.local'] ?? null,
-                'id_area' => $areas['Planificación'] ?? null,
-                'es_principal' => false,
-            ],
-        ];
+        $departamento = DB::table('org_departamentos')
+            ->where('codigo', 'TIC')
+            ->first();
 
-        foreach ($registros as $registro) {
-            if (!$registro['id_usuario'] || !$registro['id_area']) {
-                continue;
-            }
+        $proyecto = DB::table('org_proyectos')
+            ->where('codigo', 'NA')
+            ->first();
 
-            $existe = DB::table('org_usuario_area')
-                ->where('id_usuario', $registro['id_usuario'])
-                ->where('id_area', $registro['id_area'])
-                ->exists();
-
-            if (!$existe) {
-                DB::table('org_usuario_area')->insert([
-                    'id_usuario' => $registro['id_usuario'],
-                    'id_area' => $registro['id_area'],
-                    'es_principal' => $registro['es_principal'],
-                    'created_at' => $ahora,
-                    'updated_at' => $ahora,
-                ]);
-            }
+        if (!$usuario || !$departamento || !$proyecto) {
+            return;
         }
+
+        $area = DB::table('org_areas')
+            ->where('id_departamento', $departamento->id_departamento)
+            ->where('id_proyecto', $proyecto->id_proyecto)
+            ->first();
+
+        if (!$area) {
+            return;
+        }
+
+        DB::table('org_usuario_area')->updateOrInsert(
+            [
+                'id_usuario' => $usuario->id_usuario,
+                'id_area' => $area->id_area,
+            ],
+            [
+                'es_principal' => 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]
+        );
     }
 }
