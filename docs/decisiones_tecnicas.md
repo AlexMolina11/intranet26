@@ -236,3 +236,26 @@ Con esto se mejora la coherencia entre el modelo lógico, el modelo físico y la
     - índices en `deleted_at`
 - Se conservó el uso de `id_area_responsable` como referencia organizacional y se enlazó formalmente a `org_areas.id_area`.
 - No se alteró la lógica de negocio del módulo, únicamente su consistencia estructural.
+
+Día 17 - Flujo de solicitud y consulta de tickets
+
+Se replanteó el Día 17 con enfoque de solicitud operativa, alineado al comportamiento del sistema heredado.
+Se implementó TicketController con métodos para:
+-vista principal de tickets
+-formulario de solicitud
+-registro del ticket
+detalle del ticket
+búsqueda filtrada
+cancelación básica
+El ticket ahora toma su estado inicial desde tik_flujos_ticket, según el tipo de ticket seleccionado.
+Se mantuvo la lógica de solicitud de Talento Humano con selección condicional de subtipo RRHH.
+Se implementó lógica condicional para el tipo de ticket Comunicaciones, donde:
+el campo formato es obligatorio
+el campo fecha requerida es obligatorio
+ambos campos solo se muestran en el formulario cuando aplica este tipo
+Para otros tipos de ticket:
+id_formato_ticket se guarda como null
+fecha_ticket toma el valor actual (now())
+Debido a que en la estructura actual no existe una tabla transaccional separada para detalle RRHH, el dato se resolvió en esta etapa mediante id_tipo_ticket_rrhh dentro de tik_tickets.
+Se dejó la búsqueda con respuesta JSON para acercarse al flujo operativo del sistema heredado.
+Se ajustó el trait de permisos para soportar múltiples permisos por ruta, permitiendo mayor flexibilidad en el control de acceso.
