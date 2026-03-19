@@ -26,6 +26,10 @@ use Database\Seeders\Tik\IncidenciaSeeder;
 use Database\Seeders\Tik\TipoServicioSeeder;
 use Database\Seeders\Tik\ServicioSeeder;
 use Database\Seeders\Tik\PermisoTicketSeeder;
+use Database\Seeders\Tik\TikRolSeeder;
+use Database\Seeders\Tik\TikRolPermisoSeeder;
+use Database\Seeders\Tik\TikUsuarioSistemaSeeder;
+use Database\Seeders\Tik\TikUsuarioRolSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -59,6 +63,11 @@ class DatabaseSeeder extends Seeder
             TipoServicioSeeder::class,
             ServicioSeeder::class,
             PermisoTicketSeeder::class,
+
+            TikRolSeeder::class,
+            TikRolPermisoSeeder::class,
+            TikUsuarioSistemaSeeder::class,
+            TikUsuarioRolSeeder::class,
         ]);
     }
 }

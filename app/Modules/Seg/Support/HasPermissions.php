@@ -22,10 +22,20 @@ trait HasPermissions
             ->exists();
     }
 
-    public function tienePermiso(?string $codigoPermiso): bool
+    public function tienePermiso(string|array|null $codigoPermiso): bool
     {
         if (blank($codigoPermiso)) {
             return true;
+        }
+
+        if (is_array($codigoPermiso)) {
+            foreach ($codigoPermiso as $codigo) {
+                if ($this->tienePermiso($codigo)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         $permiso = Permiso::where('codigo', $codigoPermiso)->first();

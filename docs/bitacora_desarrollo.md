@@ -207,3 +207,30 @@ Este ajuste deja la estructura física de la base de datos consistente con el mo
     - `tik_incidencias`
     - `tik_tipos_servicio`
 - Se reforzó la consistencia estructural sin cambiar la lógica funcional del módulo.
+
+Día 17 - Flujo de solicitud y consulta de tickets
+
+Se replanteó el Día 17 con enfoque de solicitud operativa, alineado al comportamiento del sistema heredado.
+Se implementó TicketController con métodos para:
+vista principal de tickets
+formulario de solicitud
+registro del ticket
+detalle del ticket
+búsqueda filtrada
+cancelación básica
+
+El ticket ahora toma su estado inicial desde tik_flujos_ticket, según el tipo de ticket seleccionado.
+Se mantuvo la lógica de solicitud de Talento Humano con selección condicional de subtipo RRHH.
+Se implementó lógica condicional para el tipo de ticket Comunicaciones, donde:
+
+- el campo formato es obligatorio
+- el campo fecha requerida es obligatorio
+  ambos campos solo se muestran en el formulario cuando aplica este tipo
+
+Para otros tipos de ticket:
+-id_formato_ticket se guarda como null
+-fecha_ticket toma el valor actual (now())
+
+Debido a que en la estructura actual no existe una tabla transaccional separada para detalle RRHH, el dato se resolvió en esta etapa mediante id_tipo_ticket_rrhh dentro de tik_tickets.
+Se dejó la búsqueda con respuesta JSON para acercarse al flujo operativo del sistema heredado.
+Se ajustó el trait de permisos para soportar múltiples permisos por ruta, permitiendo mayor flexibilidad en el control de acceso.
