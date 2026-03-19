@@ -177,3 +177,22 @@ Este ajuste deja la estructura física de la base de datos consistente con el mo
 - Se protegieron rutas sensibles mediante middleware personalizado.
 - Se centralizó la autorización por nombre de ruta en `config/access.php`.
 - Se reemplazó el navbar superior por un layout con sidebar para mejorar escalabilidad y experiencia de usuario.
+
+## Día 16 - Base estructural del módulo tickets
+
+- Se creó la base de catálogos del módulo de tickets con prefijo `tik_`.
+- Se agregaron las tablas:
+    - `tik_tipos_ticket`
+    - `tik_tipos_ticket_rrhh`
+    - `tik_formatos_ticket`
+    - `tik_estados_ticket`
+    - `tik_flujos_ticket`
+    - `tik_incidencias`
+    - `tik_tipos_servicio`
+    - `tik_servicios`
+- Se tomó como referencia la lógica operativa del sistema heredado para conservar los elementos funcionales clave del módulo.
+- Se sembraron tipos de ticket históricos: Informática, Servicios Generales y Mantenimiento, Comunicaciones y Talento Humano.
+- Se sembraron subtipos RRHH y formatos de ticket heredados.
+- Se implementó una estructura de estados con relación al estado siguiente para conservar la lógica del flujo operativo.
+- Se dejó configurada la tabla de flujos por tipo de ticket y estado, incluyendo mensajes base para usuario y administrador.
+- Se creó el sistema `TIK` en seguridad y se sembraron permisos base para futura integración con rutas, menús y autorización.

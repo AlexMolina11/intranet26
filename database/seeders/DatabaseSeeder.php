@@ -16,6 +16,16 @@ use Database\Seeders\Org\DepartamentoSeeder;
 use Database\Seeders\Org\ProyectoSeeder;
 use Database\Seeders\Org\AreaSeeder;
 use Database\Seeders\Org\UsuarioAreaSeeder;
+use Database\Seeders\Tik\TikSistemaSeeder;
+use Database\Seeders\Tik\TipoTicketSeeder;
+use Database\Seeders\Tik\TipoTicketRrhhSeeder;
+use Database\Seeders\Tik\FormatoTicketSeeder;
+use Database\Seeders\Tik\EstadoTicketSeeder;
+use Database\Seeders\Tik\FlujoTicketSeeder;
+use Database\Seeders\Tik\IncidenciaSeeder;
+use Database\Seeders\Tik\TipoServicioSeeder;
+use Database\Seeders\Tik\ServicioSeeder;
+use Database\Seeders\Tik\PermisoTicketSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -38,6 +48,17 @@ class DatabaseSeeder extends Seeder
             ProyectoSeeder::class,
             AreaSeeder::class,
             UsuarioAreaSeeder::class,
+
+            TikSistemaSeeder::class,
+            TipoTicketSeeder::class,
+            TipoTicketRrhhSeeder::class,
+            FormatoTicketSeeder::class,
+            EstadoTicketSeeder::class,
+            FlujoTicketSeeder::class,
+            IncidenciaSeeder::class,
+            TipoServicioSeeder::class,
+            ServicioSeeder::class,
+            PermisoTicketSeeder::class,
         ]);
     }
 }

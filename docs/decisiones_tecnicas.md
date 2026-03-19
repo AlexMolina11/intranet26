@@ -213,3 +213,15 @@ Con esto se mejora la coherencia entre el modelo lógico, el modelo físico y la
 - La autorización se valida también en backend mediante middleware, no solo en frontend.
 - Se usó un archivo de configuración `config/access.php` para proteger rutas que no forman parte directa del menú visible.
 - Se adoptó una interfaz con sidebar para soportar crecimiento de módulos y submenús sin saturar el encabezado.
+
+## Día 16 - Diseño base del módulo tickets
+
+- El módulo de tickets se modeló en dos niveles:
+    - catálogos y flujo en esta etapa
+    - tablas transaccionales en una etapa posterior
+- Se decidió incluir `tik_flujos_ticket` desde la base porque el sistema heredado utiliza el flujo para definir estado inicial y mensajes operativos.
+- Los estados del ticket incluyen relación opcional hacia un siguiente estado para representar el flujo histórico del sistema anterior.
+- `tik_tipos_ticket_rrhh` se mantuvo como catálogo especializado vinculado al tipo general de Talento Humano.
+- Se prefirió usar `activo` en lugar de `softDeletes` para los catálogos, con el fin de conservar control administrativo simple y evitar complejidad innecesaria.
+- Se dejó `id_area_responsable` como campo opcional en algunos catálogos para futura integración con organización sin forzar aún esa relación en esta fase.
+- Los permisos `TIK_*` se crearon desde esta etapa para que el módulo pueda integrarse después con sidebar dinámico, middleware y control de acceso por rutas.
