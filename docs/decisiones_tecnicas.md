@@ -225,3 +225,14 @@ Con esto se mejora la coherencia entre el modelo lógico, el modelo físico y la
 - Se prefirió usar `activo` en lugar de `softDeletes` para los catálogos, con el fin de conservar control administrativo simple y evitar complejidad innecesaria.
 - Se dejó `id_area_responsable` como campo opcional en algunos catálogos para futura integración con organización sin forzar aún esa relación en esta fase.
 - Los permisos `TIK_*` se crearon desde esta etapa para que el módulo pueda integrarse después con sidebar dinámico, middleware y control de acceso por rutas.
+
+## Día 16 - Ajuste estructural de tablas tik\_
+
+- Se mantuvo la lógica funcional originalmente diseñada para el módulo tickets.
+- Se decidió alinear la estructura física de `tik_` con los módulos `seg_` y `org_` mediante:
+    - claves primarias explícitas
+    - claves foráneas explícitas
+    - `deleted_at` en tablas maestras
+    - índices en `deleted_at`
+- Se conservó el uso de `id_area_responsable` como referencia organizacional y se enlazó formalmente a `org_areas.id_area`.
+- No se alteró la lógica de negocio del módulo, únicamente su consistencia estructural.

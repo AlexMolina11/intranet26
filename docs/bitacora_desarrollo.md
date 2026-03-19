@@ -196,3 +196,14 @@ Este ajuste deja la estructura física de la base de datos consistente con el mo
 - Se implementó una estructura de estados con relación al estado siguiente para conservar la lógica del flujo operativo.
 - Se dejó configurada la tabla de flujos por tipo de ticket y estado, incluyendo mensajes base para usuario y administrador.
 - Se creó el sistema `TIK` en seguridad y se sembraron permisos base para futura integración con rutas, menús y autorización.
+
+## Día 16 - Ajuste estructural de catálogos tik\_
+
+- Se ajustaron las tablas de catálogos del módulo `tik_` para alinearlas con la estructura real de la base de datos del proyecto.
+- Se agregó `deleted_at` a las tablas maestras del módulo tickets.
+- Se agregaron índices sobre `deleted_at` para mantener consistencia con módulos base.
+- Se agregaron claves foráneas explícitas hacia `org_areas` en los campos `id_area_responsable` de:
+    - `tik_tipos_ticket`
+    - `tik_incidencias`
+    - `tik_tipos_servicio`
+- Se reforzó la consistencia estructural sin cambiar la lógica funcional del módulo.
