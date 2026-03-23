@@ -259,3 +259,16 @@ fecha_ticket toma el valor actual (now())
 Debido a que en la estructura actual no existe una tabla transaccional separada para detalle RRHH, el dato se resolvió en esta etapa mediante id_tipo_ticket_rrhh dentro de tik_tickets.
 Se dejó la búsqueda con respuesta JSON para acercarse al flujo operativo del sistema heredado.
 Se ajustó el trait de permisos para soportar múltiples permisos por ruta, permitiendo mayor flexibilidad en el control de acceso.
+
+## Día 18 - Historial operativo desacoplado del registro principal del ticket
+
+- Se decidió mantener el estado actual del ticket en tik_tickets y registrar la trazabilidad de cambios en tik_seguimientos_ticket.
+- Se separó el historial del ticket en tres entidades operativas:
+    - comentarios
+    - anexos
+    - seguimientos
+- Esta separación permite conservar el detalle histórico sin sobrecargar la tabla principal tik_tickets.
+- Se definió que los anexos se almacenan mediante disco público de Laravel con referencia persistida en base de datos.
+- Se estableció validación de tipos y tamaño de archivo como control mínimo para carga de anexos.
+- Se decidió que la cancelación del ticket debe generar también un seguimiento para no perder trazabilidad del cambio de estado.
+- Se incorporó el cierre automático mediante fecha_cierre cuando el nuevo estado seleccionado corresponde a un estado final.

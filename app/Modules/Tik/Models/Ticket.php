@@ -91,6 +91,24 @@ class Ticket extends Model
         return $this->belongsTo(Servicio::class, 'id_servicio', 'id_servicio');
     }
 
+    public function comentarios()
+    {
+        return $this->hasMany(ComentarioTicket::class, 'id_ticket', 'id_ticket')
+            ->latest('id_comentario_ticket');
+    }
+
+    public function anexos()
+    {
+        return $this->hasMany(AnexoTicket::class, 'id_ticket', 'id_ticket')
+            ->latest('id_anexo_ticket');
+    }
+
+    public function seguimientos()
+    {
+        return $this->hasMany(SeguimientoTicket::class, 'id_ticket', 'id_ticket')
+            ->latest('id_seguimiento_ticket');
+    }
+
     public function getFechaRegistroFormateadaAttribute(): string
     {
         return $this->created_at

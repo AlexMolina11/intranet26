@@ -9,6 +9,7 @@
                 <h1 style="margin:0;">Detalle de ticket</h1>
                 <p class="page-subtitle">{{ $ticket->codigo }} — {{ $ticket->asunto }}</p>
             </div>
+
             <div class="page-header-actions" style="display:flex; gap:10px;">
                 <a href="{{ route('tik.tickets.index') }}" class="btn btn-secondary">Volver</a>
             </div>
@@ -20,6 +21,16 @@
             </div>
         @endif
 
+        @if ($errors->any())
+            <div class="alert alert-danger" style="margin-top:16px;">
+                <ul style="margin:0; padding-left:18px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-top:20px;">
             <div class="card" style="padding:16px;">
                 <h3 style="margin-top:0;">Datos generales</h3>
@@ -28,15 +39,16 @@
                 <p><strong>Descripción:</strong><br>{{ $ticket->descripcion }}</p>
                 <p><strong>Tipo:</strong> {{ $ticket->tipoTicket?->nombre }}</p>
                 <p><strong>Tipo RRHH:</strong> {{ $ticket->tipoTicketRrhh?->nombre ?? 'N/D' }}</p>
-                <p><strong>Formato:</strong> {{ $ticket->formatoTicket?->nombre }}</p>
+                <p><strong>Formato:</strong> {{ $ticket->formatoTicket?->nombre ?? 'N/D' }}</p>
                 <p><strong>Estado:</strong> {{ $ticket->estadoTicket?->nombre }}</p>
             </div>
 
             <div class="card" style="padding:16px;">
                 <h3 style="margin-top:0;">Participantes</h3>
                 <p><strong>Solicitante:</strong> {{ trim(($ticket->solicitante?->nombres ?? '') . ' ' . ($ticket->solicitante?->apellidos ?? '')) }}</p>
-                <p><strong>Responsable:</strong>
-                    @if($ticket->responsable)
+                <p>
+                    <strong>Responsable:</strong>
+                    @if ($ticket->responsable)
                         {{ trim(($ticket->responsable->nombres ?? '') . ' ' . ($ticket->responsable->apellidos ?? '')) }}
                     @else
                         Sin asignar
@@ -54,10 +66,159 @@
             </div>
         </div>
 
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px; margin-top:20px;">
+            <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0;">Agregar comentario</h3>
+
+                <form method="POST" action="{{ route('tik.tickets.comments.store', $ticket->id_ticket) }}">
+                    @csrf
+
+                    <div class="form-group">
+                        <label class="form-label" for="frmComentarioTicket_txaComentario">Comentario</label>
+                        <textarea
+                            name="frmComentarioTicket_txaComentario"
+                            id="frmComentarioTicket_txaComentario"
+                            rows="4"
+                            class="form-control"
+                            required>{{ old('frmComentarioTicket_txaComentario') }}</textarea>
+                    </div>
+
+                    <div style="margin-top:12px;">
+                        <button type="submit" class="btn btn-primary">Guardar comentario</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0;">Adjuntar archivo</h3>
+
+                <form method="POST" action="{{ route('tik.tickets.attachments.store', $ticket->id_ticket) }}" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="form-group">
+                        <label class="form-label" for="frmAnexoTicket_fileArchivo">Archivo</label>
+                        <input
+                            type="file"
+                            name="frmAnexoTicket_fileArchivo"
+                            id="frmAnexoTicket_fileArchivo"
+                            class="form-control"
+                            required>
+                        <small class="text-muted">Formatos permitidos: pdf, jpg, jpeg, png, doc, docx, xls, xlsx. Máximo 5 MB.</small>
+                    </div>
+
+                    <div style="margin-top:12px;">
+                        <button type="submit" class="btn btn-primary">Subir archivo</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card" style="padding:16px;">
+                <h3 style="margin-top:0;">Registrar seguimiento</h3>
+
+                <form method="POST" action="{{ route('tik.tickets.tracking.store', $ticket->id_ticket) }}">
+                    @csrf
+
+                    <div class="form-group">
+                        <label class="form-label" for="frmSeguimientoTicket_slcEstado">Nuevo estado</label>
+                        <select name="frmSeguimientoTicket_slcEstado" id="frmSeguimientoTicket_slcEstado" class="form-control" required>
+                            <option value="">Seleccione</option>
+                            @foreach ($estadosDisponibles as $estado)
+                                <option value="{{ $estado->id_estado_ticket }}" {{ old('frmSeguimientoTicket_slcEstado') == $estado->id_estado_ticket ? 'selected' : '' }}>
+                                    {{ $estado->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-top:12px;">
+                        <label class="form-label" for="frmSeguimientoTicket_txaComentario">Comentario</label>
+                        <textarea
+                            name="frmSeguimientoTicket_txaComentario"
+                            id="frmSeguimientoTicket_txaComentario"
+                            rows="4"
+                            class="form-control">{{ old('frmSeguimientoTicket_txaComentario') }}</textarea>
+                    </div>
+
+                    <div style="margin-top:12px;">
+                        <button type="submit" class="btn btn-primary">Guardar seguimiento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div style="margin-top:20px;">
             <button type="button" class="btn btn-danger" onclick="cancelarTicket({{ $ticket->id_ticket }})">
                 Cancelar ticket
             </button>
+        </div>
+
+        <div style="margin-top:24px;">
+            <div class="card" style="padding:16px;">
+                <h2 style="margin-top:0;">Historial del ticket</h2>
+
+                <div style="margin-top:20px;">
+                    <h3>Comentarios</h3>
+
+                    @forelse ($ticket->comentarios as $comentario)
+                        <div class="card" style="padding:14px; margin-top:12px;">
+                            <p style="margin:0 0 8px 0;">
+                                <strong>Usuario:</strong>
+                                {{ trim(($comentario->usuario?->nombres ?? '') . ' ' . ($comentario->usuario?->apellidos ?? '')) ?: ($comentario->usuario?->nombre_usuario ?? 'N/D') }}
+                            </p>
+                            <p style="margin:0 0 8px 0;"><strong>Fecha:</strong> {{ $comentario->fecha_registro_formateada }}</p>
+                            <p style="margin:0;">{{ $comentario->comentario }}</p>
+                        </div>
+                    @empty
+                        <p>No hay comentarios registrados.</p>
+                    @endforelse
+                </div>
+
+                <div style="margin-top:24px;">
+                    <h3>Anexos</h3>
+
+                    @forelse ($ticket->anexos as $anexo)
+                        <div class="card" style="padding:14px; margin-top:12px;">
+                            <p style="margin:0 0 8px 0;"><strong>Archivo:</strong> {{ $anexo->nombre_original }}</p>
+                            <p style="margin:0 0 8px 0;"><strong>Tipo:</strong> {{ $anexo->mime_type ?? 'N/D' }}</p>
+                            <p style="margin:0 0 8px 0;"><strong>Tamaño:</strong> {{ $anexo->peso_formateado }}</p>
+                            <p style="margin:0 0 8px 0;"><strong>Fecha:</strong> {{ $anexo->fecha_registro_formateada }}</p>
+                            <a href="{{ route('tik.tickets.attachments.download', [$ticket->id_ticket, $anexo->id_anexo_ticket]) }}" class="btn btn-secondary btn-sm">
+                                Descargar
+                            </a>
+                        </div>
+                    @empty
+                        <p>No hay anexos registrados.</p>
+                    @endforelse
+                </div>
+
+                <div style="margin-top:24px;">
+                    <h3>Seguimientos</h3>
+
+                    @forelse ($ticket->seguimientos as $seguimiento)
+                        <div class="card" style="padding:14px; margin-top:12px;">
+                            <p style="margin:0 0 8px 0;">
+                                <strong>Usuario:</strong>
+                                {{ trim(($seguimiento->usuario?->nombres ?? '') . ' ' . ($seguimiento->usuario?->apellidos ?? '')) ?: ($seguimiento->usuario?->nombre_usuario ?? 'N/D') }}
+                            </p>
+                            <p style="margin:0 0 8px 0;"><strong>Fecha:</strong> {{ $seguimiento->fecha_registro_formateada }}</p>
+                            <p style="margin:0 0 8px 0;">
+                                <strong>Estado anterior:</strong>
+                                {{ $seguimiento->estadoAnterior?->nombre ?? 'Sin definir' }}
+                            </p>
+                            <p style="margin:0 0 8px 0;">
+                                <strong>Estado nuevo:</strong>
+                                {{ $seguimiento->estadoNuevo?->nombre ?? 'Sin definir' }}
+                            </p>
+                            <p style="margin:0;">
+                                <strong>Comentario:</strong>
+                                {{ $seguimiento->comentario ?? 'Sin comentario' }}
+                            </p>
+                        </div>
+                    @empty
+                        <p>No hay seguimientos registrados.</p>
+                    @endforelse
+                </div>
+            </div>
         </div>
     </div>
 
@@ -76,8 +237,8 @@
             });
 
             const data = await response.json();
-
             alert(data.message.replace(/<[^>]+>/g, ''));
+
             if (data.success) {
                 window.location.reload();
             }

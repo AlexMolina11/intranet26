@@ -9,6 +9,7 @@
                 <h1 style="margin:0;">Mis tickets</h1>
                 <p class="page-subtitle">Consulta y seguimiento de solicitudes</p>
             </div>
+
             <div class="page-header-actions">
                 <a href="{{ route('tik.tickets.create') }}" class="btn btn-primary">Nuevo ticket</a>
             </div>
@@ -32,6 +33,9 @@
                     <label class="form-label">Estado</label>
                     <select name="frmBuscarTicket_slcEstado" class="form-control">
                         <option value="0">Todos</option>
+                        @foreach ($estados as $estado)
+                            <option value="{{ $estado->id_estado_ticket }}">{{ $estado->nombre }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -39,6 +43,9 @@
                     <label class="form-label">Tipo</label>
                     <select name="frmBuscarTicket_slcTipo" class="form-control">
                         <option value="0">Todos</option>
+                        @foreach ($tipos as $tipo)
+                            <option value="{{ $tipo->id_tipo_ticket }}">{{ $tipo->nombre }}</option>
+                        @endforeach
                     </select>
                 </div>
 

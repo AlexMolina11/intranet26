@@ -234,3 +234,21 @@ Para otros tipos de ticket:
 Debido a que en la estructura actual no existe una tabla transaccional separada para detalle RRHH, el dato se resolvió en esta etapa mediante id_tipo_ticket_rrhh dentro de tik_tickets.
 Se dejó la búsqueda con respuesta JSON para acercarse al flujo operativo del sistema heredado.
 Se ajustó el trait de permisos para soportar múltiples permisos por ruta, permitiendo mayor flexibilidad en el control de acceso.
+
+## Día 18 - Comentarios, anexos y seguimiento
+
+- Se implementaron las tablas transaccionales:
+    - tik_comentarios_ticket
+    - tik_anexos_ticket
+    - tik_seguimientos_ticket
+- Se extendió el modelo Ticket para soportar historial operativo mediante relaciones de comentarios, anexos y seguimientos.
+- Se implementó el registro de comentarios desde la vista de detalle del ticket.
+- Se implementó carga de anexos con validación de tipo y tamaño de archivo.
+- Se agregó descarga controlada de archivos adjuntos desde el detalle del ticket.
+- Se implementó el registro de seguimiento con cambio de estado del ticket.
+- Se dejó el historial básico del ticket visible en tres bloques:
+    - comentarios
+    - anexos
+    - seguimientos
+- La cancelación del ticket ahora también deja trazabilidad en tik_seguimientos_ticket.
+- Se integró el comportamiento de cierre automático al registrar estados finales.

@@ -9,16 +9,31 @@ use App\Modules\Tik\Models\TipoTicketRrhh;
 use App\Modules\Tik\Models\FormatoTicket;
 use App\Modules\Tik\Models\EstadoTicket;
 use App\Modules\Tik\Models\FlujoTicket;
+use App\Modules\Tik\Models\ComentarioTicket;
+use App\Modules\Tik\Models\AnexoTicket;
+use App\Modules\Tik\Models\SeguimientoTicket;
 use App\Modules\Tik\Requests\StoreTicketRequest;
+use App\Modules\Tik\Requests\StoreComentarioTicketRequest;
+use App\Modules\Tik\Requests\StoreAnexoTicketRequest;
+use App\Modules\Tik\Requests\StoreSeguimientoTicketRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
     public function index()
     {
-        return view('tik.tickets.index');
+        $estados = EstadoTicket::where('activo', true)
+            ->orderBy('orden')
+            ->get();
+
+        $tipos = TipoTicket::where('activo', true)
+            ->orderBy('orden')
+            ->get();
+
+        return view('tik.tickets.index', compact('estados', 'tipos'));
     }
 
     public function create()
@@ -99,10 +114,18 @@ class TicketController extends Controller
             'descripcion' => $data['frmTicket_txaDescripcion'],
             'fecha_ticket' => $fechaTicket,
             'activo' => true,
-]);
+        ]);
 
         $ticket->update([
             'codigo' => 'TIK-' . str_pad((string) $ticket->id_ticket, 6, '0', STR_PAD_LEFT),
+        ]);
+
+        SeguimientoTicket::create([
+            'id_ticket' => $ticket->id_ticket,
+            'id_usuario' => $usuario->id_usuario,
+            'id_estado_ticket_anterior' => null,
+            'id_estado_ticket_nuevo' => $ticket->id_estado_ticket,
+            'comentario' => 'Ticket registrado en el sistema.',
         ]);
 
         return redirect()
@@ -121,20 +144,31 @@ class TicketController extends Controller
             'tipoTicketRrhh',
             'formatoTicket',
             'estadoTicket',
+            'comentarios.usuario',
+            'anexos.usuario',
+            'seguimientos.usuario',
+            'seguimientos.estadoAnterior',
+            'seguimientos.estadoNuevo',
         ])->findOrFail($ticket);
 
-        return view('tik.tickets.show', compact('ticket'));
+        $estadosDisponibles = EstadoTicket::where('activo', true)
+            ->orderBy('orden')
+            ->get();
+
+        return view('tik.tickets.show', compact('ticket', 'estadosDisponibles'));
     }
 
     public function search(Request $request)
     {
         try {
+            $usuario = auth()->user();
+
             $query = Ticket::with([
                 'estadoTicket',
                 'tipoTicket',
                 'responsable',
-            ])->where(function ($q) {
-                $q->where('id_usuario_solicitante', auth()->id());
+            ])->where(function ($q) use ($usuario) {
+                $q->where('id_usuario_solicitante', $usuario->id_usuario);
             });
 
             if ($request->filled('frmBuscarTicket_dateDesde') && $request->filled('frmBuscarTicket_dateHasta')) {
@@ -196,13 +230,25 @@ class TicketController extends Controller
         try {
             $ticket = Ticket::findOrFail($ticket);
 
+            $estadoAnteriorId = $ticket->id_estado_ticket;
+
             $estadoCancelado = EstadoTicket::where('codigo', 'CANCELADO')
                 ->where('activo', true)
                 ->firstOrFail();
 
-            $ticket->update([
-                'id_estado_ticket' => $estadoCancelado->id_estado_ticket,
-            ]);
+            DB::transaction(function () use ($ticket, $estadoAnteriorId, $estadoCancelado) {
+                $ticket->update([
+                    'id_estado_ticket' => $estadoCancelado->id_estado_ticket,
+                ]);
+
+                SeguimientoTicket::create([
+                    'id_ticket' => $ticket->id_ticket,
+                    'id_usuario' => auth()->user()->id_usuario,
+                    'id_estado_ticket_anterior' => $estadoAnteriorId,
+                    'id_estado_ticket_nuevo' => $estadoCancelado->id_estado_ticket,
+                    'comentario' => 'Ticket cancelado por el usuario.',
+                ]);
+            });
 
             return Response::json([
                 'success' => true,
@@ -215,5 +261,102 @@ class TicketController extends Controller
                 'message' => "<span style='color:white;'>Ha ocurrido un error al cargar los registros.</span>",
             ]);
         }
+    }
+
+    public function storeComment(StoreComentarioTicketRequest $request, int $ticket)
+    {
+        $ticket = Ticket::findOrFail($ticket);
+        $usuario = auth()->user();
+
+        ComentarioTicket::create([
+            'id_ticket' => $ticket->id_ticket,
+            'id_usuario' => $usuario->id_usuario,
+            'comentario' => $request->validated()['frmComentarioTicket_txaComentario'],
+            'es_interno' => false,
+        ]);
+
+        return redirect()
+            ->route('tik.tickets.show', $ticket->id_ticket)
+            ->with('success', 'Comentario registrado correctamente.');
+    }
+
+    public function storeAttachment(StoreAnexoTicketRequest $request, int $ticket)
+    {
+        $ticket = Ticket::findOrFail($ticket);
+        $usuario = auth()->user();
+
+        $archivo = $request->file('frmAnexoTicket_fileArchivo');
+
+        $nombreGenerado = uniqid('tik_', true) . '.' . $archivo->getClientOriginalExtension();
+        $ruta = $archivo->storeAs('tickets/anexos', $nombreGenerado, 'public');
+
+        AnexoTicket::create([
+            'id_ticket' => $ticket->id_ticket,
+            'id_usuario' => $usuario->id_usuario,
+            'nombre_original' => $archivo->getClientOriginalName(),
+            'nombre_archivo' => $nombreGenerado,
+            'ruta_archivo' => $ruta,
+            'mime_type' => $archivo->getClientMimeType(),
+            'peso_bytes' => $archivo->getSize(),
+        ]);
+
+        return redirect()
+            ->route('tik.tickets.show', $ticket->id_ticket)
+            ->with('success', 'Archivo adjuntado correctamente.');
+    }
+
+    public function storeTracking(StoreSeguimientoTicketRequest $request, int $ticket)
+    {
+        $ticket = Ticket::findOrFail($ticket);
+        $usuario = auth()->user();
+
+        $estadoAnteriorId = $ticket->id_estado_ticket;
+        $estadoNuevoId = (int) $request->validated()['frmSeguimientoTicket_slcEstado'];
+        $comentario = $request->validated()['frmSeguimientoTicket_txaComentario'] ?? null;
+
+        DB::transaction(function () use ($ticket, $usuario, $estadoAnteriorId, $estadoNuevoId, $comentario) {
+            $ticket->update([
+                'id_estado_ticket' => $estadoNuevoId,
+                'fecha_cierre' => $this->resolverFechaCierre($estadoNuevoId),
+            ]);
+
+            SeguimientoTicket::create([
+                'id_ticket' => $ticket->id_ticket,
+                'id_usuario' => $usuario->id_usuario,
+                'id_estado_ticket_anterior' => $estadoAnteriorId,
+                'id_estado_ticket_nuevo' => $estadoNuevoId,
+                'comentario' => $comentario,
+            ]);
+        });
+
+        return redirect()
+            ->route('tik.tickets.show', $ticket->id_ticket)
+            ->with('success', 'Seguimiento registrado correctamente.');
+    }
+
+    public function downloadAttachment(int $ticket, int $anexo)
+    {
+        $ticket = Ticket::findOrFail($ticket);
+
+        $anexo = AnexoTicket::where('id_ticket', $ticket->id_ticket)
+            ->where('id_anexo_ticket', $anexo)
+            ->firstOrFail();
+
+        if (!Storage::disk('public')->exists($anexo->ruta_archivo)) {
+            abort(404, 'El archivo no existe.');
+        }
+
+        return Storage::disk('public')->download($anexo->ruta_archivo, $anexo->nombre_original);
+    }
+
+    private function resolverFechaCierre(int $idEstadoTicket): ?string
+    {
+        $estado = EstadoTicket::find($idEstadoTicket);
+
+        if (!$estado) {
+            return null;
+        }
+
+        return $estado->es_final ? now() : null;
     }
 }

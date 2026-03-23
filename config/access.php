@@ -100,12 +100,16 @@ return [
         'org.areas.edit' => 'ORG_AREAS_EDITAR',
         'org.areas.update' => 'ORG_AREAS_EDITAR',
 
-        //Tickets
-        'tik.tickets.index'  => ['TIK_TICKETS_VER'],
+        // Tickets
+        'tik.tickets.index' => ['TIK_TICKETS_VER'],
         'tik.tickets.create' => ['TIK_TICKETS_CREAR'],
-        'tik.tickets.store'  => ['TIK_TICKETS_CREAR'],
-        'tik.tickets.show'   => ['TIK_TICKETS_VER'],
+        'tik.tickets.store' => ['TIK_TICKETS_CREAR'],
+        'tik.tickets.show' => ['TIK_TICKETS_VER'],
         'tik.tickets.search' => ['TIK_TICKETS_VER'],
         'tik.tickets.cancel' => ['TIK_TICKETS_GESTIONAR'],
+        'tik.tickets.comments.store' => ['TIK_TICKETS_GESTIONAR'],
+        'tik.tickets.attachments.store' => ['TIK_TICKETS_GESTIONAR'],
+        'tik.tickets.tracking.store' => ['TIK_TICKETS_GESTIONAR'],
+        'tik.tickets.attachments.download' => ['TIK_TICKETS_VER'],
     ],
 ];
