@@ -271,3 +271,39 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
     - seguimiento
     - cierre
     - evaluación
+
+## Día 19.2 - Endurecimiento operativo del módulo tickets
+
+- Se redefine el módulo TIK en tres perfiles operativos:
+    - solicitante
+    - administrador departamental
+    - gestor
+- Se mantiene el ticket como entidad central de solicitud, pero la ejecución operativa y la notificación de trabajo realizado se materializan mediante soportes.
+- Se adopta el soporte como unidad de evidencia y comunicación hacia el solicitante.
+- Para tickets clasificados como proyecto, se permite registrar múltiples soportes de avance antes del cierre final.
+- La evaluación deja de centrarse únicamente en el ticket y pasa a enfocarse en cada soporte registrado.
+- Se separan paneles de trabajo por perfil para mejorar la experiencia de usuario y reducir errores operativos.
+- Las transiciones de estado no solo dependen del flujo configurado, sino también del perfil del usuario que ejecuta la acción.
+- Se incorporan notificaciones por correo en eventos clave del ciclo de vida del ticket y del soporte.
+
+## Día 19.2A - Roles operativos y paneles base del módulo tickets
+
+- Se endureció el módulo TIK separando la experiencia por perfiles operativos:
+    - solicitante
+    - administrador departamental
+    - gestor
+- Se ampliaron los permisos del sistema de tickets para cubrir panel administrativo, panel gestor, asignación y clasificación.
+- Se agregaron nuevos campos operativos a tik_tickets:
+    - es_proyecto
+    - no_aplica
+    - id_usuario_asignador
+- Se implementó el panel de solicitante como vista de tickets propios.
+- Se implementó el panel administrativo para gestión de tickets del área responsable.
+- Se implementó el panel gestor para visualización de tickets asignados al usuario responsable.
+- Se habilitó la asignación de tickets desde el panel administrador.
+- Se habilitó la clasificación administrativa del ticket como:
+    - normal
+    - proyecto
+    - no aplica
+- Cada asignación o clasificación registra trazabilidad en tik_seguimientos_ticket.
+- Se reforzó el control de acceso para que cada perfil vea únicamente los tickets que le corresponden.

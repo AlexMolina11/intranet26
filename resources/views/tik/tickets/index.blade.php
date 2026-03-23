@@ -7,11 +7,19 @@
         <div class="page-header">
             <div class="page-header-text">
                 <h1 style="margin:0;">Mis tickets</h1>
-                <p class="page-subtitle">Consulta y seguimiento de solicitudes</p>
+                <p class="page-subtitle">Consulta de solicitudes realizadas por el usuario</p>
             </div>
 
-            <div class="page-header-actions">
+            <div class="page-header-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
                 <a href="{{ route('tik.tickets.create') }}" class="btn btn-primary">Nuevo ticket</a>
+
+                @if (auth()->user()->tienePermiso(['TIK_PANEL_ADMIN_VER', 'TIK_TICKETS_ADMIN_VER']))
+                    <a href="{{ route('tik.admin.tickets.index') }}" class="btn btn-secondary">Panel administrador</a>
+                @endif
+
+                @if (auth()->user()->tienePermiso(['TIK_PANEL_GESTOR_VER', 'TIK_TICKETS_GESTOR_VER']))
+                    <a href="{{ route('tik.gestor.tickets.index') }}" class="btn btn-secondary">Panel gestor</a>
+                @endif
             </div>
         </div>
 
@@ -66,6 +74,49 @@
         </form>
 
         <div id="resultadoTickets" style="margin-top:24px;"></div>
+
+        <div style="margin-top:24px;">
+            <h2 style="margin:0 0 12px 0;">Últimos tickets</h2>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Asunto</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Responsable</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($ticketsRecientes as $ticket)
+                            <tr>
+                                <td>{{ $ticket->codigo }}</td>
+                                <td>{{ $ticket->asunto }}</td>
+                                <td>{{ $ticket->tipoTicket?->nombre }}</td>
+                                <td>{{ $ticket->estadoTicket?->nombre }}</td>
+                                <td>
+                                    @if ($ticket->responsable)
+                                        {{ trim(($ticket->responsable->nombres ?? '') . ' ' . ($ticket->responsable->apellidos ?? '')) }}
+                                    @else
+                                        Sin asignar
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ route('tik.tickets.show', $ticket->id_ticket) }}" class="btn btn-sm btn-secondary">Ver</a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6">No hay tickets registrados.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>

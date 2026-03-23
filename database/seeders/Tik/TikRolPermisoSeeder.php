@@ -35,12 +35,12 @@ class TikRolPermisoSeeder extends Seeder
             ->where('nombre', 'Consulta')
             ->first();
 
-        $permisos = DB::table('seg_permisos')
+        $todosLosPermisos = DB::table('seg_permisos')
             ->where('id_sistema', $sistema->id_sistema)
             ->get();
 
         if ($rolSuperAdmin) {
-            foreach ($permisos as $permiso) {
+            foreach ($todosLosPermisos as $permiso) {
                 DB::table('seg_rol_permiso')->updateOrInsert(
                     [
                         'id_rol' => $rolSuperAdmin->id_rol,
@@ -57,21 +57,24 @@ class TikRolPermisoSeeder extends Seeder
         if ($rolAdministrador) {
             $codigosAdmin = [
                 'TIK_VER',
+                'TIK_PANEL_ADMIN_VER',
+                'TIK_TICKETS_VER',
+                'TIK_TICKETS_CREAR',
+                'TIK_TICKETS_DETALLE',
+                'TIK_TICKETS_ADMIN_VER',
+                'TIK_TICKETS_ASIGNAR',
+                'TIK_TICKETS_CLASIFICAR',
+                'TIK_TICKETS_GESTIONAR',
+                'TIK_TICKETS_PLANIFICAR',
+                'TIK_TICKETS_EJECUTAR',
+                'TIK_TICKETS_CERRAR',
+                'TIK_SOPORTES_VER',
+                'TIK_SOPORTES_CREAR',
+                'TIK_SOPORTES_EVALUAR',
                 'TIK_CATALOGOS_VER',
                 'TIK_CATALOGOS_CREAR',
                 'TIK_CATALOGOS_EDITAR',
                 'TIK_FLUJOS_VER',
-                'TIK_FLUJOS_CREAR',
-                'TIK_FLUJOS_EDITAR',
-                'TIK_TICKETS_VER',
-                'TIK_TICKETS_CREAR',
-                'TIK_TICKETS_EDITAR',
-                'TIK_TICKETS_ASIGNAR',
-                'TIK_TICKETS_GESTIONAR',
-                'TIK_SOPORTES_VER',
-                'TIK_SOPORTES_CREAR',
-                'TIK_SOPORTES_EDITAR',
-                'TIK_ENCUESTAS_VER',
             ];
 
             $permisosAdmin = DB::table('seg_permisos')
@@ -96,11 +99,9 @@ class TikRolPermisoSeeder extends Seeder
         if ($rolConsulta) {
             $codigosConsulta = [
                 'TIK_VER',
-                'TIK_CATALOGOS_VER',
-                'TIK_FLUJOS_VER',
                 'TIK_TICKETS_VER',
-                'TIK_SOPORTES_VER',
-                'TIK_ENCUESTAS_VER',
+                'TIK_TICKETS_CREAR',
+                'TIK_TICKETS_DETALLE',
             ];
 
             $permisosConsulta = DB::table('seg_permisos')

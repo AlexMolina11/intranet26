@@ -283,3 +283,21 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
 - Se decidió impedir cambios posteriores de seguimiento y cancelación sobre tickets ya cerrados para proteger la integridad del flujo.
 - Con este día se da por completado el ciclo funcional base del módulo tickets:
   solicitud → seguimiento → cierre → evaluación.
+
+    ## Día 19.2A - Separación operativa del módulo tickets por perfiles
+
+- Se decidió separar el módulo TIK en tres paneles funcionales:
+    - solicitante
+    - administrador departamental
+    - gestor
+- La vista general de tickets deja de representar toda la operación del módulo y pasa a enfocarse únicamente en tickets del solicitante.
+- La asignación de tickets se centraliza en un panel administrativo y no en el flujo general del ticket.
+- Se incorporó la clasificación administrativa temprana del ticket mediante indicadores:
+    - es_proyecto
+    - no_aplica
+- Se decidió registrar el usuario asignador dentro de tik_tickets para conservar trazabilidad operativa de las decisiones administrativas.
+- La visibilidad de tickets se restringe por relación funcional:
+    - el solicitante ve sus tickets
+    - el gestor ve únicamente tickets asignados a él
+    - el administrador ve tickets de sus áreas responsables
+- Se mantiene tik_seguimientos_ticket como bitácora central de trazabilidad para acciones administrativas y operativas.

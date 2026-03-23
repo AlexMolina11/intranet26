@@ -100,17 +100,29 @@ return [
         'org.areas.edit' => 'ORG_AREAS_EDITAR',
         'org.areas.update' => 'ORG_AREAS_EDITAR',
 
-        // Tickets
+        // Tickets solicitante
         'tik.tickets.index' => ['TIK_TICKETS_VER'],
         'tik.tickets.create' => ['TIK_TICKETS_CREAR'],
         'tik.tickets.store' => ['TIK_TICKETS_CREAR'],
-        'tik.tickets.show' => ['TIK_TICKETS_VER'],
+        'tik.tickets.show' => ['TIK_TICKETS_DETALLE', 'TIK_TICKETS_VER'],
         'tik.tickets.search' => ['TIK_TICKETS_VER'],
         'tik.tickets.cancel' => ['TIK_TICKETS_GESTIONAR'],
+
+        // Comentarios / anexos / seguimiento base
         'tik.tickets.comments.store' => ['TIK_TICKETS_GESTIONAR'],
         'tik.tickets.attachments.store' => ['TIK_TICKETS_GESTIONAR'],
         'tik.tickets.tracking.store' => ['TIK_TICKETS_GESTIONAR'],
         'tik.tickets.survey.store' => ['TIK_TICKETS_VER'],
         'tik.tickets.attachments.download' => ['TIK_TICKETS_VER'],
+
+        // Panel administrador
+        'tik.admin.tickets.index' => ['TIK_PANEL_ADMIN_VER', 'TIK_TICKETS_ADMIN_VER'],
+        'tik.admin.tickets.show' => ['TIK_PANEL_ADMIN_VER', 'TIK_TICKETS_ADMIN_VER'],
+        'tik.admin.tickets.assign' => ['TIK_TICKETS_ASIGNAR'],
+        'tik.admin.tickets.classify' => ['TIK_TICKETS_CLASIFICAR'],
+
+        // Panel gestor
+        'tik.gestor.tickets.index' => ['TIK_PANEL_GESTOR_VER', 'TIK_TICKETS_GESTOR_VER'],
+        'tik.gestor.tickets.show' => ['TIK_PANEL_GESTOR_VER', 'TIK_TICKETS_GESTOR_VER'],
     ],
 ];

@@ -21,38 +21,51 @@ class PermisoTicketSeeder extends Seeder
         }
 
         $permisos = [
-            ['codigo' => 'TIK_VER', 'nombre' => 'Ver módulo tickets', 'descripcion' => 'Permite ver el módulo general de tickets'],
-            ['codigo' => 'TIK_CATALOGOS_VER', 'nombre' => 'Ver catálogos tickets', 'descripcion' => 'Permite consultar catálogos del módulo tickets'],
-            ['codigo' => 'TIK_CATALOGOS_CREAR', 'nombre' => 'Crear catálogos tickets', 'descripcion' => 'Permite crear registros de catálogos del módulo tickets'],
-            ['codigo' => 'TIK_CATALOGOS_EDITAR', 'nombre' => 'Editar catálogos tickets', 'descripcion' => 'Permite editar registros de catálogos del módulo tickets'],
-            ['codigo' => 'TIK_CATALOGOS_ELIMINAR', 'nombre' => 'Eliminar catálogos tickets', 'descripcion' => 'Permite eliminar registros de catálogos del módulo tickets'],
+            // acceso general módulo
+            ['codigo' => 'TIK_VER', 'nombre' => 'Acceso general a Tickets'],
+            ['codigo' => 'TIK_PANEL_ADMIN_VER', 'nombre' => 'Ver panel administrador de tickets'],
+            ['codigo' => 'TIK_PANEL_GESTOR_VER', 'nombre' => 'Ver panel gestor de tickets'],
 
-            ['codigo' => 'TIK_FLUJOS_VER', 'nombre' => 'Ver flujos tickets', 'descripcion' => 'Permite consultar flujos del módulo tickets'],
-            ['codigo' => 'TIK_FLUJOS_CREAR', 'nombre' => 'Crear flujos tickets', 'descripcion' => 'Permite crear flujos del módulo tickets'],
-            ['codigo' => 'TIK_FLUJOS_EDITAR', 'nombre' => 'Editar flujos tickets', 'descripcion' => 'Permite editar flujos del módulo tickets'],
-            ['codigo' => 'TIK_FLUJOS_ELIMINAR', 'nombre' => 'Eliminar flujos tickets', 'descripcion' => 'Permite eliminar flujos del módulo tickets'],
+            // tickets del solicitante
+            ['codigo' => 'TIK_TICKETS_VER', 'nombre' => 'Ver tickets propios'],
+            ['codigo' => 'TIK_TICKETS_CREAR', 'nombre' => 'Crear tickets'],
+            ['codigo' => 'TIK_TICKETS_DETALLE', 'nombre' => 'Ver detalle de tickets propios'],
 
-            ['codigo' => 'TIK_TICKETS_VER', 'nombre' => 'Ver tickets', 'descripcion' => 'Permite consultar tickets'],
-            ['codigo' => 'TIK_TICKETS_CREAR', 'nombre' => 'Crear tickets', 'descripcion' => 'Permite registrar tickets'],
-            ['codigo' => 'TIK_TICKETS_EDITAR', 'nombre' => 'Editar tickets', 'descripcion' => 'Permite editar tickets'],
-            ['codigo' => 'TIK_TICKETS_ASIGNAR', 'nombre' => 'Asignar tickets', 'descripcion' => 'Permite asignar tickets a responsables'],
-            ['codigo' => 'TIK_TICKETS_GESTIONAR', 'nombre' => 'Gestionar tickets', 'descripcion' => 'Permite gestionar el flujo del ticket'],
+            // gestión administrativa
+            ['codigo' => 'TIK_TICKETS_ASIGNAR', 'nombre' => 'Asignar tickets'],
+            ['codigo' => 'TIK_TICKETS_CLASIFICAR', 'nombre' => 'Clasificar tickets como proyecto o no aplica'],
+            ['codigo' => 'TIK_TICKETS_ADMIN_VER', 'nombre' => 'Ver tickets del panel administrador'],
 
-            ['codigo' => 'TIK_SOPORTES_VER', 'nombre' => 'Ver soportes', 'descripcion' => 'Permite consultar soportes asociados'],
-            ['codigo' => 'TIK_SOPORTES_CREAR', 'nombre' => 'Crear soportes', 'descripcion' => 'Permite registrar seguimientos o soportes'],
-            ['codigo' => 'TIK_SOPORTES_EDITAR', 'nombre' => 'Editar soportes', 'descripcion' => 'Permite editar soportes'],
-            ['codigo' => 'TIK_SOPORTES_ELIMINAR', 'nombre' => 'Eliminar soportes', 'descripcion' => 'Permite eliminar soportes'],
+            // gestión operativa
+            ['codigo' => 'TIK_TICKETS_GESTOR_VER', 'nombre' => 'Ver tickets asignados como gestor'],
+            ['codigo' => 'TIK_TICKETS_GESTIONAR', 'nombre' => 'Gestionar tickets'],
+            ['codigo' => 'TIK_TICKETS_PLANIFICAR', 'nombre' => 'Planificar tickets'],
+            ['codigo' => 'TIK_TICKETS_EJECUTAR', 'nombre' => 'Ejecutar tickets'],
+            ['codigo' => 'TIK_TICKETS_CERRAR', 'nombre' => 'Cerrar tickets'],
 
-            ['codigo' => 'TIK_ENCUESTAS_VER', 'nombre' => 'Ver encuestas de soporte', 'descripcion' => 'Permite consultar evaluaciones de soportes'],
+            // soporte y evaluación (preparados para siguientes días)
+            ['codigo' => 'TIK_SOPORTES_VER', 'nombre' => 'Ver soportes'],
+            ['codigo' => 'TIK_SOPORTES_CREAR', 'nombre' => 'Crear soportes'],
+            ['codigo' => 'TIK_SOPORTES_EVALUAR', 'nombre' => 'Evaluar soportes'],
+
+            // catálogos / flujos
+            ['codigo' => 'TIK_CATALOGOS_VER', 'nombre' => 'Ver catálogos de tickets'],
+            ['codigo' => 'TIK_CATALOGOS_CREAR', 'nombre' => 'Crear catálogos de tickets'],
+            ['codigo' => 'TIK_CATALOGOS_EDITAR', 'nombre' => 'Editar catálogos de tickets'],
+            ['codigo' => 'TIK_FLUJOS_VER', 'nombre' => 'Ver flujos de tickets'],
+            ['codigo' => 'TIK_FLUJOS_CREAR', 'nombre' => 'Crear flujos de tickets'],
+            ['codigo' => 'TIK_FLUJOS_EDITAR', 'nombre' => 'Editar flujos de tickets'],
         ];
 
         foreach ($permisos as $permiso) {
             DB::table('seg_permisos')->updateOrInsert(
-                ['codigo' => $permiso['codigo']],
                 [
                     'id_sistema' => $sistema->id_sistema,
+                    'codigo' => $permiso['codigo'],
+                ],
+                [
                     'nombre' => $permiso['nombre'],
-                    'descripcion' => $permiso['descripcion'],
+                    'descripcion' => $permiso['nombre'],
                     'created_at' => $now,
                     'updated_at' => $now,
                     'deleted_at' => null,

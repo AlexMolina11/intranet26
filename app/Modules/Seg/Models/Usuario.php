@@ -109,4 +109,14 @@ class Usuario extends Authenticatable
             'id_permiso'
         )->withPivot('permitido')->withTimestamps();
     }
+
+    public function areas()
+    {
+        return $this->belongsToMany(
+            \App\Modules\Org\Models\Area::class,
+            'org_usuario_area',
+            'id_usuario',
+            'id_area'
+        )->withPivot('es_principal');
+    }
 }

@@ -36,7 +36,19 @@ class TicketController extends Controller
             ->orderBy('orden')
             ->get();
 
-        return view('tik.tickets.index', compact('estados', 'tipos'));
+        $usuario = auth()->user();
+
+        $ticketsRecientes = Ticket::with([
+            'estadoTicket',
+            'tipoTicket',
+            'responsable',
+        ])
+            ->where('id_usuario_solicitante', $usuario->id_usuario)
+            ->latest('id_ticket')
+            ->take(10)
+            ->get();
+
+        return view('tik.tickets.index', compact('estados', 'tipos', 'ticketsRecientes'));
     }
 
     public function create()
@@ -153,9 +165,12 @@ class TicketController extends Controller
 
     public function show(int $ticket)
     {
+        $usuario = auth()->user();
+
         $ticket = Ticket::with([
             'solicitante',
             'responsable',
+            'asignador',
             'areaSolicitante',
             'areaResponsable',
             'tipoTicket',
@@ -170,6 +185,13 @@ class TicketController extends Controller
             'detalleRrhh.tipoTicketRrhh',
             'encuesta.usuario',
         ])->findOrFail($ticket);
+
+        $puedeVer =
+            (int) $ticket->id_usuario_solicitante === (int) $usuario->id_usuario
+            || (int) ($ticket->id_usuario_responsable ?? 0) === (int) $usuario->id_usuario
+            || $usuario->tienePermiso(['TIK_PANEL_ADMIN_VER', 'TIK_TICKETS_ADMIN_VER']);
+
+        abort_unless($puedeVer, 403);
 
         $estadosDisponibles = EstadoTicket::where('activo', true)
             ->orderBy('orden')
