@@ -110,6 +110,7 @@ return [
         'tik.tickets.comments.store' => ['TIK_TICKETS_GESTIONAR'],
         'tik.tickets.attachments.store' => ['TIK_TICKETS_GESTIONAR'],
         'tik.tickets.tracking.store' => ['TIK_TICKETS_GESTIONAR'],
+        'tik.tickets.survey.store' => ['TIK_TICKETS_VER'],
         'tik.tickets.attachments.download' => ['TIK_TICKETS_VER'],
     ],
 ];

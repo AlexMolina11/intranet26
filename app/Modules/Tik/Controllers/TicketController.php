@@ -20,6 +20,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use App\Modules\Tik\Models\TicketRrhh;
+use App\Modules\Tik\Models\EncuestaSoporte;
+use App\Modules\Tik\Requests\StoreEncuestaSoporteRequest;
 
 class TicketController extends Controller
 {
@@ -98,35 +101,50 @@ class TicketController extends Controller
             $fechaTicket = $data['frmTicket_FechaEntrega'] ?? now();
         }
 
-        $ticket = Ticket::create([
-            'codigo' => null,
-            'id_usuario_solicitante' => $usuario->id_usuario,
-            'id_usuario_responsable' => null,
-            'id_area_solicitante' => $areaSolicitanteId,
-            'id_area_responsable' => $tipoTicket->id_area_responsable,
-            'id_tipo_ticket' => $tipoTicket->id_tipo_ticket,
-            'id_tipo_ticket_rrhh' => $data['frmTicket_slcTipoSolicitud'] ?? null,
-            'id_formato_ticket' => $idFormatoTicket,
-            'id_estado_ticket' => $flujoInicial->id_estado_ticket,
-            'id_incidencia' => null,
-            'id_servicio' => null,
-            'asunto' => $data['frmTicket_txaAsunto'],
-            'descripcion' => $data['frmTicket_txaDescripcion'],
-            'fecha_ticket' => $fechaTicket,
-            'activo' => true,
-        ]);
+        $ticket = null;
 
-        $ticket->update([
-            'codigo' => 'TIK-' . str_pad((string) $ticket->id_ticket, 6, '0', STR_PAD_LEFT),
-        ]);
+        DB::transaction(function () use (&$ticket, $data, $tipoTicket, $flujoInicial, $usuario, $areaSolicitanteId, $idFormatoTicket, $fechaTicket) {
+            $ticket = Ticket::create([
+                'codigo' => null,
+                'id_usuario_solicitante' => $usuario->id_usuario,
+                'id_usuario_responsable' => null,
+                'id_area_solicitante' => $areaSolicitanteId,
+                'id_area_responsable' => $tipoTicket->id_area_responsable,
+                'id_tipo_ticket' => $tipoTicket->id_tipo_ticket,
+                'id_tipo_ticket_rrhh' => $data['frmTicket_slcTipoSolicitud'] ?? null,
+                'id_formato_ticket' => $idFormatoTicket,
+                'id_estado_ticket' => $flujoInicial->id_estado_ticket,
+                'id_incidencia' => null,
+                'id_servicio' => null,
+                'asunto' => $data['frmTicket_txaAsunto'],
+                'descripcion' => $data['frmTicket_txaDescripcion'],
+                'fecha_ticket' => $fechaTicket,
+                'activo' => true,
+            ]);
 
-        SeguimientoTicket::create([
-            'id_ticket' => $ticket->id_ticket,
-            'id_usuario' => $usuario->id_usuario,
-            'id_estado_ticket_anterior' => null,
-            'id_estado_ticket_nuevo' => $ticket->id_estado_ticket,
-            'comentario' => 'Ticket registrado en el sistema.',
-        ]);
+            $ticket->update([
+                'codigo' => 'TIK-' . str_pad((string) $ticket->id_ticket, 6, '0', STR_PAD_LEFT),
+            ]);
+
+            if (
+                $tipoTicket->codigo === 'TALENTO_HUMANO' &&
+                !empty($data['frmTicket_slcTipoSolicitud'])
+            ) {
+                TicketRrhh::create([
+                    'id_ticket' => $ticket->id_ticket,
+                    'id_tipo_ticket_rrhh' => $data['frmTicket_slcTipoSolicitud'],
+                    'detalle' => $data['frmTicket_txaDescripcion'],
+                ]);
+            }
+
+            SeguimientoTicket::create([
+                'id_ticket' => $ticket->id_ticket,
+                'id_usuario' => $usuario->id_usuario,
+                'id_estado_ticket_anterior' => null,
+                'id_estado_ticket_nuevo' => $ticket->id_estado_ticket,
+                'comentario' => 'Ticket registrado en el sistema.',
+            ]);
+        });
 
         return redirect()
             ->route('tik.tickets.show', $ticket->id_ticket)
@@ -149,6 +167,8 @@ class TicketController extends Controller
             'seguimientos.usuario',
             'seguimientos.estadoAnterior',
             'seguimientos.estadoNuevo',
+            'detalleRrhh.tipoTicketRrhh',
+            'encuesta.usuario',
         ])->findOrFail($ticket);
 
         $estadosDisponibles = EstadoTicket::where('activo', true)
@@ -228,7 +248,14 @@ class TicketController extends Controller
     public function cancel(int $ticket)
     {
         try {
-            $ticket = Ticket::findOrFail($ticket);
+            $ticket = Ticket::with('estadoTicket')->findOrFail($ticket);
+
+            if ($ticket->estadoTicket?->es_final) {
+                return Response::json([
+                    'success' => false,
+                    'message' => "<span style='color:white;'>No puedes cancelar un ticket que ya está cerrado.</span>",
+                ]);
+            }
 
             $estadoAnteriorId = $ticket->id_estado_ticket;
 
@@ -239,6 +266,7 @@ class TicketController extends Controller
             DB::transaction(function () use ($ticket, $estadoAnteriorId, $estadoCancelado) {
                 $ticket->update([
                     'id_estado_ticket' => $estadoCancelado->id_estado_ticket,
+                    'fecha_cierre' => $estadoCancelado->es_final ? now() : null,
                 ]);
 
                 SeguimientoTicket::create([
@@ -307,8 +335,14 @@ class TicketController extends Controller
 
     public function storeTracking(StoreSeguimientoTicketRequest $request, int $ticket)
     {
-        $ticket = Ticket::findOrFail($ticket);
+        $ticket = Ticket::with('estadoTicket')->findOrFail($ticket);
         $usuario = auth()->user();
+
+        if ($ticket->estadoTicket?->es_final) {
+            return redirect()
+                ->route('tik.tickets.show', $ticket->id_ticket)
+                ->withErrors(['general' => 'No puedes registrar seguimiento porque el ticket ya está cerrado.']);
+        }
 
         $estadoAnteriorId = $ticket->id_estado_ticket;
         $estadoNuevoId = (int) $request->validated()['frmSeguimientoTicket_slcEstado'];
@@ -358,5 +392,40 @@ class TicketController extends Controller
         }
 
         return $estado->es_final ? now() : null;
+    }
+
+    public function storeSurvey(StoreEncuestaSoporteRequest $request, int $ticket)
+    {
+        $ticket = Ticket::with(['estadoTicket', 'encuesta'])->findOrFail($ticket);
+        $usuario = auth()->user();
+
+        if (!$ticket->estadoTicket || !$ticket->estadoTicket->es_final) {
+            return redirect()
+                ->route('tik.tickets.show', $ticket->id_ticket)
+                ->withErrors(['general' => 'Solo puedes evaluar tickets cerrados.']);
+        }
+
+        if ($ticket->encuesta) {
+            return redirect()
+                ->route('tik.tickets.show', $ticket->id_ticket)
+                ->withErrors(['general' => 'Este ticket ya fue evaluado.']);
+        }
+
+        if ((int) $ticket->id_usuario_solicitante !== (int) $usuario->id_usuario) {
+            return redirect()
+                ->route('tik.tickets.show', $ticket->id_ticket)
+                ->withErrors(['general' => 'Solo el solicitante puede registrar la evaluación del ticket.']);
+        }
+
+        EncuestaSoporte::create([
+            'id_ticket' => $ticket->id_ticket,
+            'id_usuario' => $usuario->id_usuario,
+            'calificacion' => (int) $request->validated()['frmEncuestaTicket_numCalificacion'],
+            'comentario' => $request->validated()['frmEncuestaTicket_txaComentario'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('tik.tickets.show', $ticket->id_ticket)
+            ->with('success', 'Encuesta registrada correctamente.');
     }
 }

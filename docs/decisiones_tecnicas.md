@@ -272,3 +272,14 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
 - Se estableció validación de tipos y tamaño de archivo como control mínimo para carga de anexos.
 - Se decidió que la cancelación del ticket debe generar también un seguimiento para no perder trazabilidad del cambio de estado.
 - Se incorporó el cierre automático mediante fecha_cierre cuando el nuevo estado seleccionado corresponde a un estado final.
+
+## Día 19 - Cierre funcional base del módulo tickets
+
+- Se decidió separar el detalle operativo de RRHH en la tabla tik_ticket_rrhh para evitar sobrecargar tik_tickets con información específica de un solo tipo de ticket.
+- Se mantuvo id_tipo_ticket_rrhh en tik_tickets como referencia rápida del subtipo, y se agregó tik_ticket_rrhh como estructura transaccional extensible.
+- Se decidió que la evaluación del ticket debe almacenarse en una tabla independiente, tik_encuestas_soporte, para conservar el cierre del ciclo de atención sin mezclarlo con la trazabilidad operativa del ticket.
+- Se estableció que la evaluación solo puede registrarse cuando el ticket ha alcanzado un estado final.
+- Se definió que solo el usuario solicitante puede registrar la encuesta del ticket.
+- Se decidió impedir cambios posteriores de seguimiento y cancelación sobre tickets ya cerrados para proteger la integridad del flujo.
+- Con este día se da por completado el ciclo funcional base del módulo tickets:
+  solicitud → seguimiento → cierre → evaluación.

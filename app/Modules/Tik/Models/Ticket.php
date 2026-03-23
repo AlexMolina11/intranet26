@@ -109,6 +109,16 @@ class Ticket extends Model
             ->latest('id_seguimiento_ticket');
     }
 
+    public function detalleRrhh()
+    {
+        return $this->hasOne(TicketRrhh::class, 'id_ticket', 'id_ticket');
+    }
+
+    public function encuesta()
+    {
+        return $this->hasOne(EncuestaSoporte::class, 'id_ticket', 'id_ticket');
+    }
+
     public function getFechaRegistroFormateadaAttribute(): string
     {
         return $this->created_at
@@ -128,5 +138,22 @@ class Ticket extends Model
         return $this->fecha_cierre
             ? $this->fecha_cierre->format('d/m/Y h:i a')
             : 'Sin definir';
+    }
+
+    public function getEstaCerradoAttribute(): bool
+    {
+        return (bool) optional($this->estadoTicket)->es_final;
+    }
+
+    public function getTieneEncuestaAttribute(): bool
+    {
+        return $this->relationLoaded('encuesta')
+            ? $this->encuesta !== null
+            : $this->encuesta()->exists();
+    }
+
+    public function getPuedeEvaluarseAttribute(): bool
+    {
+        return $this->esta_cerrado && !$this->tiene_encuesta;
     }
 }

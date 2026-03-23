@@ -252,3 +252,22 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
     - seguimientos
 - La cancelación del ticket ahora también deja trazabilidad en tik_seguimientos_ticket.
 - Se integró el comportamiento de cierre automático al registrar estados finales.
+
+## Día 19 - Encuestas y detalle RRHH del ticket
+
+- Se implementó la tabla transaccional tik_ticket_rrhh para separar el detalle operativo de solicitudes de Talento Humano.
+- Se implementó la tabla tik_encuestas_soporte para registrar la evaluación final del ticket por parte del solicitante.
+- Se integró la lógica para guardar detalle RRHH al registrar tickets del tipo Talento Humano.
+- Se mostró el detalle RRHH en la vista de detalle del ticket cuando aplica.
+- Se reforzó la lógica de cierre del ticket mediante estados finales y fecha_cierre automática.
+- Se bloqueó el registro de seguimientos adicionales cuando el ticket ya está cerrado.
+- Se bloqueó la cancelación de tickets que ya se encuentran cerrados.
+- Se habilitó la evaluación del ticket únicamente cuando:
+    - el ticket está cerrado
+    - no ha sido evaluado previamente
+    - el usuario autenticado es el solicitante
+- Se completó el flujo funcional base del módulo tickets:
+    - solicitud
+    - seguimiento
+    - cierre
+    - evaluación

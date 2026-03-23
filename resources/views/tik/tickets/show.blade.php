@@ -43,6 +43,14 @@
                 <p><strong>Estado:</strong> {{ $ticket->estadoTicket?->nombre }}</p>
             </div>
 
+            @if ($ticket->tipoTicket?->codigo === 'TALENTO_HUMANO' && $ticket->detalleRrhh)
+                <div class="card" style="padding:16px; margin-top:20px;">
+                    <h3 style="margin-top:0;">Detalle RRHH</h3>
+                    <p><strong>Tipo de solicitud RRHH:</strong> {{ $ticket->detalleRrhh->tipoTicketRrhh?->nombre ?? 'N/D' }}</p>
+                    <p><strong>Detalle:</strong><br>{{ $ticket->detalleRrhh->detalle ?? 'Sin detalle adicional' }}</p>
+                </div>
+            @endif
+
             <div class="card" style="padding:16px;">
                 <h3 style="margin-top:0;">Participantes</h3>
                 <p><strong>Solicitante:</strong> {{ trim(($ticket->solicitante?->nombres ?? '') . ' ' . ($ticket->solicitante?->apellidos ?? '')) }}</p>
@@ -115,41 +123,49 @@
             <div class="card" style="padding:16px;">
                 <h3 style="margin-top:0;">Registrar seguimiento</h3>
 
-                <form method="POST" action="{{ route('tik.tickets.tracking.store', $ticket->id_ticket) }}">
-                    @csrf
-
-                    <div class="form-group">
-                        <label class="form-label" for="frmSeguimientoTicket_slcEstado">Nuevo estado</label>
-                        <select name="frmSeguimientoTicket_slcEstado" id="frmSeguimientoTicket_slcEstado" class="form-control" required>
-                            <option value="">Seleccione</option>
-                            @foreach ($estadosDisponibles as $estado)
-                                <option value="{{ $estado->id_estado_ticket }}" {{ old('frmSeguimientoTicket_slcEstado') == $estado->id_estado_ticket ? 'selected' : '' }}>
-                                    {{ $estado->nombre }}
-                                </option>
-                            @endforeach
-                        </select>
+                @if ($ticket->esta_cerrado)
+                    <div class="alert alert-warning" style="margin-top:12px;">
+                        El ticket ya está cerrado. No se permiten más seguimientos.
                     </div>
+                @else
+                    <form method="POST" action="{{ route('tik.tickets.tracking.store', $ticket->id_ticket) }}">
+                        @csrf
 
-                    <div class="form-group" style="margin-top:12px;">
-                        <label class="form-label" for="frmSeguimientoTicket_txaComentario">Comentario</label>
-                        <textarea
-                            name="frmSeguimientoTicket_txaComentario"
-                            id="frmSeguimientoTicket_txaComentario"
-                            rows="4"
-                            class="form-control">{{ old('frmSeguimientoTicket_txaComentario') }}</textarea>
-                    </div>
+                        <div class="form-group">
+                            <label class="form-label" for="frmSeguimientoTicket_slcEstado">Nuevo estado</label>
+                            <select name="frmSeguimientoTicket_slcEstado" id="frmSeguimientoTicket_slcEstado" class="form-control" required>
+                                <option value="">Seleccione</option>
+                                @foreach ($estadosDisponibles as $estado)
+                                    <option value="{{ $estado->id_estado_ticket }}" {{ old('frmSeguimientoTicket_slcEstado') == $estado->id_estado_ticket ? 'selected' : '' }}>
+                                        {{ $estado->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <div style="margin-top:12px;">
-                        <button type="submit" class="btn btn-primary">Guardar seguimiento</button>
-                    </div>
-                </form>
+                        <div class="form-group" style="margin-top:12px;">
+                            <label class="form-label" for="frmSeguimientoTicket_txaComentario">Comentario</label>
+                            <textarea
+                                name="frmSeguimientoTicket_txaComentario"
+                                id="frmSeguimientoTicket_txaComentario"
+                                rows="4"
+                                class="form-control">{{ old('frmSeguimientoTicket_txaComentario') }}</textarea>
+                        </div>
+
+                        <div style="margin-top:12px;">
+                            <button type="submit" class="btn btn-primary">Guardar seguimiento</button>
+                        </div>
+                    </form>
+                @endif
             </div>
         </div>
 
         <div style="margin-top:20px;">
-            <button type="button" class="btn btn-danger" onclick="cancelarTicket({{ $ticket->id_ticket }})">
-                Cancelar ticket
-            </button>
+            @if (!$ticket->esta_cerrado)
+                <button type="button" class="btn btn-danger" onclick="cancelarTicket({{ $ticket->id_ticket }})">
+                    Cancelar ticket
+                </button>
+            @endif
         </div>
 
         <div style="margin-top:24px;">
@@ -218,6 +234,55 @@
                         <p>No hay seguimientos registrados.</p>
                     @endforelse
                 </div>
+            </div>
+        </div>
+
+        <div style="margin-top:24px;">
+            <div class="card" style="padding:16px;">
+                <h2 style="margin-top:0;">Evaluación del ticket</h2>
+
+                @if ($ticket->encuesta)
+                    <p><strong>Calificación:</strong> {{ $ticket->encuesta->calificacion }}/5</p>
+                    <p><strong>Comentario:</strong> {{ $ticket->encuesta->comentario ?? 'Sin comentario' }}</p>
+                    <p><strong>Fecha:</strong> {{ $ticket->encuesta->fecha_registro_formateada }}</p>
+                @elseif ($ticket->puede_evaluarse && auth()->id() === $ticket->id_usuario_solicitante)
+                    <form method="POST" action="{{ route('tik.tickets.survey.store', $ticket->id_ticket) }}">
+                        @csrf
+
+                        <div class="form-group">
+                            <label class="form-label" for="frmEncuestaTicket_numCalificacion">Calificación</label>
+                            <select name="frmEncuestaTicket_numCalificacion" id="frmEncuestaTicket_numCalificacion" class="form-control" required>
+                                <option value="">Seleccione</option>
+                                <option value="1" {{ old('frmEncuestaTicket_numCalificacion') == 1 ? 'selected' : '' }}>1 - Muy mala</option>
+                                <option value="2" {{ old('frmEncuestaTicket_numCalificacion') == 2 ? 'selected' : '' }}>2 - Mala</option>
+                                <option value="3" {{ old('frmEncuestaTicket_numCalificacion') == 3 ? 'selected' : '' }}>3 - Regular</option>
+                                <option value="4" {{ old('frmEncuestaTicket_numCalificacion') == 4 ? 'selected' : '' }}>4 - Buena</option>
+                                <option value="5" {{ old('frmEncuestaTicket_numCalificacion') == 5 ? 'selected' : '' }}>5 - Excelente</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="margin-top:12px;">
+                            <label class="form-label" for="frmEncuestaTicket_txaComentario">Comentario</label>
+                            <textarea
+                                name="frmEncuestaTicket_txaComentario"
+                                id="frmEncuestaTicket_txaComentario"
+                                rows="4"
+                                class="form-control">{{ old('frmEncuestaTicket_txaComentario') }}</textarea>
+                        </div>
+
+                        <div style="margin-top:12px;">
+                            <button type="submit" class="btn btn-primary">Guardar evaluación</button>
+                        </div>
+                    </form>
+                @elseif (!$ticket->esta_cerrado)
+                    <div class="alert alert-warning" style="margin-top:12px;">
+                        La evaluación estará disponible cuando el ticket esté cerrado.
+                    </div>
+                @else
+                    <div class="alert alert-warning" style="margin-top:12px;">
+                        La evaluación solo puede ser registrada por el solicitante del ticket.
+                    </div>
+                @endif
             </div>
         </div>
     </div>
