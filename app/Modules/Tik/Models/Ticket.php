@@ -33,6 +33,9 @@ class Ticket extends Model
         'descripcion',
         'fecha_ticket',
         'fecha_asignacion',
+        'fecha_planificada',
+        'fecha_inicio_ejecucion',
+        'fecha_fin_ejecucion',
         'fecha_cierre',
         'activo',
     ];
@@ -40,6 +43,9 @@ class Ticket extends Model
     protected $casts = [
         'fecha_ticket' => 'datetime',
         'fecha_asignacion' => 'datetime',
+        'fecha_planificada' => 'datetime',
+        'fecha_inicio_ejecucion' => 'datetime',
+        'fecha_fin_ejecucion' => 'datetime',
         'fecha_cierre' => 'datetime',
         'activo' => 'boolean',
         'es_proyecto' => 'boolean',
@@ -147,6 +153,27 @@ class Ticket extends Model
     {
         return $this->fecha_cierre
             ? $this->fecha_cierre->format('d/m/Y h:i a')
+            : 'Sin definir';
+    }
+
+    public function getFechaPlanificadaFormateadaAttribute(): string
+    {
+        return $this->fecha_planificada
+            ? $this->fecha_planificada->format('d/m/Y h:i a')
+            : 'Sin definir';
+    }
+
+    public function getFechaInicioEjecucionFormateadaAttribute(): string
+    {
+        return $this->fecha_inicio_ejecucion
+            ? $this->fecha_inicio_ejecucion->format('d/m/Y h:i a')
+            : 'Sin definir';
+    }
+
+    public function getFechaFinEjecucionFormateadaAttribute(): string
+    {
+        return $this->fecha_fin_ejecucion
+            ? $this->fecha_fin_ejecucion->format('d/m/Y h:i a')
             : 'Sin definir';
     }
 

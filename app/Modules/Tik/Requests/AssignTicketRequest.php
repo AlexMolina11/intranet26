@@ -1,176 +1,64 @@
 <?php
 
-namespace App\Modules\Tik\Models;
+namespace App\Modules\Tik\Requests;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Modules\Seg\Models\Usuario;
-use App\Modules\Org\Models\Area;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use App\Modules\Tik\Models\Ticket;
 
-class Ticket extends Model
+class AssignTicketRequest extends FormRequest
 {
-    use SoftDeletes;
-
-    protected $table = 'tik_tickets';
-    protected $primaryKey = 'id_ticket';
-
-    protected $fillable = [
-        'codigo',
-        'id_usuario_solicitante',
-        'id_usuario_responsable',
-        'id_usuario_asignador',
-        'id_area_solicitante',
-        'id_area_responsable',
-        'id_tipo_ticket',
-        'id_tipo_ticket_rrhh',
-        'id_formato_ticket',
-        'id_estado_ticket',
-        'id_incidencia',
-        'id_servicio',
-        'es_proyecto',
-        'no_aplica',
-        'asunto',
-        'descripcion',
-        'fecha_ticket',
-        'fecha_asignacion',
-        'fecha_cierre',
-        'activo',
-    ];
-
-    protected $casts = [
-        'fecha_ticket' => 'datetime',
-        'fecha_asignacion' => 'datetime',
-        'fecha_cierre' => 'datetime',
-        'activo' => 'boolean',
-        'es_proyecto' => 'boolean',
-        'no_aplica' => 'boolean',
-    ];
-
-    public function solicitante()
+    public function authorize(): bool
     {
-        return $this->belongsTo(Usuario::class, 'id_usuario_solicitante', 'id_usuario');
+        return true;
     }
 
-    public function responsable()
+    public function rules(): array
     {
-        return $this->belongsTo(Usuario::class, 'id_usuario_responsable', 'id_usuario');
+        return [
+            'id_usuario_responsable' => [
+                'required',
+                'integer',
+                Rule::exists('seg_usuarios', 'id_usuario')->where(function ($query) {
+                    $query->where('activo', 1)
+                        ->whereNull('deleted_at');
+                }),
+                function ($attribute, $value, $fail) {
+                    $idTicket = (int) $this->route('ticket');
+
+                    $ticket = Ticket::select('id_ticket', 'id_area_responsable')
+                        ->find($idTicket);
+
+                    if (!$ticket) {
+                        $fail('El ticket indicado no existe.');
+                        return;
+                    }
+
+                    if (!$ticket->id_area_responsable) {
+                        $fail('El ticket no tiene un área responsable definida.');
+                        return;
+                    }
+
+                    $perteneceArea = DB::table('org_usuario_area')
+                        ->where('id_usuario', (int) $value)
+                        ->where('id_area', (int) $ticket->id_area_responsable)
+                        ->exists();
+
+                    if (!$perteneceArea) {
+                        $fail('El usuario seleccionado no pertenece al área responsable del ticket.');
+                    }
+                },
+            ],
+        ];
     }
 
-    public function asignador()
+    public function messages(): array
     {
-        return $this->belongsTo(Usuario::class, 'id_usuario_asignador', 'id_usuario');
-    }
-
-    public function areaSolicitante()
-    {
-        return $this->belongsTo(Area::class, 'id_area_solicitante', 'id_area');
-    }
-
-    public function areaResponsable()
-    {
-        return $this->belongsTo(Area::class, 'id_area_responsable', 'id_area');
-    }
-
-    public function tipoTicket()
-    {
-        return $this->belongsTo(TipoTicket::class, 'id_tipo_ticket', 'id_tipo_ticket');
-    }
-
-    public function tipoTicketRrhh()
-    {
-        return $this->belongsTo(TipoTicketRrhh::class, 'id_tipo_ticket_rrhh', 'id_tipo_ticket_rrhh');
-    }
-
-    public function formatoTicket()
-    {
-        return $this->belongsTo(FormatoTicket::class, 'id_formato_ticket', 'id_formato_ticket');
-    }
-
-    public function estadoTicket()
-    {
-        return $this->belongsTo(EstadoTicket::class, 'id_estado_ticket', 'id_estado_ticket');
-    }
-
-    public function incidencia()
-    {
-        return $this->belongsTo(Incidencia::class, 'id_incidencia', 'id_incidencia');
-    }
-
-    public function servicio()
-    {
-        return $this->belongsTo(Servicio::class, 'id_servicio', 'id_servicio');
-    }
-
-    public function comentarios()
-    {
-        return $this->hasMany(ComentarioTicket::class, 'id_ticket', 'id_ticket')
-            ->latest('id_comentario_ticket');
-    }
-
-    public function anexos()
-    {
-        return $this->hasMany(AnexoTicket::class, 'id_ticket', 'id_ticket')
-            ->latest('id_anexo_ticket');
-    }
-
-    public function seguimientos()
-    {
-        return $this->hasMany(SeguimientoTicket::class, 'id_ticket', 'id_ticket')
-            ->latest('id_seguimiento_ticket');
-    }
-
-    public function detalleRrhh()
-    {
-        return $this->hasOne(TicketRrhh::class, 'id_ticket', 'id_ticket');
-    }
-
-    public function encuesta()
-    {
-        return $this->hasOne(EncuestaSoporte::class, 'id_ticket', 'id_ticket');
-    }
-
-    public function getFechaRegistroFormateadaAttribute(): string
-    {
-        return $this->created_at
-            ? $this->created_at->format('d/m/Y h:i a')
-            : 'Sin definir';
-    }
-
-    public function getFechaTicketFormateadaAttribute(): string
-    {
-        return $this->fecha_ticket
-            ? $this->fecha_ticket->format('d/m/Y')
-            : 'Sin definir';
-    }
-
-    public function getFechaCierreFormateadaAttribute(): string
-    {
-        return $this->fecha_cierre
-            ? $this->fecha_cierre->format('d/m/Y h:i a')
-            : 'Sin definir';
-    }
-
-    public function getEstaCerradoAttribute(): bool
-    {
-        return (bool) optional($this->estadoTicket)->es_final;
-    }
-
-    public function getTieneEncuestaAttribute(): bool
-    {
-        return $this->relationLoaded('encuesta')
-            ? $this->encuesta !== null
-            : $this->encuesta()->exists();
-    }
-
-    public function getPuedeEvaluarseAttribute(): bool
-    {
-        return $this->esta_cerrado && !$this->tiene_encuesta;
-    }
-
-    public function getEsPendienteAsignacionAttribute(): bool
-    {
-        return $this->responsable === null
-            && !$this->no_aplica
-            && !$this->esta_cerrado;
+        return [
+            'id_usuario_responsable.required' => 'Debes seleccionar un responsable.',
+            'id_usuario_responsable.integer' => 'El responsable enviado no es válido.',
+            'id_usuario_responsable.exists' => 'El responsable seleccionado no existe o no está activo.',
+        ];
     }
 }

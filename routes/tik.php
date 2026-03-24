@@ -31,4 +31,7 @@ Route::middleware(['auth', 'route.access'])
         // Panel gestor
         Route::get('/gestor/tickets', [GestorTicketController::class, 'index'])->name('gestor.tickets.index');
         Route::get('/gestor/tickets/{ticket}', [GestorTicketController::class, 'show'])->name('gestor.tickets.show');
+        Route::post('/gestor/tickets/{ticket}/planificar', [GestorTicketController::class, 'planificar'])->name('gestor.tickets.planificar');
+        Route::post('/gestor/tickets/{ticket}/iniciar', [GestorTicketController::class, 'iniciar'])->name('gestor.tickets.iniciar');
+        Route::post('/gestor/tickets/{ticket}/finalizar', [GestorTicketController::class, 'finalizar'])->name('gestor.tickets.finalizar');
     });

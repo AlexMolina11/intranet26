@@ -1,48 +1,42 @@
 <?php
 
-namespace App\Modules\Org\Models;
+namespace App\Modules\Org\Requests;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Http\FormRequest;
 
-class Area extends Model
+class StoreDepartamentoRequest extends FormRequest
 {
-    use SoftDeletes;
-
-    protected $table = 'org_areas';
-    protected $primaryKey = 'id_area';
-
-    protected $fillable = [
-        'id_departamento',
-        'id_proyecto',
-        'nombre',
-        'descripcion',
-        'activo',
-    ];
-
-    protected $casts = [
-        'activo' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
-    ];
-
-    public function departamento()
+    public function authorize(): bool
     {
-        return $this->belongsTo(Departamento::class, 'id_departamento', 'id_departamento');
+        return true;
     }
 
-    public function proyecto()
+    protected function prepareForValidation(): void
     {
-        return $this->belongsTo(Proyecto::class, 'id_proyecto', 'id_proyecto');
+        $this->merge([
+            'codigo' => $this->codigo ? strtoupper(trim($this->codigo)) : null,
+            'nombre' => $this->nombre ? trim($this->nombre) : null,
+            'descripcion' => $this->descripcion ? trim($this->descripcion) : null,
+            'activo' => $this->boolean('activo'),
+        ]);
     }
 
-    public function getNombreCompletoAttribute(): string
+    public function rules(): array
     {
-        $departamento = $this->departamento->nombre ?? 'Sin departamento';
-        $proyecto = $this->proyecto->nombre ?? 'Sin proyecto';
-        $area = $this->nombre ?? 'Sin área';
+        return [
+            'codigo' => ['nullable', 'string', 'max:30', 'unique:org_departamentos,codigo'],
+            'nombre' => ['required', 'string', 'max:150', 'unique:org_departamentos,nombre'],
+            'descripcion' => ['nullable', 'string', 'max:255'],
+            'activo' => ['nullable', 'boolean'],
+        ];
+    }
 
-        return $departamento . ' / ' . $proyecto . ' / ' . $area;
+    public function messages(): array
+    {
+        return [
+            'codigo.unique' => 'Ya existe un departamento con ese código.',
+            'nombre.required' => 'El nombre del departamento es obligatorio.',
+            'nombre.unique' => 'Ya existe un departamento con ese nombre.',
+        ];
     }
 }
