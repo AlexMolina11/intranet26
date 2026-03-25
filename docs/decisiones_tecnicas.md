@@ -301,3 +301,30 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
     - el gestor ve únicamente tickets asignados a él
     - el administrador ve tickets de sus áreas responsables
 - Se mantiene tik_seguimientos_ticket como bitácora central de trazabilidad para acciones administrativas y operativas.
+
+## Día 19.2B — Decisiones técnicas
+
+- Se decidió separar claramente los roles:
+    - administrador (asignación y clasificación)
+    - gestor (ejecución del ticket)
+- Se introdujo el campo `id_usuario_asignador` para auditoría interna.
+- Se permitió la clasificación flexible del ticket mediante proyecto o “no aplica” para cubrir distintos escenarios operativos.
+- Se optó por manejar cambios de estado controlados en lugar de automatismos rígidos, permitiendo mayor control manual.
+- Se mantuvo la lógica de estados basada en catálogo (`tik_estados_ticket`) para facilitar futura escalabilidad.
+
+## Día 19.2C — Decisiones técnicas
+
+- Se decidió separar la entidad soporte en:
+    - cabecera (`tik_soportes`)
+    - detalle (`tik_soporte_detalles`)
+      para permitir múltiples servicios por soporte.
+- Se optó por manejar selección múltiple de servicios con incidencias mediante JSON en frontend para simplificar la interacción del usuario.
+- Se decidió no crear una relación directa incidencia → departamento, sino resolverla vía:
+  incidencia → área → departamento,
+  respetando la estructura organizacional existente.
+- Se implementó carga dinámica de incidencias en frontend filtrando por departamento seleccionado.
+- Se evitó lógica compleja en el frontend trasladando la validación final al backend.
+- Se decidió registrar automáticamente un seguimiento del ticket al crear un soporte para mantener trazabilidad del flujo.
+- Se priorizó una interfaz clara y operativa sobre una estructura estrictamente normalizada en frontend.
+- Se corrigieron problemas de autoload PSR-4 asegurando consistencia entre namespace y ubicación de archivos.
+- Se reforzó el uso de relaciones Eloquent para evitar consultas manuales y mejorar mantenibilidad.

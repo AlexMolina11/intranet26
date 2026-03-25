@@ -307,3 +307,37 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
     - no aplica
 - Cada asignación o clasificación registra trazabilidad en tik_seguimientos_ticket.
 - Se reforzó el control de acceso para que cada perfil vea únicamente los tickets que le corresponden.
+
+## Día 19.2B — Asignación, clasificación y planificación
+
+- Se implementó la lógica de asignación de tickets desde el panel administrador.
+- Se incorporó el registro de usuario asignador (`id_usuario_asignador`) para trazabilidad.
+- Se permitió la clasificación del ticket según proyecto o “no aplica”.
+- Se agregó campo de fecha planificada para ejecución del ticket.
+- Se implementó cambio de estado del ticket con validaciones básicas (en proceso / finalizado).
+- Se aseguró que únicamente el usuario responsable pueda operar sobre el ticket en el panel gestor.
+- Se fortaleció el flujo administrativo del ticket alineándolo con el comportamiento operativo esperado.
+
+## Día 19.2C — Soportes y avances
+
+- Se implementó la estructura de soportes (`tik_soportes`) como registro operativo del trabajo realizado.
+- Se diseñó el modelo de detalle (`tik_soporte_detalles`) para permitir múltiples servicios por soporte.
+- Se construyó el formulario de soporte con:
+    - selección de departamento
+    - selección de proyecto
+    - selección de solicitante
+    - selección de sección
+    - fechas de inicio y fin
+    - asunto y descripción
+- Se integró la selección dinámica de servicios agrupados por tipo de servicio.
+- Se implementó selección de incidencias mediante modal, filtradas por departamento.
+- Se resolvió la relación incidencia → área → departamento para compatibilidad con la estructura actual.
+- Se implementó almacenamiento de combinaciones servicio/incidencia en formato JSON desde el frontend.
+- Se procesó el JSON en backend para generar registros en `tik_soporte_detalles`.
+- Se registró automáticamente seguimiento del ticket al crear un soporte asociado.
+- Se ajustaron modelos y relaciones:
+    - Servicio → TipoServicio
+    - Incidencia → Área
+    - Soporte → Detalles
+- Se corrigieron errores de namespace, PSR-4 y relaciones faltantes.
+- Se mejoró la experiencia visual del formulario para hacerlo más claro y responsive.
