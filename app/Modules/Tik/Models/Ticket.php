@@ -200,4 +200,10 @@ class Ticket extends Model
             && !$this->no_aplica
             && !$this->esta_cerrado;
     }
+
+    public function soportes()
+    {
+        return $this->hasMany(Soporte::class, 'id_ticket', 'id_ticket')
+            ->latest('id_soporte');
+    }
 }

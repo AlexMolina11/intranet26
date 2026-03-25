@@ -475,6 +475,10 @@
                                 </form>
                             @endif
 
+                            <a href="{{ route('tik.soportes.create', ['ticket' => $ticket->id_ticket]) }}" class="btn btn-secondary">
+                                Registrar soporte / avance
+                            </a>
+
                             @if ($puedeFinalizar)
                                 <form method="POST"
                                       action="{{ route('tik.gestor.tickets.finalizar', $ticket->id_ticket) }}"

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\Tik\Controllers\TicketController;
 use App\Modules\Tik\Controllers\AdminTicketController;
 use App\Modules\Tik\Controllers\GestorTicketController;
+use App\Modules\Tik\Controllers\SoporteController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('tik')
@@ -34,4 +35,9 @@ Route::middleware(['auth', 'route.access'])
         Route::post('/gestor/tickets/{ticket}/planificar', [GestorTicketController::class, 'planificar'])->name('gestor.tickets.planificar');
         Route::post('/gestor/tickets/{ticket}/iniciar', [GestorTicketController::class, 'iniciar'])->name('gestor.tickets.iniciar');
         Route::post('/gestor/tickets/{ticket}/finalizar', [GestorTicketController::class, 'finalizar'])->name('gestor.tickets.finalizar');
+
+        // Panel soportes
+        Route::get('/soportes', [SoporteController::class, 'index'])->name('soportes.index');
+        Route::get('/soportes/crear', [SoporteController::class, 'create'])->name('soportes.create');
+        Route::post('/soportes', [SoporteController::class, 'store'])->name('soportes.store');
     });

@@ -6,17 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Org\Models\Area;
 
-class Incidencia extends Model
+class TipoServicio extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'tik_incidencias';
-    protected $primaryKey = 'id_incidencia';
+    protected $table = 'tik_tipos_servicio';
+    protected $primaryKey = 'id_tipo_servicio';
 
     protected $fillable = [
         'codigo',
         'nombre',
-        'descripcion',
         'id_area_responsable',
         'orden',
         'activo',
@@ -25,6 +24,13 @@ class Incidencia extends Model
     protected $casts = [
         'activo' => 'boolean',
     ];
+
+    public function servicios()
+    {
+        return $this->hasMany(Servicio::class, 'id_tipo_servicio', 'id_tipo_servicio')
+            ->whereNull('deleted_at')
+            ->orderBy('nombre');
+    }
 
     public function areaResponsable()
     {
