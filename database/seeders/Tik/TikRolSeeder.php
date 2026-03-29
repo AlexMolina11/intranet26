@@ -27,13 +27,23 @@ class TikRolSeeder extends Seeder
                 'activo' => 1,
             ],
             [
-                'nombre' => 'Administrador',
-                'descripcion' => 'Administrador funcional del sistema de tickets',
+                'nombre' => 'Administrador Tickets',
+                'descripcion' => 'Administra operación, asignación, clasificación y consulta amplia del módulo Tickets',
                 'activo' => 1,
             ],
             [
-                'nombre' => 'Consulta',
-                'descripcion' => 'Usuario solo lectura del sistema de tickets',
+                'nombre' => 'Gestor Tickets',
+                'descripcion' => 'Gestiona tickets asignados y registra soportes operativos',
+                'activo' => 1,
+            ],
+            [
+                'nombre' => 'Solicitante',
+                'descripcion' => 'Crea y consulta sus propios tickets',
+                'activo' => 1,
+            ],
+            [
+                'nombre' => 'Consulta Tickets',
+                'descripcion' => 'Consulta información del módulo Tickets sin operar casos',
                 'activo' => 1,
             ],
         ];

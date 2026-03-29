@@ -328,3 +328,31 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
 - Se priorizó una interfaz clara y operativa sobre una estructura estrictamente normalizada en frontend.
 - Se corrigieron problemas de autoload PSR-4 asegurando consistencia entre namespace y ubicación de archivos.
 - Se reforzó el uso de relaciones Eloquent para evitar consultas manuales y mejorar mantenibilidad.
+
+
+## Decisión técnica - Roles funcionales específicos para Tickets
+
+Se decidió abandonar la estrategia de roles genéricos dentro del sistema Tickets (`Administrador`, `Consulta`) y adoptar roles más cercanos a la operación real del módulo.
+
+### Motivo
+El sistema ya cuenta con separación funcional entre:
+- panel solicitante
+- panel administrador
+- panel gestor
+
+Mantener roles demasiado genéricos dificulta:
+- la validación de permisos
+- la construcción de dashboards por perfil
+- la navegación contextual
+- las pruebas integrales del módulo
+
+### Decisión
+Se definen los siguientes roles específicos para `TIK`:
+- Super Administrador
+- Administrador Tickets
+- Gestor Tickets
+- Solicitante
+- Consulta Tickets
+
+### Consecuencia
+Los seeders del módulo Tickets deben asignar permisos y accesos con base en estos perfiles, y no solo por lectura o administración genérica.

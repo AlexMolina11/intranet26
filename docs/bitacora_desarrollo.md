@@ -341,3 +341,18 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
     - Soporte → Detalles
 - Se corrigieron errores de namespace, PSR-4 y relaciones faltantes.
 - Se mejoró la experiencia visual del formulario para hacerlo más claro y responsive.
+
+## Día Bonus - Reestructuración inicial de seeders para Tickets
+
+- Se redefinieron los roles funcionales del sistema Tickets para representar mejor la operación real del módulo.
+- Se sustituyeron los roles genéricos por perfiles específicos:
+  - Super Administrador
+  - Administrador Tickets
+  - Gestor Tickets
+  - Solicitante
+  - Consulta Tickets
+- Se reorganizó la asignación de permisos por rol dentro de Tickets, alineándola con las rutas y paneles ya existentes del sistema.
+- Se creó un seeder de usuarios demo para validar escenarios reales de acceso y navegación.
+- Se amplió la asignación de acceso al sistema `TIK` para múltiples usuarios de prueba.
+- Se actualizó la asignación de roles de Tickets por usuario demo.
+- Se reordenó `DatabaseSeeder` para reflejar mejor la secuencia lógica de catálogos, usuarios, roles, accesos y menús.

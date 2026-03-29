@@ -12,36 +12,49 @@ class TikUsuarioRolSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        $usuario = DB::table('seg_usuarios')
-            ->where('correo', 'admin@intranet.local')
-            ->first();
-
         $sistema = DB::table('seg_sistemas')
             ->where('codigo', 'TIK')
             ->first();
 
-        if (!$usuario || !$sistema) {
+        if (!$sistema) {
             return;
         }
 
-        $rol = DB::table('seg_roles')
+        $roles = DB::table('seg_roles')
             ->where('id_sistema', $sistema->id_sistema)
-            ->where('nombre', 'Super Administrador')
-            ->first();
+            ->get()
+            ->keyBy('nombre');
 
-        if (!$rol) {
-            return;
+        $asignaciones = [
+            'admin@intranet.local' => 'Super Administrador',
+            'admin.tickets@intranet.local' => 'Administrador Tickets',
+            'gestor.tickets@intranet.local' => 'Gestor Tickets',
+            'solicitante1@intranet.local' => 'Solicitante',
+            'solicitante2@intranet.local' => 'Solicitante',
+            'consulta.tickets@intranet.local' => 'Consulta Tickets',
+        ];
+
+        foreach ($asignaciones as $correo => $nombreRol) {
+            $usuario = DB::table('seg_usuarios')
+                ->where('correo', $correo)
+                ->first();
+
+            $rol = $roles->get($nombreRol);
+
+            if (!$usuario || !$rol) {
+                continue;
+            }
+
+            DB::table('seg_usuario_rol')->updateOrInsert(
+                [
+                    'id_usuario' => $usuario->id_usuario,
+                    'id_rol' => $rol->id_rol,
+                ],
+                [
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
         }
-
-        DB::table('seg_usuario_rol')->updateOrInsert(
-            [
-                'id_usuario' => $usuario->id_usuario,
-                'id_rol' => $rol->id_rol,
-            ],
-            [
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]
-        );
     }
 }

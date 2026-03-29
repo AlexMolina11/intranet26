@@ -12,27 +12,39 @@ class TikUsuarioSistemaSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        $usuario = DB::table('seg_usuarios')
-            ->where('correo', 'admin@intranet.local')
-            ->first();
-
         $sistema = DB::table('seg_sistemas')
             ->where('codigo', 'TIK')
             ->first();
 
-        if (!$usuario || !$sistema) {
+        if (!$sistema) {
             return;
         }
 
-        DB::table('seg_usuario_sistema')->updateOrInsert(
-            [
-                'id_usuario' => $usuario->id_usuario,
-                'id_sistema' => $sistema->id_sistema,
-            ],
-            [
-                'activo' => 1,
-                'created_at' => $now,
-            ]
-        );
+        $correos = [
+            'admin@intranet.local',
+            'admin.tickets@intranet.local',
+            'gestor.tickets@intranet.local',
+            'solicitante1@intranet.local',
+            'solicitante2@intranet.local',
+            'consulta.tickets@intranet.local',
+        ];
+
+        $usuarios = DB::table('seg_usuarios')
+            ->whereIn('correo', $correos)
+            ->get();
+
+        foreach ($usuarios as $usuario) {
+            DB::table('seg_usuario_sistema')->updateOrInsert(
+                [
+                    'id_usuario' => $usuario->id_usuario,
+                    'id_sistema' => $sistema->id_sistema,
+                ],
+                [
+                    'activo' => 1,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
+        }
     }
 }
