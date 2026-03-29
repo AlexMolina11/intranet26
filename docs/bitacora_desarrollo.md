@@ -495,22 +495,32 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 
 ## Día Bonus Dashboard - Resolución del sistema activo por contexto de ruta
 
-- Se incorporó una estrategia para resolver el sistema activo según el nombre de la ruta actual.
-- Se definió que las rutas del módulo Tickets (`tik.*`) activan el contexto del sistema `TIK`.
-- Se definió que las rutas administrativas base (`seg.*`, `org.*`) activan el contexto del sistema `INTRANET`.
-- Se dejó el dashboard general fuera de un sistema activo específico para que funcione como portada institucional.
+- Se incorporó un resolvedor del sistema activo basado en el nombre de la ruta.
+- Se definió que las rutas `tik.*` activan el sistema `TIK`.
+- Se definió que las rutas `seg.*` y `org.*` activan el sistema base `INTRANET`.
+- Se mantuvo el dashboard general sin sistema activo para utilizarlo como portada institucional.
 
 ## - Filtrado de navegación por sistema activo
 
-- Se modificó el servicio de navegación para soportar contexto de sistema activo.
-- La navegación ahora puede construirse en dos modos:
-  - general, para dashboard institucional
-  - filtrado por sistema, para módulos específicos como Tickets
-- Se ajustó el armado del sidebar para devolver únicamente los menús del sistema activo cuando existe contexto de módulo.
-- Con este cambio, la intranet deja de presentar todos los sistemas simultáneamente en la navegación lateral.
+- Se actualizó `NavigationService` para soportar filtrado por sistema activo.
+- Se mantuvo el formato de salida compatible con el layout actual:
+  - sistemas
+  - menús
+  - items
+  - hijos
+  - url
+  - route_name
+- Se evitó rehacer la vista base desde cero y se aprovechó la estructura ya existente del sidebar.
 
 ## - Inyección del contexto activo en la vista base
 
 - Se actualizó el `View::composer` del layout principal para compartir el código de sistema activo con las vistas.
 - Se integró la resolución del sistema activo con el servicio de navegación.
 - El layout principal ahora recibe tanto la navegación filtrada como el contexto funcional actual del usuario.
+
+## - Ajuste del sidebar del layout principal para navegación contextual
+
+- Se modificó el bloque del sidebar del layout principal sin rehacer la plantilla completa.
+- En contexto de sistema activo, el lateral muestra únicamente la navegación del sistema correspondiente.
+- En contexto general, el lateral presenta accesos resumidos a los sistemas disponibles del usuario.
+- Se conservó la estructura visual, responsive y colapsable ya existente en la plantilla principal.

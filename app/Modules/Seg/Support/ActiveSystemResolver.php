@@ -18,7 +18,7 @@ class ActiveSystemResolver
             return null;
         }
 
-        if ($routeName === 'dashboard' || $routeName === 'inicio') {
+        if (in_array($routeName, ['dashboard', 'inicio'], true)) {
             return null;
         }
 

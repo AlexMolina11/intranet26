@@ -679,7 +679,7 @@
         <aside class="sidebar" id="appSidebar">
             <div class="sidebar-section">
                 <a href="{{ route('dashboard') }}"
-                   class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <span class="nav-link-icon">
                         <i class="fa-solid fa-house"></i>
                     </span>
@@ -687,65 +687,103 @@
                 </a>
             </div>
 
-            @forelse ($navigation as $system)
-                <div class="sidebar-system">{{ $system['nombre'] }}</div>
+            @if (!empty($activeSystemCode))
+                @forelse ($navigation as $system)
+                    <div class="sidebar-system">{{ $system['nombre'] }}</div>
 
-                @foreach ($system['menus'] as $menu)
-                    <div class="sidebar-menu-title">
-                        @if(!empty($menu['icono']))
-                            <span class="sidebar-menu-title-icon">
-                                <i class="{{ $menu['icono'] }}"></i>
-                            </span>
-                        @endif
-                        {{ $menu['nombre'] }}
+                    @foreach ($system['menus'] as $menu)
+                        <div class="sidebar-menu-title">
+                            @if(!empty($menu['icono']))
+                                <span class="sidebar-menu-title-icon">
+                                    <i class="{{ $menu['icono'] }}"></i>
+                                </span>
+                            @endif
+                            {{ $menu['nombre'] }}
+                        </div>
+
+                        @foreach ($menu['items'] as $item)
+                            @php
+                                $isActive = !$item['externo'] && !empty($item['route_name']) && request()->routeIs($item['route_name']);
+                                $hasChildrenActive = collect($item['hijos'])->contains(function ($child) {
+                                    return !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']);
+                                });
+                            @endphp
+
+                            <a href="{{ $item['url'] }}"
+                            class="nav-link {{ $isActive || $hasChildrenActive ? 'active' : '' }}"
+                            @if($item['externo'] && $item['nueva_pestana']) target="_blank" @endif>
+                                <span class="nav-link-icon">
+                                    @if(!empty($item['icono']))
+                                        <i class="{{ $item['icono'] }}"></i>
+                                    @else
+                                        <i class="fa-solid fa-circle"></i>
+                                    @endif
+                                </span>
+                                <span class="nav-link-label">{{ $item['nombre'] }}</span>
+                            </a>
+
+                            @if (!empty($item['hijos']))
+                                <div class="nav-submenu">
+                                    @foreach ($item['hijos'] as $child)
+                                        <a href="{{ $child['url'] }}"
+                                        class="nav-link {{ !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']) ? 'active' : '' }}"
+                                        @if($child['externo'] && $child['nueva_pestana']) target="_blank" @endif>
+                                            <span class="nav-link-icon">
+                                                @if(!empty($child['icono']))
+                                                    <i class="{{ $child['icono'] }}"></i>
+                                                @else
+                                                    <i class="fa-regular fa-circle"></i>
+                                                @endif
+                                            </span>
+                                            <span class="nav-link-label">{{ $child['nombre'] }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @endif
+                        @endforeach
+                    @endforeach
+                @empty
+                    <div style="color:#eef4dd; font-size:14px;">
+                        No hay navegación disponible.
                     </div>
+                @endforelse
+            @else
+                @if (!empty($navigation))
+                    <div class="sidebar-system">Sistemas disponibles</div>
 
-                    @foreach ($menu['items'] as $item)
+                    @foreach ($navigation as $system)
                         @php
-                            $isActive = !$item['externo'] && !empty($item['route_name']) && request()->routeIs($item['route_name']);
-                            $hasChildrenActive = collect($item['hijos'])->contains(function ($child) {
-                                return !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']);
-                            });
+                            $firstUrl = null;
+
+                            foreach ($system['menus'] as $menu) {
+                                foreach ($menu['items'] as $item) {
+                                    if (!empty($item['url'])) {
+                                        $firstUrl = $item['url'];
+                                        break 2;
+                                    }
+                                }
+                            }
                         @endphp
 
-                        <a href="{{ $item['url'] }}"
-                           class="nav-link {{ $isActive || $hasChildrenActive ? 'active' : '' }}"
-                           @if($item['externo'] && $item['nueva_pestana']) target="_blank" @endif>
-                            <span class="nav-link-icon">
-                                @if(!empty($item['icono']))
-                                    <i class="{{ $item['icono'] }}"></i>
-                                @else
-                                    <i class="fa-solid fa-circle"></i>
-                                @endif
-                            </span>
-                            <span class="nav-link-label">{{ $item['nombre'] }}</span>
-                        </a>
-
-                        @if (!empty($item['hijos']))
-                            <div class="nav-submenu">
-                                @foreach ($item['hijos'] as $child)
-                                    <a href="{{ $child['url'] }}"
-                                       class="nav-link {{ !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']) ? 'active' : '' }}"
-                                       @if($child['externo'] && $child['nueva_pestana']) target="_blank" @endif>
-                                        <span class="nav-link-icon">
-                                            @if(!empty($child['icono']))
-                                                <i class="{{ $child['icono'] }}"></i>
-                                            @else
-                                                <i class="fa-regular fa-circle"></i>
-                                            @endif
-                                        </span>
-                                        <span class="nav-link-label">{{ $child['nombre'] }}</span>
-                                    </a>
-                                @endforeach
-                            </div>
+                        @if ($firstUrl)
+                            <a href="{{ $firstUrl }}" class="nav-link">
+                                <span class="nav-link-icon">
+                                    @if(!empty($system['icono']))
+                                        <i class="{{ $system['icono'] }}"></i>
+                                    @else
+                                        <i class="fa-solid fa-layer-group"></i>
+                                    @endif
+                                </span>
+                                <span class="nav-link-label">{{ $system['nombre'] }}</span>
+                            </a>
                         @endif
                     @endforeach
-                @endforeach
-            @empty
-                <div style="color:#eef4dd; font-size:14px;">
-                    No hay navegación disponible.
-                </div>
-            @endforelse
+                @else
+                    <div style="color:#eef4dd; font-size:14px;">
+                        No hay navegación disponible.
+                    </div>
+                @endif
+            @endif
         </aside>
 
         <main class="content">

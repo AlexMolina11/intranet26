@@ -415,33 +415,42 @@ Se utilizarán usuarios demo diferenciados para probar:
 ### Consecuencia
 Las siguientes fases del proyecto podrán construirse sobre una base de permisos ya verificada y no sobre supuestos.
 
-## Decisión técnica - Resolver sistema activo por prefijo de ruta
+## Decisión técnica - Resolver sistema activo según prefijo de ruta
 
-Se decidió determinar el sistema activo a partir del nombre de la ruta actual.
+Se decidió determinar el sistema activo a partir del prefijo del nombre de la ruta actual.
 
 ### Motivo
-La estructura actual de rutas ya segmenta claramente los módulos por prefijos (`tik.`, `seg.`, `org.`), por lo que reutilizar esa convención evita agregar lógica innecesaria o dependencia de parámetros adicionales.
+La aplicación ya usa una convención clara de nombres de rutas por módulo (`tik.*`, `seg.*`, `org.*`), por lo que esta estrategia permite activar navegación contextual sin modificar estructura de base de datos ni agregar parámetros extra.
 
 ### Decisión
-- `tik.*` se interpreta como sistema `TIK`
-- `seg.*` y `org.*` se interpretan como sistema `INTRANET`
-- `dashboard` e `inicio` se mantienen como contexto general
+- `tik.*` => `TIK`
+- `seg.*` y `org.*` => `INTRANET`
+- `dashboard` e `inicio` => contexto general
 
 ### Consecuencia
-La navegación puede filtrarse por sistema activo sin modificar la estructura de base de datos ni las rutas existentes.
+La navegación lateral podrá filtrarse por sistema activo y mostrará solo el módulo correspondiente al contexto actual.
 
 ## Decisión técnica - Navegación contextual por sistema activo
 
-Se decidió que la navegación lateral debe construirse en función del sistema activo cuando el usuario se encuentra dentro de un módulo específico.
+## Decisión técnica - Conservar la estructura esperada por el layout en la navegación
+
+Se decidió adaptar el servicio de navegación al formato que ya consume `layouts/app.blade.php`, en lugar de rediseñar por completo la vista base.
 
 ### Motivo
-Mostrar simultáneamente todos los sistemas autorizados en el sidebar genera ruido visual, diluye el contexto funcional y hace que módulos como Tickets no se perciban como una experiencia aislada.
+El layout actual ya cuenta con una estructura funcional, responsive y estable para renderizar sidebar, menús e hijos. Reemplazarla completamente aumentaría el riesgo de regresiones visuales innecesarias.
 
 ### Decisión
-El servicio de navegación ahora acepta un código de sistema activo opcional y, cuando existe, limita la navegación a ese sistema.
+`NavigationService` seguirá devolviendo la estructura esperada por Blade:
+- `menus`
+- `items`
+- `url`
+- `route_name`
+- `externo`
+- `nueva_pestana`
+- `hijos`
 
 ### Consecuencia
-Al ingresar al sistema Tickets, el usuario verá exclusivamente los menús y submenús de Tickets, lo que mejora claridad, enfoque y experiencia de uso.
+La navegación contextual podrá integrarse con cambios mínimos en la vista y menor riesgo de ruptura visual.
 
 ## Decisión técnica - Compartir navegación y sistema activo desde el provider
 
@@ -458,3 +467,18 @@ El `View::composer` de `layouts.app` calcula:
 
 ### Consecuencia
 Las vistas quedan más limpias y la navegación contextual puede evolucionar sin dispersar lógica entre múltiples controladores o plantillas.
+
+## Decisión técnica - Ajuste incremental del layout principal en lugar de reemplazo completo
+
+Se decidió modificar únicamente el bloque funcional del sidebar dentro de `layouts/app.blade.php` y conservar el resto del layout.
+
+### Motivo
+La plantilla principal ya cuenta con estilos, responsive y comportamiento JavaScript estables. Reemplazarla completa no aportaba valor y aumentaba el riesgo de inconsistencias.
+
+### Decisión
+Se reemplaza únicamente el bloque del sidebar para soportar:
+- navegación contextual por sistema activo
+- accesos resumidos en dashboard general
+
+### Consecuencia
+Se mejora la experiencia de navegación sin romper la estructura visual consolidada del proyecto.
