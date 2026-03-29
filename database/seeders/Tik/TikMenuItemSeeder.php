@@ -35,10 +35,18 @@ class TikMenuItemSeeder extends Seeder
         $items = [
             [
                 'id_menu' => $menuInicio,
+                'nombre' => 'Dashboard Tickets',
+                'ruta' => 'tik.dashboard',
+                'icono' => 'fa-solid fa-chart-line',
+                'orden' => 1,
+                'permiso_requerido' => 'TIK_VER',
+            ],
+            [
+                'id_menu' => $menuInicio,
                 'nombre' => 'Mis Tickets',
                 'ruta' => 'tik.tickets.index',
                 'icono' => 'fa-solid fa-inbox',
-                'orden' => 1,
+                'orden' => 2,
                 'permiso_requerido' => 'TIK_TICKETS_VER',
             ],
             [
@@ -46,7 +54,7 @@ class TikMenuItemSeeder extends Seeder
                 'nombre' => 'Crear Ticket',
                 'ruta' => 'tik.tickets.create',
                 'icono' => 'fa-solid fa-plus',
-                'orden' => 2,
+                'orden' => 3,
                 'permiso_requerido' => 'TIK_TICKETS_CREAR',
             ],
             [

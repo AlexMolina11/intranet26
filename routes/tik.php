@@ -5,11 +5,13 @@ use App\Modules\Tik\Controllers\TicketController;
 use App\Modules\Tik\Controllers\AdminTicketController;
 use App\Modules\Tik\Controllers\GestorTicketController;
 use App\Modules\Tik\Controllers\SoporteController;
+use App\Modules\Tik\Controllers\TikDashboardController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('tik')
     ->as('tik.')
     ->group(function () {
+        Route::get('/dashboard', [TikDashboardController::class, 'index'])->name('dashboard');
         // Panel solicitante
         Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
         Route::get('/tickets/crear', [TicketController::class, 'create'])->name('tickets.create');

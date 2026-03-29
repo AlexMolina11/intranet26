@@ -524,3 +524,28 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - En contexto de sistema activo, el lateral muestra únicamente la navegación del sistema correspondiente.
 - En contexto general, el lateral presenta accesos resumidos a los sistemas disponibles del usuario.
 - Se conservó la estructura visual, responsive y colapsable ya existente en la plantilla principal.
+
+## Día Dia bonus dashboard ticket - Dashboard específico del sistema Tickets
+
+- Se diseñó e implementó un dashboard independiente para el módulo de Tickets (`TIK`), separado del dashboard general de la intranet.
+- Se creó el controlador `TikDashboardController` para centralizar la lógica de métricas operativas del sistema.
+- Se incorporaron indicadores clave:
+  - total de tickets del solicitante
+  - tickets abiertos y cerrados
+  - tickets asignados al usuario
+  - tickets en proceso
+  - tickets pendientes de asignación
+- Se implementó un resumen de tickets por estado para visualizar la distribución actual del sistema.
+- Se agregó una tabla de tickets recientes para facilitar la revisión rápida de actividad.
+- Se creó la vista `tik/dashboard.blade.php` con estructura de tarjetas, tablas y acciones rápidas.
+- Se integraron botones de acción contextual según permisos:
+  - creación de tickets
+  - creación de soportes
+- Se registró la ruta `tik.dashboard` como entrada principal del módulo.
+- Se protegió la ruta mediante el permiso base `TIK_VER`.
+- Se actualizó el menú del sistema `TIK` para incluir el dashboard como primer acceso dentro del menú "Inicio".
+- Se validó el funcionamiento del dashboard con diferentes perfiles:
+  - solicitante
+  - gestor
+  - administrador
+- Se confirmó la correcta integración con la navegación contextual del sistema, mostrando únicamente opciones del módulo Tickets al estar dentro de `tik.*`.

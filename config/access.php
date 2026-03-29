@@ -100,6 +100,10 @@ return [
         'org.areas.edit' => 'ORG_AREAS_EDITAR',
         'org.areas.update' => 'ORG_AREAS_EDITAR',
 
+        // Tickets dashboard
+        'tik.dashboard' => ['TIK_VER'],
+
+
         // Tickets solicitante
         'tik.tickets.index' => ['TIK_TICKETS_VER'],
         'tik.tickets.create' => ['TIK_TICKETS_CREAR'],
