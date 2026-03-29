@@ -442,3 +442,19 @@ El servicio de navegación ahora acepta un código de sistema activo opcional y,
 
 ### Consecuencia
 Al ingresar al sistema Tickets, el usuario verá exclusivamente los menús y submenús de Tickets, lo que mejora claridad, enfoque y experiencia de uso.
+
+## Decisión técnica - Compartir navegación y sistema activo desde el provider
+
+Se decidió centralizar la construcción de navegación contextual en el `AppServiceProvider`.
+
+### Motivo
+El layout principal requiere conocer tanto la navegación filtrada como el sistema activo, y resolver esa lógica en un solo punto reduce duplicidad y facilita mantenimiento.
+
+### Decisión
+El `View::composer` de `layouts.app` calcula:
+- usuario autenticado
+- sistema activo
+- navegación correspondiente a ese contexto
+
+### Consecuencia
+Las vistas quedan más limpias y la navegación contextual puede evolucionar sin dispersar lógica entre múltiples controladores o plantillas.

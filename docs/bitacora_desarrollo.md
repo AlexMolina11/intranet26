@@ -508,3 +508,9 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
   - filtrado por sistema, para módulos específicos como Tickets
 - Se ajustó el armado del sidebar para devolver únicamente los menús del sistema activo cuando existe contexto de módulo.
 - Con este cambio, la intranet deja de presentar todos los sistemas simultáneamente en la navegación lateral.
+
+## - Inyección del contexto activo en la vista base
+
+- Se actualizó el `View::composer` del layout principal para compartir el código de sistema activo con las vistas.
+- Se integró la resolución del sistema activo con el servicio de navegación.
+- El layout principal ahora recibe tanto la navegación filtrada como el contexto funcional actual del usuario.
