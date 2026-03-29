@@ -74,4 +74,16 @@ class MenuItem extends Model
             ->orderBy('orden')
             ->orderBy('nombre');
     }
+
+    public function children()
+    {
+        return $this->hasMany(self::class, 'id_menu_item_padre', 'id_menu_item')
+            ->where('visible', true)
+            ->orderBy('orden');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(self::class, 'id_menu_item_padre', 'id_menu_item');
+    }
 }
