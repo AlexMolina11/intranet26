@@ -492,3 +492,10 @@ Las siguientes fases del proyecto podrán construirse sobre una base de permisos
 Commit de esta etapa
 git add .
 git commit -m "test(seeders): validate ticket access profiles after fresh seeding"
+
+## Día Bonus Dashboard - Resolución del sistema activo por contexto de ruta
+
+- Se incorporó una estrategia para resolver el sistema activo según el nombre de la ruta actual.
+- Se definió que las rutas del módulo Tickets (`tik.*`) activan el contexto del sistema `TIK`.
+- Se definió que las rutas administrativas base (`seg.*`, `org.*`) activan el contexto del sistema `INTRANET`.
+- Se dejó el dashboard general fuera de un sistema activo específico para que funcione como portada institucional.

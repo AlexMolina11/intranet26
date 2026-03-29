@@ -414,3 +414,18 @@ Se utilizarán usuarios demo diferenciados para probar:
 
 ### Consecuencia
 Las siguientes fases del proyecto podrán construirse sobre una base de permisos ya verificada y no sobre supuestos.
+
+## Decisión técnica - Resolver sistema activo por prefijo de ruta
+
+Se decidió determinar el sistema activo a partir del nombre de la ruta actual.
+
+### Motivo
+La estructura actual de rutas ya segmenta claramente los módulos por prefijos (`tik.`, `seg.`, `org.`), por lo que reutilizar esa convención evita agregar lógica innecesaria o dependencia de parámetros adicionales.
+
+### Decisión
+- `tik.*` se interpreta como sistema `TIK`
+- `seg.*` y `org.*` se interpretan como sistema `INTRANET`
+- `dashboard` e `inicio` se mantienen como contexto general
+
+### Consecuencia
+La navegación puede filtrarse por sistema activo sin modificar la estructura de base de datos ni las rutas existentes.
