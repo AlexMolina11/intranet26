@@ -356,3 +356,19 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
 - Se amplió la asignación de acceso al sistema `TIK` para múltiples usuarios de prueba.
 - Se actualizó la asignación de roles de Tickets por usuario demo.
 - Se reordenó `DatabaseSeeder` para reflejar mejor la secuencia lógica de catálogos, usuarios, roles, accesos y menús.
+
+## Día 19.3B - Menús propios del sistema Tickets
+
+- Se creó la semilla de menús raíz del sistema `TIK` para separar su navegación de la intranet general.
+- Se definieron dos grupos iniciales de navegación:
+  - Inicio
+  - Operación
+- Se sembraron items de menú únicamente para rutas ya existentes del módulo Tickets.
+- Se incorporaron accesos directos a:
+  - mis tickets
+  - crear ticket
+  - bandeja administrativa
+  - bandeja de gestión
+  - soportes
+  - crear soporte
+- Se dejó pendiente una segunda fase de menú para dashboard específico y catálogos, la cual dependerá de crear primero esas rutas y vistas.

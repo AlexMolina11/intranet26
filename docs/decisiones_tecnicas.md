@@ -356,3 +356,22 @@ Se definen los siguientes roles específicos para `TIK`:
 
 ### Consecuencia
 Los seeders del módulo Tickets deben asignar permisos y accesos con base en estos perfiles, y no solo por lectura o administración genérica.
+
+## Decisión técnica - Menús de Tickets solo con rutas existentes
+
+Se decidió sembrar inicialmente el menú del sistema Tickets únicamente con rutas ya registradas en `routes/tik.php`.
+
+### Motivo
+La navegación actual valida la existencia de rutas, por lo que sembrar accesos a endpoints aún no implementados generaría navegación inconsistente o elementos invisibles.
+
+### Decisión
+En esta etapa solo se incluyen en el menú de Tickets:
+- Mis Tickets
+- Crear Ticket
+- Bandeja Administrativa
+- Bandeja de Gestión
+- Soportes
+- Crear Soporte
+
+### Consecuencia
+El menú de configuración y el dashboard específico de Tickets se incorporarán en una etapa posterior, cuando existan sus rutas, controladores y vistas.
