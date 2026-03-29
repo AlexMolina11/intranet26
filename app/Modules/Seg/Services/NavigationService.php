@@ -2,112 +2,126 @@
 
 namespace App\Modules\Seg\Services;
 
+use App\Modules\Seg\Models\Sistema;
 use App\Modules\Seg\Models\Usuario;
-use Illuminate\Support\Facades\Route;
 
 class NavigationService
 {
-    public function buildFor(?Usuario $usuario): array
+    public function buildFor(Usuario $usuario, ?string $activeSystemCode = null): array
     {
-        if (!$usuario) {
-            return [];
+        $query = $usuario->sistemasAutorizados()
+            ->with([
+                'menus' => function ($menuQuery) {
+                    $menuQuery->where('visible', true)
+                        ->orderBy('orden')
+                        ->with([
+                            'items' => function ($itemQuery) {
+                                $itemQuery->where('visible', true)
+                                    ->whereNull('id_menu_item_padre')
+                                    ->orderBy('orden')
+                                    ->with([
+                                        'children' => function ($childQuery) {
+                                            $childQuery->where('visible', true)
+                                                ->orderBy('orden');
+                                        },
+                                    ]);
+                            },
+                        ]);
+                },
+            ])
+            ->orderBy('orden');
+
+        if ($activeSystemCode) {
+            $query->where('codigo', $activeSystemCode);
         }
 
-        $sistemas = $usuario->sistemasAutorizados()
-            ->with([
-                'menusVisibles' => function ($query) {
-                    $query->with([
-                        'itemsVisibles' => function ($query) {
-                            $query->with([
-                                'hijosVisibles' => function ($subQuery) {
-                                    $subQuery->orderBy('orden')->orderBy('nombre');
+        $sistemas = $query->get();
+
+        return $sistemas
+            ->map(function (Sistema $sistema) use ($usuario) {
+                $menus = $sistema->menus
+                    ->map(function ($menu) use ($usuario) {
+                        $items = $menu->items
+                            ->map(function ($item) use ($usuario) {
+                                $children = collect($item->children ?? [])
+                                    ->filter(function ($child) use ($usuario) {
+                                        return $this->canSeeItem($usuario, $child->permiso_requerido);
+                                    })
+                                    ->map(function ($child) {
+                                        $child->resolved_url = $this->resolveUrl($child);
+                                        return $child;
+                                    })
+                                    ->values();
+
+                                $canSeeParent = $this->canSeeItem($usuario, $item->permiso_requerido);
+
+                                if (!$canSeeParent && $children->isEmpty()) {
+                                    return null;
                                 }
-                            ])->orderBy('orden')->orderBy('nombre');
-                        }
-                    ]);
-                }
-            ])
-            ->get();
 
-        $navigation = [];
+                                $item->children = $children;
+                                $item->resolved_url = $this->resolveUrl($item);
 
-        foreach ($sistemas as $sistema) {
-            $menus = [];
+                                return $item;
+                            })
+                            ->filter()
+                            ->values();
 
-            foreach ($sistema->menusVisibles as $menu) {
-                $items = [];
-
-                foreach ($menu->itemsVisibles as $item) {
-                    if (!$usuario->tienePermiso($item->permiso_requerido)) {
-                        continue;
-                    }
-
-                    $hijos = [];
-
-                    foreach ($item->hijosVisibles as $hijo) {
-                        if (!$usuario->tienePermiso($hijo->permiso_requerido)) {
-                            continue;
+                        if ($items->isEmpty()) {
+                            return null;
                         }
 
-                        $hijos[] = [
-                            'id' => $hijo->id_menu_item,
-                            'nombre' => $hijo->nombre,
-                            'icono' => $hijo->icono,
-                            'url' => $this->resolveUrl($hijo->ruta, (bool) $hijo->es_externo),
-                            'route_name' => $hijo->ruta,
-                            'externo' => (bool) $hijo->es_externo,
-                            'nueva_pestana' => (bool) $hijo->abre_nueva_pestana,
-                        ];
-                    }
+                        $menu->items = $items;
 
-                    if (empty($hijos) && blank($item->ruta) && !$item->es_externo) {
-                        continue;
-                    }
+                        return $menu;
+                    })
+                    ->filter()
+                    ->values();
 
-                    $items[] = [
-                        'id' => $item->id_menu_item,
-                        'nombre' => $item->nombre,
-                        'icono' => $item->icono,
-                        'url' => $this->resolveUrl($item->ruta, (bool) $item->es_externo),
-                        'route_name' => $item->ruta,
-                        'externo' => (bool) $item->es_externo,
-                        'nueva_pestana' => (bool) $item->abre_nueva_pestana,
-                        'hijos' => $hijos,
-                    ];
+                if ($menus->isEmpty()) {
+                    return null;
                 }
 
-                if (!empty($items)) {
-                    $menus[] = [
-                        'id' => $menu->id_menu,
-                        'nombre' => $menu->nombre,
-                        'icono' => $menu->icono,
-                        'items' => $items,
-                    ];
-                }
-            }
-
-            if (!empty($menus)) {
-                $navigation[] = [
-                    'id' => $sistema->id_sistema,
+                return [
+                    'id_sistema' => $sistema->id_sistema,
+                    'codigo' => $sistema->codigo,
                     'nombre' => $sistema->nombre,
+                    'slug' => $sistema->slug,
+                    'icono' => $sistema->icono,
                     'menus' => $menus,
                 ];
-            }
-        }
-
-        return $navigation;
+            })
+            ->filter()
+            ->values()
+            ->all();
     }
 
-    protected function resolveUrl(?string $ruta, bool $esExterno): string
+    protected function canSeeItem(Usuario $usuario, ?string $permisoRequerido): bool
     {
-        if (blank($ruta)) {
-            return '#';
+        if (!$permisoRequerido) {
+            return true;
         }
 
-        if ($esExterno) {
-            return $ruta;
+        return $usuario->tienePermiso($permisoRequerido);
+    }
+
+    protected function resolveUrl($item): ?string
+    {
+        if (!$item->ruta) {
+            return null;
         }
 
-        return Route::has($ruta) ? route($ruta) : '#';
+        if ($item->es_externo) {
+            return $item->ruta;
+        }
+
+        return route_exists($item->ruta) ? route($item->ruta) : null;
+    }
+}
+
+if (!function_exists('route_exists')) {
+    function route_exists(string $name): bool
+    {
+        return app('router')->has($name);
     }
 }

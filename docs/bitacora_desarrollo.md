@@ -499,3 +499,12 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - Se definió que las rutas del módulo Tickets (`tik.*`) activan el contexto del sistema `TIK`.
 - Se definió que las rutas administrativas base (`seg.*`, `org.*`) activan el contexto del sistema `INTRANET`.
 - Se dejó el dashboard general fuera de un sistema activo específico para que funcione como portada institucional.
+
+## - Filtrado de navegación por sistema activo
+
+- Se modificó el servicio de navegación para soportar contexto de sistema activo.
+- La navegación ahora puede construirse en dos modos:
+  - general, para dashboard institucional
+  - filtrado por sistema, para módulos específicos como Tickets
+- Se ajustó el armado del sidebar para devolver únicamente los menús del sistema activo cuando existe contexto de módulo.
+- Con este cambio, la intranet deja de presentar todos los sistemas simultáneamente en la navegación lateral.

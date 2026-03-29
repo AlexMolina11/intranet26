@@ -429,3 +429,16 @@ La estructura actual de rutas ya segmenta claramente los módulos por prefijos (
 
 ### Consecuencia
 La navegación puede filtrarse por sistema activo sin modificar la estructura de base de datos ni las rutas existentes.
+
+## Decisión técnica - Navegación contextual por sistema activo
+
+Se decidió que la navegación lateral debe construirse en función del sistema activo cuando el usuario se encuentra dentro de un módulo específico.
+
+### Motivo
+Mostrar simultáneamente todos los sistemas autorizados en el sidebar genera ruido visual, diluye el contexto funcional y hace que módulos como Tickets no se perciban como una experiencia aislada.
+
+### Decisión
+El servicio de navegación ahora acepta un código de sistema activo opcional y, cuando existe, limita la navegación a ese sistema.
+
+### Consecuencia
+Al ingresar al sistema Tickets, el usuario verá exclusivamente los menús y submenús de Tickets, lo que mejora claridad, enfoque y experiencia de uso.
