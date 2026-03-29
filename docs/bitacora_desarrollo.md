@@ -381,3 +381,114 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
   - `Seg` conserva la administración base del sistema
   - `Tik` administra usuarios demo, accesos y roles específicos del módulo Tickets
 - Esta separación deja la base lista para que cada sistema evolucione su propia navegación y perfiles sin mezclar responsabilidades.
+
+Etapa 4 — Probar la siembra y validar accesos
+Objetivo
+
+Ejecutar todo y confirmar que los perfiles se sembraron bien.
+
+1. Ejecutar migración fresca con seeders
+php artisan migrate:fresh --seed
+2. Probar usuarios
+
+Usa estas credenciales:
+
+admin@intranet.local
+admin.tickets@intranet.local
+gestor.tickets@intranet.local
+solicitante1@intranet.local
+solicitante2@intranet.local
+consulta.tickets@intranet.local
+
+Clave para todos:
+
+Admin2026*
+3. Validaciones esperadas
+admin@intranet.local
+
+Debe poder entrar a:
+
+intranet general
+sistema tickets
+panel admin
+panel gestor
+soportes
+tickets propios
+admin.tickets@intranet.local
+
+Debe poder entrar a:
+
+Tickets
+bandeja administrativa
+soportes
+crear ticket
+
+No necesariamente debe ver toda la intranet administrativa.
+
+gestor.tickets@intranet.local
+
+Debe poder entrar a:
+
+Tickets
+bandeja de gestión
+soportes
+detalle operativo de tickets
+
+No debe ver bandeja administrativa si el permiso no lo habilita.
+
+solicitante1@intranet.local
+
+Debe poder entrar a:
+
+mis tickets
+crear ticket
+ver detalle de sus tickets
+
+No debe ver:
+
+bandeja admin
+bandeja gestor
+soportes
+consulta.tickets@intranet.local
+
+Debe poder ver:
+
+consultas amplias si el permiso lo permite
+soportes en modo lectura
+detalle
+
+No debe poder crear ni gestionar.
+
+Bitácora para esta etapa
+
+Agrega esto a docs/bitacora_desarrollo.md:
+
+## Día Bonus 4 - Validación de seeders y perfiles operativos de Tickets
+
+- Se ejecutó una siembra completa de base de datos con la nueva estructura de seeders.
+- Se validó la existencia de perfiles demo para Tickets con permisos diferenciados.
+- Se confirmó el acceso al sistema `TIK` para usuarios de prueba según su rol funcional.
+- Se dejó el sistema preparado para la siguiente fase: navegación contextual por sistema activo y dashboard específico de Tickets.
+
+Agrega esto a docs/decisiones_tecnicas.md:
+
+## Decisión técnica - Validación temprana con usuarios demo por perfil
+
+Se decidió validar la arquitectura de Tickets mediante usuarios demo específicos por perfil antes de avanzar con cambios mayores de navegación y dashboard.
+
+### Motivo
+La navegación contextual y los paneles funcionales dependen directamente de que roles, permisos y accesos estén correctamente sembrados.
+
+### Decisión
+Se utilizarán usuarios demo diferenciados para probar:
+- solicitante
+- gestor
+- administrador del módulo
+- consulta
+- super administrador
+
+### Consecuencia
+Las siguientes fases del proyecto podrán construirse sobre una base de permisos ya verificada y no sobre supuestos.
+Commit de esta etapa
+git add .
+git commit -m "test(seeders): validate ticket access profiles after fresh seeding"

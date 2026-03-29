@@ -396,3 +396,21 @@ Mezclar usuarios demo, roles operativos y accesos del módulo Tickets dentro de 
 
 ### Consecuencia
 Cada sistema puede crecer de forma más aislada, mantenible y coherente con su propio dominio funcional.
+
+## Decisión técnica - Validación temprana con usuarios demo por perfil
+
+Se decidió validar la arquitectura de Tickets mediante usuarios demo específicos por perfil antes de avanzar con cambios mayores de navegación y dashboard.
+
+### Motivo
+La navegación contextual y los paneles funcionales dependen directamente de que roles, permisos y accesos estén correctamente sembrados.
+
+### Decisión
+Se utilizarán usuarios demo diferenciados para probar:
+- solicitante
+- gestor
+- administrador del módulo
+- consulta
+- super administrador
+
+### Consecuencia
+Las siguientes fases del proyecto podrán construirse sobre una base de permisos ya verificada y no sobre supuestos.

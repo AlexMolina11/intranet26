@@ -28,8 +28,11 @@ use Database\Seeders\Tik\ServicioSeeder;
 use Database\Seeders\Tik\PermisoTicketSeeder;
 use Database\Seeders\Tik\TikRolSeeder;
 use Database\Seeders\Tik\TikRolPermisoSeeder;
+use Database\Seeders\Tik\TikUsuarioDemoSeeder;
 use Database\Seeders\Tik\TikUsuarioSistemaSeeder;
 use Database\Seeders\Tik\TikUsuarioRolSeeder;
+use Database\Seeders\Tik\TikMenuSeeder;
+use Database\Seeders\Tik\TikMenuItemSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -40,6 +43,10 @@ class DatabaseSeeder extends Seeder
             RolSeeder::class,
             PermisoSeeder::class,
 
+            DepartamentoSeeder::class,
+            ProyectoSeeder::class,
+            AreaSeeder::class,
+
             MenuSeeder::class,
             MenuItemSeeder::class,
             RolPermisoSeeder::class,
@@ -47,13 +54,13 @@ class DatabaseSeeder extends Seeder
             UsuarioAdminSeeder::class,
             UsuarioSistemaSeeder::class,
             UsuarioRolSeeder::class,
-
-            DepartamentoSeeder::class,
-            ProyectoSeeder::class,
-            AreaSeeder::class,
             UsuarioAreaSeeder::class,
 
             TikSistemaSeeder::class,
+            PermisoTicketSeeder::class,
+            TikRolSeeder::class,
+            TikRolPermisoSeeder::class,
+
             TipoTicketSeeder::class,
             TipoTicketRrhhSeeder::class,
             FormatoTicketSeeder::class,
@@ -62,12 +69,13 @@ class DatabaseSeeder extends Seeder
             IncidenciaSeeder::class,
             TipoServicioSeeder::class,
             ServicioSeeder::class,
-            PermisoTicketSeeder::class,
 
-            TikRolSeeder::class,
-            TikRolPermisoSeeder::class,
+            TikUsuarioDemoSeeder::class,
             TikUsuarioSistemaSeeder::class,
             TikUsuarioRolSeeder::class,
+
+            TikMenuSeeder::class,
+            TikMenuItemSeeder::class,
         ]);
     }
 }
