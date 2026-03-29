@@ -6,23 +6,29 @@
     <div class="page-header">
         <div class="page-header-text">
             <h1 style="margin:0;">Dashboard Tickets</h1>
-            <p class="page-subtitle">Resumen operativo del sistema de tickets</p>
-        </div>
-
-        <div class="page-header-actions">
-            @if(auth()->user()->tienePermiso('TIK_TICKETS_CREAR'))
-                <a href="{{ route('tik.tickets.create') }}" class="btn btn-primary">
-                    Nuevo ticket
-                </a>
-            @endif
-
-            @if(auth()->user()->tienePermiso('TIK_SOPORTES_CREAR') && \Illuminate\Support\Facades\Route::has('tik.soportes.create'))
-                <a href="{{ route('tik.soportes.create') }}" class="btn btn-secondary">
-                    Nuevo soporte
-                </a>
-            @endif
+            <p class="page-subtitle">Resumen operativo y accesos rápidos del sistema de tickets</p>
         </div>
     </div>
+
+    @if($accesosRapidos->isNotEmpty())
+        <div class="card">
+            <div class="page-header" style="margin-bottom:16px;">
+                <div class="page-header-text">
+                    <h1 style="font-size:20px; margin:0;">Accesos rápidos</h1>
+                    <p class="page-subtitle">Opciones disponibles según tu perfil</p>
+                </div>
+            </div>
+
+            <div class="page-header-actions">
+                @foreach($accesosRapidos as $acceso)
+                    <a href="{{ route($acceso['route']) }}" class="btn btn-primary">
+                        <i class="{{ $acceso['icon'] }}"></i>
+                        {{ $acceso['label'] }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
     <div class="stats-grid">
         <div class="stat-card">
@@ -42,12 +48,12 @@
 
         @if(auth()->user()->tienePermiso('TIK_TICKETS_GESTOR_VER'))
             <div class="stat-card">
-                <div class="stat-title">Tickets asignados a mí</div>
+                <div class="stat-title">Asignados a mí</div>
                 <div class="stat-value">{{ $ticketsAsignados }}</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-title">Tickets en proceso</div>
+                <div class="stat-title">En proceso</div>
                 <div class="stat-value">{{ $ticketsEnProceso }}</div>
             </div>
         @endif
@@ -64,7 +70,7 @@
         <div class="page-header" style="margin-bottom:16px;">
             <div class="page-header-text">
                 <h1 style="font-size:20px; margin:0;">Tickets por estado</h1>
-                <p class="page-subtitle">Distribución actual de tickets en el sistema</p>
+                <p class="page-subtitle">Distribución actual del sistema</p>
             </div>
         </div>
 
@@ -80,7 +86,12 @@
                 <tbody>
                     @forelse ($ticketsPorEstado as $fila)
                         <tr>
-                            <td>{{ $fila->estadoTicket->nombre ?? 'Sin estado' }}</td>
+                            <td>
+                                <span class="badge"
+                                      style="background: {{ $fila->estadoTicket->color ?? '#ece9ea' }}22; color: {{ $fila->estadoTicket->color ?? '#4b4a4b' }}; border: 1px solid {{ $fila->estadoTicket->color ?? '#4b4a4b' }}33;">
+                                    {{ $fila->estadoTicket->nombre ?? 'Sin estado' }}
+                                </span>
+                            </td>
                             <td>{{ $fila->estadoTicket->codigo ?? '-' }}</td>
                             <td>{{ $fila->total }}</td>
                         </tr>
@@ -98,7 +109,7 @@
         <div class="page-header" style="margin-bottom:16px;">
             <div class="page-header-text">
                 <h1 style="font-size:20px; margin:0;">Tickets recientes</h1>
-                <p class="page-subtitle">Últimos movimientos registrados</p>
+                <p class="page-subtitle">Últimos tickets registrados en el sistema</p>
             </div>
         </div>
 
@@ -111,6 +122,7 @@
                         <th>Tipo</th>
                         <th>Estado</th>
                         <th>Asunto</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -119,12 +131,26 @@
                             <td>{{ $ticket->id_ticket }}</td>
                             <td>{{ $ticket->fecha_ticket }}</td>
                             <td>{{ $ticket->tipoTicket->nombre ?? '-' }}</td>
-                            <td>{{ $ticket->estadoTicket->nombre ?? '-' }}</td>
+                            <td>
+                                <span class="badge"
+                                      style="background: {{ $ticket->estadoTicket->color ?? '#ece9ea' }}22; color: {{ $ticket->estadoTicket->color ?? '#4b4a4b' }}; border: 1px solid {{ $ticket->estadoTicket->color ?? '#4b4a4b' }}33;">
+                                    {{ $ticket->estadoTicket->nombre ?? '-' }}
+                                </span>
+                            </td>
                             <td>{{ $ticket->asunto }}</td>
+                            <td>
+                                @if(Route::has('tik.tickets.show') && auth()->user()->tienePermiso('TIK_TICKETS_DETALLE'))
+                                    <a href="{{ route('tik.tickets.show', $ticket->id_ticket) }}" class="btn btn-secondary">
+                                        Ver
+                                    </a>
+                                @else
+                                    <span>-</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5">No hay tickets recientes.</td>
+                            <td colspan="6">No hay tickets recientes.</td>
                         </tr>
                     @endforelse
                 </tbody>

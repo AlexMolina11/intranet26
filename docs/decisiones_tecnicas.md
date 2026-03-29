@@ -482,3 +482,20 @@ Se reemplaza únicamente el bloque del sidebar para soportar:
 
 ### Consecuencia
 Se mejora la experiencia de navegación sin romper la estructura visual consolidada del proyecto.
+
+## Decisión técnica - Refinar el dashboard de Tickets antes de expandir catálogos y reportería
+
+Se decidió fortalecer primero la utilidad operativa del dashboard de Tickets antes de extender el módulo hacia reportería avanzada o nuevas secciones administrativas.
+
+### Motivo
+El dashboard es la entrada principal contextual del sistema y debe entregar valor inmediato a solicitantes, gestores y administradores.
+
+### Decisión
+Se mejoró el dashboard con:
+- métricas más útiles
+- accesos rápidos
+- estados con color
+- tabla de tickets recientes con acción directa
+
+### Consecuencia
+El sistema Tickets dispone ahora de una entrada funcional más clara, útil y preparada para una evolución posterior hacia indicadores más avanzados.

@@ -549,3 +549,12 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
   - gestor
   - administrador
 - Se confirmó la correcta integración con la navegación contextual del sistema, mostrando únicamente opciones del módulo Tickets al estar dentro de `tik.*`.
+
+## - Refinamiento visual y funcional del dashboard de Tickets
+
+- Se refinó el dashboard del sistema Tickets para convertirlo en una vista más útil y profesional.
+- Se reorganizaron las métricas para mostrar información más clara según el perfil del usuario.
+- Se incorporó un bloque de accesos rápidos condicionado por permisos del usuario autenticado.
+- Se mejoró la visualización del resumen por estado utilizando insignias con color.
+- Se amplió la tabla de tickets recientes para incluir una acción directa de consulta del ticket.
+- Se dejó el dashboard preparado para futuras mejoras de reportería, gráficos y métricas avanzadas.

@@ -13,19 +13,18 @@ class TikDashboardController extends Controller
     {
         $usuario = $request->user();
 
-        $misTicketsTotal = Ticket::query()
-            ->where('id_usuario_solicitante', $usuario->id_usuario)
-            ->count();
+        $misTicketsQuery = Ticket::query()
+            ->where('id_usuario_solicitante', $usuario->id_usuario);
 
-        $misTicketsAbiertos = Ticket::query()
-            ->where('id_usuario_solicitante', $usuario->id_usuario)
+        $misTicketsTotal = (clone $misTicketsQuery)->count();
+
+        $misTicketsAbiertos = (clone $misTicketsQuery)
             ->whereHas('estadoTicket', function ($query) {
                 $query->where('es_final', false);
             })
             ->count();
 
-        $misTicketsCerrados = Ticket::query()
-            ->where('id_usuario_solicitante', $usuario->id_usuario)
+        $misTicketsCerrados = (clone $misTicketsQuery)
             ->whereHas('estadoTicket', function ($query) {
                 $query->where('es_final', true);
             })
@@ -52,6 +51,7 @@ class TikDashboardController extends Controller
             ->select('id_estado_ticket', DB::raw('COUNT(*) as total'))
             ->groupBy('id_estado_ticket')
             ->with('estadoTicket:id_estado_ticket,nombre,color,codigo')
+            ->orderByDesc('total')
             ->get();
 
         $ticketsRecientes = Ticket::query()
@@ -63,6 +63,49 @@ class TikDashboardController extends Controller
             ->limit(10)
             ->get();
 
+        $accesosRapidos = [
+            [
+                'label' => 'Mis Tickets',
+                'route' => 'tik.tickets.index',
+                'icon' => 'fa-solid fa-inbox',
+                'can' => $usuario->tienePermiso('TIK_TICKETS_VER'),
+            ],
+            [
+                'label' => 'Crear Ticket',
+                'route' => 'tik.tickets.create',
+                'icon' => 'fa-solid fa-plus',
+                'can' => $usuario->tienePermiso('TIK_TICKETS_CREAR'),
+            ],
+            [
+                'label' => 'Bandeja Admin',
+                'route' => 'tik.admin.tickets.index',
+                'icon' => 'fa-solid fa-clipboard-list',
+                'can' => $usuario->tienePermiso('TIK_PANEL_ADMIN_VER'),
+            ],
+            [
+                'label' => 'Bandeja Gestor',
+                'route' => 'tik.gestor.tickets.index',
+                'icon' => 'fa-solid fa-screwdriver-wrench',
+                'can' => $usuario->tienePermiso('TIK_PANEL_GESTOR_VER'),
+            ],
+            [
+                'label' => 'Soportes',
+                'route' => 'tik.soportes.index',
+                'icon' => 'fa-solid fa-folder-open',
+                'can' => $usuario->tienePermiso('TIK_SOPORTES_VER'),
+            ],
+            [
+                'label' => 'Crear Soporte',
+                'route' => 'tik.soportes.create',
+                'icon' => 'fa-solid fa-file-circle-plus',
+                'can' => $usuario->tienePermiso('TIK_SOPORTES_CREAR'),
+            ],
+        ];
+
+        $accesosRapidos = collect($accesosRapidos)
+            ->filter(fn ($item) => $item['can'] && \Route::has($item['route']))
+            ->values();
+
         return view('tik.dashboard', compact(
             'usuario',
             'misTicketsTotal',
@@ -72,7 +115,8 @@ class TikDashboardController extends Controller
             'ticketsEnProceso',
             'pendientesAsignacion',
             'ticketsPorEstado',
-            'ticketsRecientes'
+            'ticketsRecientes',
+            'accesosRapidos'
         ));
     }
 }

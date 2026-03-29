@@ -524,6 +524,21 @@
             background: var(--color-white);
         }
 
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge-soft {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
         @media (max-width: 1024px) {
             .content {
                 padding: 20px;
