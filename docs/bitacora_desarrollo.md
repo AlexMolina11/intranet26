@@ -357,7 +357,7 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
 - Se actualizó la asignación de roles de Tickets por usuario demo.
 - Se reordenó `DatabaseSeeder` para reflejar mejor la secuencia lógica de catálogos, usuarios, roles, accesos y menús.
 
-## Día 19.3B - Menús propios del sistema Tickets
+## Día Bonus 2 - Menús propios del sistema Tickets
 
 - Se creó la semilla de menús raíz del sistema `TIK` para separar su navegación de la intranet general.
 - Se definieron dos grupos iniciales de navegación:
@@ -372,3 +372,12 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
   - soportes
   - crear soporte
 - Se dejó pendiente una segunda fase de menú para dashboard específico y catálogos, la cual dependerá de crear primero esas rutas y vistas.
+
+## Día Bonus 3 - Separación clara entre seeders base y seeders de Tickets
+
+- Se mantuvo el usuario `admin@intranet.local` como cuenta raíz de la intranet.
+- Se dejó la asignación del admin global restringida al sistema base `INTRANET`.
+- Se separó conceptualmente la responsabilidad de los seeders:
+  - `Seg` conserva la administración base del sistema
+  - `Tik` administra usuarios demo, accesos y roles específicos del módulo Tickets
+- Esta separación deja la base lista para que cada sistema evolucione su propia navegación y perfiles sin mezclar responsabilidades.

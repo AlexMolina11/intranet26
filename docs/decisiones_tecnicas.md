@@ -375,3 +375,24 @@ En esta etapa solo se incluyen en el menú de Tickets:
 
 ### Consecuencia
 El menú de configuración y el dashboard específico de Tickets se incorporarán en una etapa posterior, cuando existan sus rutas, controladores y vistas.
+
+## Decisión técnica - Separación de responsabilidades entre seeders `Seg` y `Tik`
+
+Se decidió mantener los seeders del módulo de seguridad (`Seg`) enfocados en la base institucional de la intranet y trasladar al módulo Tickets (`Tik`) toda la configuración operativa específica de ese sistema.
+
+### Motivo
+Mezclar usuarios demo, roles operativos y accesos del módulo Tickets dentro de seeders genéricos de seguridad complica el mantenimiento y vuelve menos clara la intención de cada archivo.
+
+### Decisión
+- `Seg` conserva:
+  - admin global
+  - acceso base a INTRANET
+  - rol base de super administrador de la intranet
+- `Tik` define:
+  - usuarios demo del módulo
+  - roles operativos de Tickets
+  - asignación de acceso al sistema `TIK`
+  - asignación de roles de Tickets
+
+### Consecuencia
+Cada sistema puede crecer de forma más aislada, mantenible y coherente con su propio dominio funcional.
