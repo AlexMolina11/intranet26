@@ -33,6 +33,12 @@ class TikMenuSeeder extends Seeder
                 'orden' => 2,
                 'visible' => 1,
             ],
+            [
+                'nombre' => 'Configuración',
+                'icono' => 'fa-solid fa-gear',
+                'orden' => 3,
+                'visible' => 1,
+            ],
         ];
 
         foreach ($menus as $menu) {

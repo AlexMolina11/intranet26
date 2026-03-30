@@ -23,4 +23,9 @@ class EstadoTicket extends Model
         'orden',
         'activo',
     ];
+
+    public function estadoSiguiente()
+    {
+        return $this->belongsTo(self::class, 'id_estado_siguiente', 'id_estado_ticket');
+    }
 }

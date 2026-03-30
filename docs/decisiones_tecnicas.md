@@ -499,3 +499,24 @@ Se mejoró el dashboard con:
 
 ### Consecuencia
 El sistema Tickets dispone ahora de una entrada funcional más clara, útil y preparada para una evolución posterior hacia indicadores más avanzados.
+
+## Decisión técnica - Cerrar primero los catálogos implementados antes de ampliar más la configuración
+
+Se decidió consolidar completamente los catálogos ya implementados antes de seguir expandiendo la sección de configuración del sistema Tickets.
+
+### Motivo
+Agregar más opciones de menú o más CRUDs sin cerrar primero rutas, permisos, relaciones y vistas de los catálogos actuales incrementa el riesgo de inconsistencias funcionales.
+
+### Decisión
+La fase actual se cierra con los catálogos ya implementados:
+- tipos de ticket
+- estados
+- flujos
+- incidencias
+- tipos de servicio
+- servicios
+
+Los catálogos restantes se incorporarán en una etapa posterior.
+
+### Consecuencia
+La sección de configuración del módulo Tickets queda operativa, coherente y lista para pruebas integrales antes de nuevas expansiones.

@@ -21,6 +21,10 @@ class FlujoTicket extends Model
         'activo',
     ];
 
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
     public function estado()
     {
         return $this->belongsTo(EstadoTicket::class, 'id_estado_ticket', 'id_estado_ticket');
@@ -29,5 +33,10 @@ class FlujoTicket extends Model
     public function tipoTicket()
     {
         return $this->belongsTo(TipoTicket::class, 'id_tipo_ticket', 'id_tipo_ticket');
+    }
+    
+    public function estadoTicket()
+    {
+        return $this->belongsTo(\App\Modules\Tik\Models\EstadoTicket::class, 'id_estado_ticket', 'id_estado_ticket');
     }
 }

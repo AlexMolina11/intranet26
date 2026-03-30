@@ -128,5 +128,43 @@ return [
         // Panel gestor
         'tik.gestor.tickets.index' => ['TIK_PANEL_GESTOR_VER', 'TIK_TICKETS_GESTOR_VER'],
         'tik.gestor.tickets.show' => ['TIK_PANEL_GESTOR_VER', 'TIK_TICKETS_GESTOR_VER'],
+
+        // Configuración Tickets - Catálogos
+        'tik.config.tipos-ticket.index' => ['TIK_CATALOGOS_VER'],
+        'tik.config.tipos-ticket.create' => ['TIK_CATALOGOS_CREAR'],
+        'tik.config.tipos-ticket.store' => ['TIK_CATALOGOS_CREAR'],
+        'tik.config.tipos-ticket.edit' => ['TIK_CATALOGOS_EDITAR'],
+        'tik.config.tipos-ticket.update' => ['TIK_CATALOGOS_EDITAR'],
+
+        'tik.config.estados.index' => ['TIK_CATALOGOS_VER'],
+        'tik.config.estados.create' => ['TIK_CATALOGOS_CREAR'],
+        'tik.config.estados.store' => ['TIK_CATALOGOS_CREAR'],
+        'tik.config.estados.edit' => ['TIK_CATALOGOS_EDITAR'],
+        'tik.config.estados.update' => ['TIK_CATALOGOS_EDITAR'],
+
+        // Configuración Tickets - Flujos
+        'tik.config.flujos.index' => ['TIK_FLUJOS_VER'],
+        'tik.config.flujos.create' => ['TIK_FLUJOS_CREAR'],
+        'tik.config.flujos.store' => ['TIK_FLUJOS_CREAR'],
+        'tik.config.flujos.edit' => ['TIK_FLUJOS_EDITAR'],
+        'tik.config.flujos.update' => ['TIK_FLUJOS_EDITAR'],
+
+        'tik.config.incidencias.index' => ['TIK_CATALOGOS_VER'],
+        'tik.config.incidencias.create' => ['TIK_CATALOGOS_CREAR'],
+        'tik.config.incidencias.store' => ['TIK_CATALOGOS_CREAR'],
+        'tik.config.incidencias.edit' => ['TIK_CATALOGOS_EDITAR'],
+        'tik.config.incidencias.update' => ['TIK_CATALOGOS_EDITAR'],
+
+        'tik.config.tipos-servicio.index' => ['TIK_CATALOGOS_VER'],
+        'tik.config.tipos-servicio.create' => ['TIK_CATALOGOS_CREAR'],
+        'tik.config.tipos-servicio.store' => ['TIK_CATALOGOS_CREAR'],
+        'tik.config.tipos-servicio.edit' => ['TIK_CATALOGOS_EDITAR'],
+        'tik.config.tipos-servicio.update' => ['TIK_CATALOGOS_EDITAR'],
+
+        'tik.config.servicios.index' => ['TIK_CATALOGOS_VER'],
+        'tik.config.servicios.create' => ['TIK_CATALOGOS_CREAR'],
+        'tik.config.servicios.store' => ['TIK_CATALOGOS_CREAR'],
+        'tik.config.servicios.edit' => ['TIK_CATALOGOS_EDITAR'],
+        'tik.config.servicios.update' => ['TIK_CATALOGOS_EDITAR'],
     ],
 ];

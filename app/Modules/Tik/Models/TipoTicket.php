@@ -25,4 +25,9 @@ class TipoTicket extends Model
     {
         return $this->hasMany(FlujoTicket::class, 'id_tipo_ticket', 'id_tipo_ticket');
     }
+
+    public function areaResponsable()
+    {
+        return $this->belongsTo(\App\Modules\Org\Models\Area::class, 'id_area_responsable', 'id_area');
+    }
 }
