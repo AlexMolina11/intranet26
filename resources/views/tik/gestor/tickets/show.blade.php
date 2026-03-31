@@ -247,6 +247,19 @@
             font-weight: 600;
         }
 
+        .ticket-attachment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ticket-attachment-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px;
+            background: #f8fafc;
+        }
+
         @media (max-width: 1100px) {
             .ticket-summary-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -431,6 +444,85 @@
                     @else
                         <div class="ticket-empty">
                             Todavía no hay movimientos registrados para este ticket.
+                        </div>
+                    @endif
+                </section>
+
+                <section class="ticket-card">
+                    <h3>Comentarios del solicitante</h3>
+
+                    @if ($ticket->comentarios->count())
+                        <div class="ticket-timeline">
+                            @foreach ($ticket->comentarios as $comentario)
+                                <div class="ticket-timeline-item">
+                                    <div class="ticket-timeline-date">
+                                        {{ $comentario->fecha_registro_formateada }}
+                                    </div>
+
+                                    <div class="ticket-timeline-title">
+                                        {{ trim(($comentario->usuario?->nombres ?? '') . ' ' . ($comentario->usuario?->apellidos ?? '')) ?: ($comentario->usuario?->nombre_usuario ?? 'N/D') }}
+                                    </div>
+
+                                    <div class="ticket-timeline-text">
+                                        {{ $comentario->comentario }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="ticket-empty">
+                            No hay comentarios registrados.
+                        </div>
+                    @endif
+                </section>
+
+                <section class="ticket-card">
+                    <h3>Archivos adjuntos</h3>
+
+                    @if ($ticket->anexos->count())
+                        <div class="ticket-attachment-list">
+                            @foreach ($ticket->anexos as $anexo)
+                                <div class="ticket-attachment-item">
+                                    <div class="ticket-meta-list">
+                                        <div class="ticket-meta-item">
+                                            <div class="ticket-meta-label">Archivo</div>
+                                            <div class="ticket-meta-value">{{ $anexo->nombre_original }}</div>
+                                        </div>
+
+                                        <div class="ticket-meta-item">
+                                            <div class="ticket-meta-label">Subido por</div>
+                                            <div class="ticket-meta-value">
+                                                {{ trim(($anexo->usuario?->nombres ?? '') . ' ' . ($anexo->usuario?->apellidos ?? '')) ?: ($anexo->usuario?->nombre_usuario ?? 'N/D') }}
+                                            </div>
+                                        </div>
+
+                                        <div class="ticket-meta-item">
+                                            <div class="ticket-meta-label">Tipo</div>
+                                            <div class="ticket-meta-value">{{ $anexo->mime_type ?? 'N/D' }}</div>
+                                        </div>
+
+                                        <div class="ticket-meta-item">
+                                            <div class="ticket-meta-label">Tamaño</div>
+                                            <div class="ticket-meta-value">{{ $anexo->peso_formateado }}</div>
+                                        </div>
+
+                                        <div class="ticket-meta-item">
+                                            <div class="ticket-meta-label">Fecha</div>
+                                            <div class="ticket-meta-value">{{ $anexo->fecha_registro_formateada }}</div>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-top: 12px;">
+                                        <a href="{{ route('tik.tickets.attachments.download', [$ticket->id_ticket, $anexo->id_anexo_ticket]) }}" class="btn btn-secondary btn-sm">
+                                            Descargar
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="ticket-empty">
+                            No hay anexos registrados.
                         </div>
                     @endif
                 </section>

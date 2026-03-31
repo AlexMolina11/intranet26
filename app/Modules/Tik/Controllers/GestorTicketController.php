@@ -54,6 +54,8 @@ class GestorTicketController extends Controller
             'seguimientos.usuario',
             'seguimientos.estadoAnterior',
             'seguimientos.estadoNuevo',
+            'comentarios.usuario',
+            'anexos.usuario',
         ])->findOrFail($ticket);
 
         abort_unless((int) $ticket->id_usuario_responsable === (int) $usuario->id_usuario, 403);

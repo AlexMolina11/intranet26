@@ -593,3 +593,16 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - Se depuró la obtención de departamentos del gestor para adaptarse a la estructura real de `org_usuario_area`, quitando filtros sobre columnas `deleted_at` inexistentes en esa tabla.
 - Se ajustó la obtención de solicitantes con departamento asociado para soportar el filtrado visual en el formulario sin afectar la lógica de negocio principal.
 - Se limpió el modelo `Soporte` para dejarlo alineado con el flujo actual basado en cabecera + detalles.
+
+## - Ajustes de interacción del solicitante en tickets
+
+- Se ajustó el flujo del módulo de tickets para que el usuario solicitante pueda agregar comentarios y subir archivos adjuntos desde el detalle del ticket.
+- Se eliminó del panel del solicitante la capacidad de registrar seguimientos o cambiar el estado del ticket.
+- Se actualizó `TicketController` para restringir las acciones de comentarios y anexos únicamente al usuario solicitante del ticket.
+- Se reforzó la descarga de anexos validando que solo pueda realizarla un usuario con acceso real al ticket.
+- Se actualizó la vista `tik.tickets.show` para eliminar el bloque de seguimiento y dejar únicamente comentarios, anexos y cancelación del ticket.
+- Se ajustó `GestorTicketController` para cargar comentarios y anexos dentro del detalle del ticket asignado.
+- Se ajustó `AdminTicketController` para cargar comentarios y anexos dentro del detalle administrativo del ticket.
+- Se actualizaron las vistas de gestor y administrador para mostrar comentarios del solicitante y archivos adjuntos con opción de descarga.
+- Se corrigió la configuración de permisos en `config/access.php` para permitir que el solicitante comente, adjunte archivos, descargue anexos y cancele su ticket usando permisos de detalle, en lugar de permisos de gestión.
+- Se eliminó del mapeo de acceso la ruta de seguimiento del solicitante, ya que ese flujo dejó de estar disponible.

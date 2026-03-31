@@ -61,6 +61,8 @@ class AdminTicketController extends Controller
             'seguimientos.usuario',
             'seguimientos.estadoAnterior',
             'seguimientos.estadoNuevo',
+            'comentarios.usuario',
+            'anexos.usuario',
         ])->findOrFail($ticket);
 
         abort_unless(in_array($ticket->id_area_responsable, $areasAdmin), 403);

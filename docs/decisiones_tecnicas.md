@@ -545,3 +545,12 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
 - El formulario queda más simple y coherente con el rol del gestor.
 - La lógica se adapta a la estructura real de la base de datos, evitando asumir `soft deletes` en tablas que no tienen columna `deleted_at`, como `org_usuario_area`.
 - El modelo `Soporte` queda alineado con un esquema de cabecera y detalle, dejando los servicios e incidencias en `SoporteDetalle`.
+
+## - Separación de capacidades entre solicitante y gestores en tickets
+
+- Se definió que el solicitante del ticket tendrá un rol de interacción limitada sobre su propio caso: podrá consultar el detalle, agregar comentarios, adjuntar archivos, cancelar el ticket y responder encuestas, pero no podrá modificar estados ni registrar seguimientos operativos.
+- El cambio de estado y el seguimiento administrativo quedan reservados para los perfiles gestor y administrador, con el objetivo de mantener un control operativo centralizado del flujo del ticket.
+- Se decidió reutilizar el permiso `TIK_TICKETS_DETALLE` para las acciones del solicitante relacionadas con comentarios, anexos, descarga de archivos y cancelación, evitando crear permisos adicionales innecesarios.
+- Se descartó el uso de `TIK_TICKETS_GESTIONAR` para acciones del solicitante, ya que ese permiso representa una capacidad operativa más amplia y generaba bloqueos incorrectos sobre funciones básicas del usuario final.
+- La visibilidad de comentarios y anexos se incorporó tanto en el panel del gestor como en el panel del administrador para asegurar trazabilidad completa del caso sin duplicar estructuras ni tablas adicionales.
+- Se mantuvo la validación en controlador además del middleware de acceso, para garantizar que solo el solicitante pueda comentar o adjuntar sobre su propio ticket aunque la ruta esté accesible por permiso.

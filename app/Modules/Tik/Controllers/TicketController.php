@@ -15,7 +15,7 @@ use App\Modules\Tik\Models\SeguimientoTicket;
 use App\Modules\Tik\Requests\StoreTicketRequest;
 use App\Modules\Tik\Requests\StoreComentarioTicketRequest;
 use App\Modules\Tik\Requests\StoreAnexoTicketRequest;
-use App\Modules\Tik\Requests\StoreSeguimientoTicketRequest;
+//use App\Modules\Tik\Requests\StoreSeguimientoTicketRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
@@ -204,11 +204,7 @@ class TicketController extends Controller
 
         abort_unless($puedeVer, 403);
 
-        $estadosDisponibles = EstadoTicket::where('activo', true)
-            ->orderBy('orden')
-            ->get();
-
-        return view('tik.tickets.show', compact('ticket', 'estadosDisponibles'));
+        return view('tik.tickets.show', compact('ticket'));
     }
 
     public function search(Request $request)
@@ -340,6 +336,11 @@ class TicketController extends Controller
         $ticket = Ticket::findOrFail($ticket);
         $usuario = auth()->user();
 
+        abort_unless(
+            (int) $ticket->id_usuario_solicitante === (int) $usuario->id_usuario,
+            403
+        );
+
         ComentarioTicket::create([
             'id_ticket' => $ticket->id_ticket,
             'id_usuario' => $usuario->id_usuario,
@@ -356,6 +357,11 @@ class TicketController extends Controller
     {
         $ticket = Ticket::findOrFail($ticket);
         $usuario = auth()->user();
+
+        abort_unless(
+            (int) $ticket->id_usuario_solicitante === (int) $usuario->id_usuario,
+            403
+        );
 
         $archivo = $request->file('frmAnexoTicket_fileArchivo');
 
@@ -377,7 +383,7 @@ class TicketController extends Controller
             ->with('success', 'Archivo adjuntado correctamente.');
     }
 
-    public function storeTracking(StoreSeguimientoTicketRequest $request, int $ticket, TicketFlowNotificationService $notificationService)
+    /*public function storeTracking(StoreSeguimientoTicketRequest $request, int $ticket, TicketFlowNotificationService $notificationService)
     {
         $ticket = Ticket::with('estadoTicket')->findOrFail($ticket);
         $usuario = auth()->user();
@@ -421,11 +427,19 @@ class TicketController extends Controller
         return redirect()
             ->route('tik.tickets.show', $ticket->id_ticket)
             ->with('success', 'Seguimiento registrado correctamente.');
-    }
+    }*/
 
     public function downloadAttachment(int $ticket, int $anexo)
     {
-        $ticket = Ticket::findOrFail($ticket);
+        $ticket = Ticket::with(['estadoTicket'])->findOrFail($ticket);
+        $usuario = auth()->user();
+
+        $puedeVer =
+            (int) $ticket->id_usuario_solicitante === (int) $usuario->id_usuario
+            || (int) ($ticket->id_usuario_responsable ?? 0) === (int) $usuario->id_usuario
+            || $usuario->tienePermiso(['TIK_PANEL_ADMIN_VER', 'TIK_TICKETS_ADMIN_VER']);
+
+        abort_unless($puedeVer, 403);
 
         $anexo = AnexoTicket::where('id_ticket', $ticket->id_ticket)
             ->where('id_anexo_ticket', $anexo)

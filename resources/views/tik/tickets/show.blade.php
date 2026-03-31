@@ -544,39 +544,6 @@
                             <button type="submit" class="btn btn-primary">Subir archivo</button>
                         </form>
 
-                        @if ($ticket->esta_cerrado)
-                            <div class="ticket-empty">
-                                El ticket ya está cerrado. No se permiten más seguimientos.
-                            </div>
-                        @else
-                            <form method="POST" action="{{ route('tik.tickets.tracking.store', $ticket->id_ticket) }}" class="ticket-form-stack">
-                                @csrf
-
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label" for="frmSeguimientoTicket_slcEstado">Registrar seguimiento</label>
-                                    <select name="frmSeguimientoTicket_slcEstado" id="frmSeguimientoTicket_slcEstado" class="form-control" required>
-                                        <option value="">Seleccione</option>
-                                        @foreach ($estadosDisponibles as $estado)
-                                            <option value="{{ $estado->id_estado_ticket }}" {{ old('frmSeguimientoTicket_slcEstado') == $estado->id_estado_ticket ? 'selected' : '' }}>
-                                                {{ $estado->nombre }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label" for="frmSeguimientoTicket_txaComentario">Comentario</label>
-                                    <textarea
-                                        name="frmSeguimientoTicket_txaComentario"
-                                        id="frmSeguimientoTicket_txaComentario"
-                                        rows="4"
-                                        class="form-control">{{ old('frmSeguimientoTicket_txaComentario') }}</textarea>
-                                </div>
-
-                                <button type="submit" class="btn btn-primary">Guardar seguimiento</button>
-                            </form>
-                        @endif
-
                         @if (!$ticket->esta_cerrado)
                             <div>
                                 <button type="button" class="btn btn-danger" onclick="cancelarTicket({{ $ticket->id_ticket }})">

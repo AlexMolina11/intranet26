@@ -110,14 +110,13 @@ return [
         'tik.tickets.store' => ['TIK_TICKETS_CREAR'],
         'tik.tickets.show' => ['TIK_TICKETS_DETALLE', 'TIK_TICKETS_VER'],
         'tik.tickets.search' => ['TIK_TICKETS_VER'],
-        'tik.tickets.cancel' => ['TIK_TICKETS_GESTIONAR'],
+        'tik.tickets.cancel' => ['TIK_TICKETS_DETALLE'],
 
         // Comentarios / anexos / seguimiento base
-        'tik.tickets.comments.store' => ['TIK_TICKETS_GESTIONAR'],
-        'tik.tickets.attachments.store' => ['TIK_TICKETS_GESTIONAR'],
-        'tik.tickets.tracking.store' => ['TIK_TICKETS_GESTIONAR'],
-        'tik.tickets.survey.store' => ['TIK_TICKETS_VER'],
-        'tik.tickets.attachments.download' => ['TIK_TICKETS_VER'],
+        'tik.tickets.comments.store' => ['TIK_TICKETS_DETALLE'],
+        'tik.tickets.attachments.store' => ['TIK_TICKETS_DETALLE'],
+        'tik.tickets.survey.store' => ['TIK_TICKETS_DETALLE'],
+        'tik.tickets.attachments.download' => ['TIK_TICKETS_DETALLE'],
 
         // Panel administrador
         'tik.admin.tickets.index' => ['TIK_PANEL_ADMIN_VER', 'TIK_TICKETS_ADMIN_VER'],

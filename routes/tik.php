@@ -29,7 +29,7 @@ Route::middleware(['auth', 'route.access'])
         Route::post('/tickets/{ticket}/cancelar', [TicketController::class, 'cancel'])->name('tickets.cancel');
         Route::post('/tickets/{ticket}/comentarios', [TicketController::class, 'storeComment'])->name('tickets.comments.store');
         Route::post('/tickets/{ticket}/anexos', [TicketController::class, 'storeAttachment'])->name('tickets.attachments.store');
-        Route::post('/tickets/{ticket}/seguimientos', [TicketController::class, 'storeTracking'])->name('tickets.tracking.store');
+        /*Route::post('/tickets/{ticket}/seguimientos', [TicketController::class, 'storeTracking'])->name('tickets.tracking.store');*/
         Route::post('/tickets/{ticket}/encuesta', [TicketController::class, 'storeSurvey'])->name('tickets.survey.store');
         Route::get('/tickets/{ticket}/anexos/{anexo}/descargar', [TicketController::class, 'downloadAttachment'])->name('tickets.attachments.download');
 
