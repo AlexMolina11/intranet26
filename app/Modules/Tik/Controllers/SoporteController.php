@@ -33,9 +33,7 @@ class SoporteController extends Controller
             'proyecto',
             'detalles.servicio.tipoServicio',
             'detalles.incidencia',
-        ])
-            ->where('id_usuario_gestor', $usuario->id_usuario)
-            ->whereIn('id_departamento', $departamentosGestorIds);
+        ])->where('id_usuario_gestor', $usuario->id_usuario);
 
         if ($request->filled('id_departamento')) {
             $query->where('id_departamento', (int) $request->id_departamento);
@@ -56,7 +54,6 @@ class SoporteController extends Controller
         $soportes = $query->latest('id_soporte')->paginate(15)->withQueryString();
 
         $departamentos = Departamento::query()
-            ->whereIn('id_departamento', $departamentosGestorIds)
             ->where('activo', true)
             ->whereNull('deleted_at')
             ->orderBy('nombre')
@@ -68,7 +65,7 @@ class SoporteController extends Controller
             ->orderBy('nombre')
             ->get();
 
-        $solicitantes = $this->obtenerSolicitantesConDepartamento();
+        $solicitantes = $this->obtenerSolicitantesConArea();
 
         return view('tik.soportes.index', compact(
             'soportes',
@@ -92,7 +89,6 @@ class SoporteController extends Controller
             $ticket = Ticket::with([
                 'solicitante',
                 'responsable',
-                'areaResponsable.departamento',
                 'tipoTicket',
                 'tipoTicketRrhh',
                 'estadoTicket',
@@ -103,30 +99,36 @@ class SoporteController extends Controller
                 403
             );
 
-            $departamentoTicketId = (int) ($ticket->areaResponsable?->id_departamento ?? 0);
-
-            abort_unless(
-                in_array($departamentoTicketId, $departamentosGestorIds, true),
-                403,
-                'No puedes registrar soportes para tickets fuera de tus departamentos asignados.'
-            );
+            $ticket->areaSolicitante = $this->obtenerAreaPrincipalUsuario((int) $ticket->id_usuario_solicitante);
         }
 
+        // Todos los departamentos para el formulario
         $departamentos = Departamento::query()
-            ->whereIn('id_departamento', $departamentosGestorIds)
             ->where('activo', true)
             ->whereNull('deleted_at')
             ->orderBy('nombre')
             ->get();
 
+        // Todos los proyectos para filtrarlos en frontend por departamento/área
         $proyectos = Proyecto::query()
-            ->where('activo', true)
+            ->select('org_proyectos.*')
+            ->join('org_areas as oa', 'oa.id_proyecto', '=', 'org_proyectos.id_proyecto')
+            ->where('org_proyectos.activo', true)
+            ->whereNull('org_proyectos.deleted_at')
+            ->whereNull('oa.deleted_at')
+            ->distinct()
+            ->orderBy('org_proyectos.nombre')
+            ->get();
+
+        $areas = DB::table('org_areas')
+            ->select('id_area', 'id_departamento', 'id_proyecto', 'nombre')
             ->whereNull('deleted_at')
             ->orderBy('nombre')
             ->get();
 
-        $solicitantes = $this->obtenerSolicitantesConDepartamento();
+        $solicitantes = $this->obtenerSolicitantesConArea();
 
+        // Estos sí se restringen por departamentos del gestor
         $tiposServicio = TipoServicio::query()
             ->select('tik_tipos_servicio.*')
             ->join('org_areas as oa', 'oa.id_area', '=', 'tik_tipos_servicio.id_area_responsable')
@@ -162,6 +164,7 @@ class SoporteController extends Controller
             'ticket',
             'departamentos',
             'proyectos',
+            'areas',
             'solicitantes',
             'tiposServicio',
             'incidencias'
@@ -183,7 +186,6 @@ class SoporteController extends Controller
             $ticket = Ticket::with([
                 'solicitante',
                 'responsable',
-                'areaResponsable.departamento',
                 'estadoTicket',
             ])->findOrFail((int) $data['id_ticket']);
 
@@ -192,27 +194,14 @@ class SoporteController extends Controller
                 403
             );
 
-            $departamentoTicketId = (int) ($ticket->areaResponsable?->id_departamento ?? 0);
-
-            abort_unless(
-                in_array($departamentoTicketId, $departamentosGestorIds, true),
-                403,
-                'No puedes registrar soportes para tickets fuera de tus departamentos asignados.'
-            );
+            $areaSolicitante = $this->obtenerAreaPrincipalUsuario((int) $ticket->id_usuario_solicitante);
 
             $data['id_usuario_solicitante'] = $ticket->id_usuario_solicitante;
-            $data['id_departamento'] = $departamentoTicketId;
+            $data['id_departamento'] = $areaSolicitante?->id_departamento;
+            $data['id_proyecto'] = $areaSolicitante?->id_proyecto;
 
             if ($ticket->es_proyecto && ($data['tipo_registro'] ?? null) === 'TICKET') {
                 $data['tipo_registro'] = 'AVANCE';
-            }
-        } else {
-            if (!in_array((int) $data['id_departamento'], $departamentosGestorIds, true)) {
-                return back()
-                    ->withErrors([
-                        'id_departamento' => 'No puedes registrar soportes en un departamento que no te pertenece.',
-                    ])
-                    ->withInput();
             }
         }
 
@@ -357,7 +346,7 @@ class SoporteController extends Controller
             ->toArray();
     }
 
-    private function obtenerSolicitantesConDepartamento(): Collection
+    private function obtenerSolicitantesConArea(): Collection
     {
         return Usuario::query()
             ->select('seg_usuarios.*')
@@ -369,12 +358,49 @@ class SoporteController extends Controller
                     ->orderByDesc('oua.es_principal')
                     ->orderBy('oua.id_usuario_area')
                     ->limit(1)
+                    ->select('oa.id_area');
+            }, 'id_area')
+            ->selectSub(function ($query) {
+                $query->from('org_usuario_area as oua')
+                    ->join('org_areas as oa', 'oa.id_area', '=', 'oua.id_area')
+                    ->whereColumn('oua.id_usuario', 'seg_usuarios.id_usuario')
+                    ->whereNull('oa.deleted_at')
+                    ->orderByDesc('oua.es_principal')
+                    ->orderBy('oua.id_usuario_area')
+                    ->limit(1)
                     ->select('oa.id_departamento');
             }, 'id_departamento')
+            ->selectSub(function ($query) {
+                $query->from('org_usuario_area as oua')
+                    ->join('org_areas as oa', 'oa.id_area', '=', 'oua.id_area')
+                    ->whereColumn('oua.id_usuario', 'seg_usuarios.id_usuario')
+                    ->whereNull('oa.deleted_at')
+                    ->orderByDesc('oua.es_principal')
+                    ->orderBy('oua.id_usuario_area')
+                    ->limit(1)
+                    ->select('oa.id_proyecto');
+            }, 'id_proyecto')
             ->where('seg_usuarios.activo', true)
             ->whereNull('seg_usuarios.deleted_at')
             ->orderBy('seg_usuarios.nombres')
             ->orderBy('seg_usuarios.apellidos')
             ->get();
+    }
+
+    private function obtenerAreaPrincipalUsuario(int $idUsuario): ?object
+    {
+        return DB::table('org_usuario_area as oua')
+            ->join('org_areas as oa', 'oa.id_area', '=', 'oua.id_area')
+            ->where('oua.id_usuario', $idUsuario)
+            ->whereNull('oa.deleted_at')
+            ->orderByDesc('oua.es_principal')
+            ->orderBy('oua.id_usuario_area')
+            ->select(
+                'oa.id_area',
+                'oa.id_departamento',
+                'oa.id_proyecto',
+                'oa.nombre'
+            )
+            ->first();
     }
 }

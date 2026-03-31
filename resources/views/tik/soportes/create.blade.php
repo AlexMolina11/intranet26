@@ -13,239 +13,57 @@
                 'nombre' => $item->nombre,
             ];
         })->values()->toArray();
+
+        $areasJs = collect($areas)->map(function ($area) {
+            return [
+                'id_area' => $area->id_area,
+                'id_departamento' => $area->id_departamento,
+                'id_proyecto' => $area->id_proyecto,
+                'nombre' => $area->nombre,
+            ];
+        })->values()->toArray();
     @endphp
 
     <style>
-        .support-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .support-hero {
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            background: #ffffff;
-            padding: 24px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-        }
-
-        .support-title {
-            margin: 0;
-            font-size: 28px;
-            line-height: 1.2;
-            color: #111827;
-        }
-
-        .support-subtitle {
-            margin: 8px 0 0;
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .support-grid {
-            display: grid;
-            grid-template-columns: minmax(320px, 1fr) minmax(420px, 1.3fr);
-            gap: 20px;
-        }
-
-        .support-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            background: #ffffff;
-            padding: 22px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
-        }
-
-        .support-card h2,
-        .support-card h3 {
-            margin-top: 0;
-            margin-bottom: 14px;
-            color: #111827;
-        }
-
-        .support-form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
-        }
-
-        .support-form-grid .full {
-            grid-column: 1 / -1;
-        }
-
-        .support-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 18px;
-        }
-
-        .service-type-block {
-            margin-bottom: 18px;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            overflow: hidden;
-            background: #fff;
-        }
-
-        .service-type-header {
-            background: #f8fafc;
-            padding: 12px 14px;
-            font-weight: 700;
-            color: #111827;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .service-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-            padding: 14px;
-        }
-
-        .service-check {
-            border: 1px solid #dbe3ea;
-            border-radius: 12px;
-            background: #f8fafc;
-            padding: 12px;
-            cursor: pointer;
-            transition: .2s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-height: 56px;
-        }
-
-        .service-check:hover {
-            border-color: #94a3b8;
-            background: #f1f5f9;
-        }
-
-        .service-check.active {
-            border-color: #385506;
-            background: rgba(160, 197, 37, 0.12);
-        }
-
-        .service-check input {
-            margin: 0;
-        }
-
-        .support-empty {
-            padding: 14px 16px;
-            border-radius: 12px;
-            background: #f8fafc;
-            border: 1px dashed #cbd5e1;
-            color: #475569;
-        }
-
-        .support-selected-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .support-selected-item {
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            background: #f8fafc;
-            padding: 12px 14px;
-        }
-
-        .support-selected-title {
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 4px;
-        }
-
-        .support-selected-meta {
-            color: #475569;
-            font-size: 14px;
-        }
-
-        .support-info-banner {
-            border: 1px solid #bfdbfe;
-            background: #eff6ff;
-            color: #1e3a8a;
-            border-radius: 14px;
-            padding: 14px 16px;
-        }
-
-        .support-modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.45);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-
-        .support-modal-backdrop.open {
-            display: flex;
-        }
-
-        .support-modal {
-            width: 100%;
-            max-width: 760px;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.3);
-            overflow: hidden;
-        }
-
-        .support-modal-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .support-modal-body {
-            padding: 20px;
-        }
-
-        .incidence-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 10px;
-        }
-
-        .incidence-option {
-            border: 1px solid #dbe3ea;
-            border-radius: 12px;
-            background: #f8fafc;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: .2s ease;
-        }
-
-        .incidence-option:hover {
-            border-color: #94a3b8;
-            background: #f1f5f9;
-        }
+        .support-wrap { display:flex; flex-direction:column; gap:20px; }
+        .support-hero { border:1px solid #e5e7eb; border-radius:16px; background:#fff; padding:24px; box-shadow:0 8px 24px rgba(15, 23, 42, 0.06); }
+        .support-title { margin:0; font-size:28px; line-height:1.2; color:#111827; }
+        .support-subtitle { margin:8px 0 0; color:#6b7280; font-size:14px; }
+        .support-grid { display:grid; grid-template-columns:minmax(320px, 1fr) minmax(420px, 1.3fr); gap:20px; }
+        .support-card { border:1px solid #e5e7eb; border-radius:16px; background:#fff; padding:22px; box-shadow:0 8px 24px rgba(15, 23, 42, 0.05); }
+        .support-card h2,.support-card h3 { margin-top:0; margin-bottom:14px; color:#111827; }
+        .support-form-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; }
+        .support-form-grid .full { grid-column:1 / -1; }
+        .support-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+        .service-type-block { margin-bottom:18px; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; background:#fff; }
+        .service-type-header { background:#f8fafc; padding:12px 14px; font-weight:700; color:#111827; border-bottom:1px solid #e5e7eb; }
+        .service-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; padding:14px; }
+        .service-check { border:1px solid #dbe3ea; border-radius:12px; background:#f8fafc; padding:12px; cursor:pointer; transition:.2s ease; display:flex; align-items:center; gap:10px; min-height:56px; }
+        .service-check:hover { border-color:#94a3b8; background:#f1f5f9; }
+        .service-check.active { border-color:#385506; background:rgba(160, 197, 37, 0.12); }
+        .service-check input { margin:0; }
+        .support-empty { padding:14px 16px; border-radius:12px; background:#f8fafc; border:1px dashed #cbd5e1; color:#475569; }
+        .support-selected-list { display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+        .support-selected-item { border:1px solid #e5e7eb; border-radius:12px; background:#f8fafc; padding:12px 14px; }
+        .support-selected-title { font-weight:700; color:#111827; margin-bottom:4px; }
+        .support-selected-meta { color:#475569; font-size:14px; }
+        .support-info-banner { border:1px solid #bfdbfe; background:#eff6ff; color:#1e3a8a; border-radius:14px; padding:14px 16px; }
+        .support-modal-backdrop { position:fixed; inset:0; background:rgba(15, 23, 42, 0.45); display:none; align-items:center; justify-content:center; z-index:2000; padding:20px; }
+        .support-modal-backdrop.open { display:flex; }
+        .support-modal { width:100%; max-width:760px; background:#fff; border-radius:18px; box-shadow:0 20px 50px rgba(15, 23, 42, 0.3); overflow:hidden; }
+        .support-modal-header { padding:18px 20px; border-bottom:1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+        .support-modal-body { padding:20px; }
+        .incidence-grid { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; }
+        .incidence-option { border:1px solid #dbe3ea; border-radius:12px; background:#f8fafc; padding:12px; text-align:center; cursor:pointer; transition:.2s ease; }
+        .incidence-option:hover { border-color:#94a3b8; background:#f1f5f9; }
 
         @media (max-width: 1100px) {
-            .support-grid {
-                grid-template-columns: 1fr;
-            }
+            .support-grid { grid-template-columns:1fr; }
         }
 
         @media (max-width: 768px) {
-            .support-form-grid,
-            .service-grid,
-            .incidence-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .support-title {
-                font-size: 22px;
-            }
+            .support-form-grid, .service-grid, .incidence-grid { grid-template-columns:1fr; }
+            .support-title { font-size:22px; }
         }
     </style>
 
@@ -329,27 +147,32 @@
                                 <option value="">Seleccione</option>
                                 @foreach ($departamentos as $departamento)
                                     <option value="{{ $departamento->id_departamento }}"
-                                        {{ (string) old('id_departamento', $ticket?->areaResponsable?->id_departamento) === (string) $departamento->id_departamento ? 'selected' : '' }}>
+                                        {{ (string) old('id_departamento', $ticket?->areaSolicitante?->id_departamento) === (string) $departamento->id_departamento ? 'selected' : '' }}>
                                         {{ $departamento->nombre }}
                                     </option>
                                 @endforeach
                             </select>
 
-                            @if ($ticket && $ticket->areaResponsable?->id_departamento)
-                                <input type="hidden" name="id_departamento" value="{{ $ticket->areaResponsable->id_departamento }}">
+                            @if ($ticket && $ticket->areaSolicitante?->id_departamento)
+                                <input type="hidden" name="id_departamento" value="{{ $ticket->areaSolicitante->id_departamento }}">
                             @endif
                         </div>
 
                         <div>
                             <label class="form-label" for="id_proyecto">Proyecto</label>
-                            <select name="id_proyecto" id="id_proyecto" class="form-control">
+                            <select name="id_proyecto" id="id_proyecto" class="form-control" {{ $ticket ? 'disabled' : '' }}>
                                 <option value="">Seleccione</option>
                                 @foreach ($proyectos as $proyecto)
-                                    <option value="{{ $proyecto->id_proyecto }}" {{ old('id_proyecto') == $proyecto->id_proyecto ? 'selected' : '' }}>
+                                    <option value="{{ $proyecto->id_proyecto }}"
+                                        {{ (string) old('id_proyecto', $ticket?->areaSolicitante?->id_proyecto) === (string) $proyecto->id_proyecto ? 'selected' : '' }}>
                                         {{ $proyecto->nombre }}
                                     </option>
                                 @endforeach
                             </select>
+
+                            @if ($ticket && $ticket->areaSolicitante?->id_proyecto)
+                                <input type="hidden" name="id_proyecto" value="{{ $ticket->areaSolicitante->id_proyecto }}">
+                            @endif
                         </div>
 
                         <div class="full">
@@ -358,7 +181,9 @@
                                 <option value="">Seleccione</option>
                                 @foreach ($solicitantes as $solicitante)
                                     <option value="{{ $solicitante->id_usuario }}"
+                                        data-area="{{ $solicitante->id_area ?? '' }}"
                                         data-departamento="{{ $solicitante->id_departamento ?? '' }}"
+                                        data-proyecto="{{ $solicitante->id_proyecto ?? '' }}"
                                         {{ (string) old('id_usuario_solicitante', $ticket?->id_usuario_solicitante) === (string) $solicitante->id_usuario ? 'selected' : '' }}>
                                         {{ trim(($solicitante->nombres ?? '') . ' ' . ($solicitante->apellidos ?? '')) }}
                                     </option>
@@ -415,7 +240,7 @@
                                 {{ $tipoServicio->nombre }}
                                 @if ($tipoServicio->areaResponsable?->departamento?->nombre)
                                     <div style="font-size: 12px; font-weight: 500; color: #64748b; margin-top: 4px;">
-                                        Departamento: {{ $tipoServicio->areaResponsable->departamento->nombre }}
+                                        Departamento catálogo: {{ $tipoServicio->areaResponsable->departamento->nombre }}
                                     </div>
                                 @endif
                             </div>
@@ -463,6 +288,7 @@
     <script>
         (() => {
             const departmentSelect = document.getElementById('id_departamento');
+            const projectSelect = document.getElementById('id_proyecto');
             const applicantSelect = document.getElementById('id_usuario_solicitante');
             const hiddenSelections = document.getElementById('frmSoporte_hddSelecciones');
             const serviceChecks = document.querySelectorAll('.service-selector');
@@ -474,10 +300,77 @@
             const btnCloseIncidenceModal = document.getElementById('btnCloseIncidenceModal');
 
             const incidencias = @json($incidenciasJs);
+            const areas = @json($areasJs);
 
             const selections = {};
             let currentServiceId = null;
             let currentServiceName = null;
+
+            function getValidProjectIdsByDepartment(departmentId) {
+                if (!departmentId) return [];
+                return areas
+                    .filter(area => String(area.id_departamento) === String(departmentId))
+                    .map(area => String(area.id_proyecto));
+            }
+
+            function getValidAreaIds(departmentId, projectId) {
+                return areas
+                    .filter(area =>
+                        String(area.id_departamento) === String(departmentId) &&
+                        String(area.id_proyecto) === String(projectId)
+                    )
+                    .map(area => String(area.id_area));
+            }
+
+            function filterProjectsByDepartment() {
+                if (!departmentSelect || !projectSelect) return;
+
+                const departmentId = departmentSelect.value;
+                const validProjectIds = getValidProjectIdsByDepartment(departmentId);
+
+                Array.from(projectSelect.options).forEach((option, index) => {
+                    if (index === 0) {
+                        option.hidden = false;
+                        return;
+                    }
+
+                    option.hidden = departmentId
+                        ? !validProjectIds.includes(String(option.value))
+                        : false;
+                });
+
+                const selected = projectSelect.selectedOptions[0];
+                if (selected && selected.hidden) {
+                    projectSelect.value = '';
+                }
+            }
+
+            function filterApplicantsByArea() {
+                if (!departmentSelect || !projectSelect || !applicantSelect) return;
+
+                const departmentId = departmentSelect.value;
+                const projectId = projectSelect.value;
+
+                Array.from(applicantSelect.options).forEach((option, index) => {
+                    if (index === 0) {
+                        option.hidden = false;
+                        return;
+                    }
+
+                    if (!departmentId || !projectId) {
+                        option.hidden = true;
+                        return;
+                    }
+
+                    const validAreaIds = getValidAreaIds(departmentId, projectId);
+                    option.hidden = !validAreaIds.includes(String(option.dataset.area || ''));
+                });
+
+                const selected = applicantSelect.selectedOptions[0];
+                if (selected && selected.hidden) {
+                    applicantSelect.value = '';
+                }
+            }
 
             function openIncidenceModal(serviceId, serviceName) {
                 currentServiceId = String(serviceId);
@@ -550,33 +443,6 @@
                 `).join('');
             }
 
-            function filterApplicantsByDepartment() {
-                if (!departmentSelect || !applicantSelect) {
-                    return;
-                }
-
-                const selectedDepartment = departmentSelect.value;
-
-                Array.from(applicantSelect.options).forEach((option, index) => {
-                    if (index === 0) {
-                        option.hidden = false;
-                        return;
-                    }
-
-                    const optionDepartment = option.dataset.departamento || '';
-
-                    option.hidden = selectedDepartment !== ''
-                        ? optionDepartment !== '' && optionDepartment !== selectedDepartment
-                        : false;
-                });
-
-                const selectedOption = applicantSelect.selectedOptions[0] ?? null;
-
-                if (selectedOption && selectedOption.hidden) {
-                    applicantSelect.value = '';
-                }
-            }
-
             serviceChecks.forEach(check => {
                 check.addEventListener('change', function () {
                     const wrapper = this.closest('.service-check');
@@ -595,7 +461,12 @@
                 });
             });
 
-            departmentSelect?.addEventListener('change', filterApplicantsByDepartment);
+            departmentSelect?.addEventListener('change', () => {
+                filterProjectsByDepartment();
+                filterApplicantsByArea();
+            });
+
+            projectSelect?.addEventListener('change', filterApplicantsByArea);
 
             btnCloseIncidenceModal?.addEventListener('click', () => {
                 if (currentServiceId && !selections[currentServiceId]) {
@@ -605,7 +476,6 @@
                         checkbox.closest('.service-check')?.classList.remove('active');
                     }
                 }
-
                 closeIncidenceModal();
             });
 
@@ -618,12 +488,12 @@
                             checkbox.closest('.service-check')?.classList.remove('active');
                         }
                     }
-
                     closeIncidenceModal();
                 }
             });
 
-            filterApplicantsByDepartment();
+            filterProjectsByDepartment();
+            filterApplicantsByArea();
             renderSelections();
         })();
     </script>
