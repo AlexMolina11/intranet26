@@ -580,3 +580,16 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
   - tipos RRHH
   - secciones
   - ampliación adicional del menú de configuración
+  
+  ## - Ajuste de soportes por departamentos del gestor y limpieza de secciones
+
+- Se revisó el flujo del módulo de soportes debido a fallos al cargar catálogos de tipos de servicio, servicios e incidencias.
+- Se identificó que la vista de creación requería catálogos que no estaban siendo cargados correctamente desde el controlador.
+- Se redefinió la lógica del formulario para que los catálogos visibles dependan únicamente de los departamentos asignados al usuario gestor.
+- Se agregó validación en backend para impedir que un gestor registre soportes usando servicios o incidencias fuera de sus departamentos permitidos.
+- Se mantuvo el campo `departamento` dentro del formulario solo como apoyo para el filtrado del solicitante y como dato general del soporte.
+- Se eliminó la dependencia entre el select de departamento y la carga dinámica de servicios e incidencias.
+- Se removieron las referencias funcionales a `secciones` dentro del flujo de creación de soportes.
+- Se depuró la obtención de departamentos del gestor para adaptarse a la estructura real de `org_usuario_area`, quitando filtros sobre columnas `deleted_at` inexistentes en esa tabla.
+- Se ajustó la obtención de solicitantes con departamento asociado para soportar el filtrado visual en el formulario sin afectar la lógica de negocio principal.
+- Se limpió el modelo `Soporte` para dejarlo alineado con el flujo actual basado en cabecera + detalles.

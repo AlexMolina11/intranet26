@@ -44,6 +44,16 @@ class AreaSeeder extends Seeder
                 'nombre' => 'Recursos Humanos',
                 'descripcion' => 'Área general para Recursos Humanos',
             ],
+            [
+                'codigo_departamento' => 'SG',
+                'nombre' => 'Servicios Generales',
+                'descripcion' => 'Área general para Servicios Generales',
+            ],
+            [
+                'codigo_departamento' => 'COM',
+                'nombre' => 'Comunicaciones',
+                'descripcion' => 'Área general para Comunicaciones',
+            ],
         ];
 
         foreach ($areas as $area) {

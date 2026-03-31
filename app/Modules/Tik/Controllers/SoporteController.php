@@ -7,11 +7,14 @@ use App\Modules\Tik\Models\Soporte;
 use App\Modules\Tik\Models\SoporteDetalle;
 use App\Modules\Tik\Models\Ticket;
 use App\Modules\Tik\Models\SeguimientoTicket;
+use App\Modules\Tik\Models\TipoServicio;
+use App\Modules\Tik\Models\Incidencia;
 use App\Modules\Tik\Requests\StoreSoporteRequest;
 use App\Modules\Seg\Models\Usuario;
 use App\Modules\Org\Models\Departamento;
 use App\Modules\Org\Models\Proyecto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class SoporteController extends Controller
@@ -19,6 +22,8 @@ class SoporteController extends Controller
     public function index(Request $request)
     {
         $usuario = auth()->user();
+
+        $departamentosGestorIds = $this->obtenerDepartamentosGestorIds((int) $usuario->id_usuario);
 
         $query = Soporte::with([
             'ticket',
@@ -28,7 +33,9 @@ class SoporteController extends Controller
             'proyecto',
             'detalles.servicio.tipoServicio',
             'detalles.incidencia',
-        ])->where('id_usuario_gestor', $usuario->id_usuario);
+        ])
+            ->where('id_usuario_gestor', $usuario->id_usuario)
+            ->whereIn('id_departamento', $departamentosGestorIds);
 
         if ($request->filled('id_departamento')) {
             $query->where('id_departamento', (int) $request->id_departamento);
@@ -49,6 +56,7 @@ class SoporteController extends Controller
         $soportes = $query->latest('id_soporte')->paginate(15)->withQueryString();
 
         $departamentos = Departamento::query()
+            ->whereIn('id_departamento', $departamentosGestorIds)
             ->where('activo', true)
             ->whereNull('deleted_at')
             ->orderBy('nombre')
@@ -60,12 +68,7 @@ class SoporteController extends Controller
             ->orderBy('nombre')
             ->get();
 
-        $solicitantes = Usuario::query()
-            ->where('activo', true)
-            ->whereNull('deleted_at')
-            ->orderBy('nombres')
-            ->orderBy('apellidos')
-            ->get();
+        $solicitantes = $this->obtenerSolicitantesConDepartamento();
 
         return view('tik.soportes.index', compact(
             'soportes',
@@ -78,6 +81,10 @@ class SoporteController extends Controller
     public function create(Request $request)
     {
         $usuario = auth()->user();
+
+        $departamentosGestorIds = $this->obtenerDepartamentosGestorIds((int) $usuario->id_usuario);
+
+        abort_if(empty($departamentosGestorIds), 403, 'No tienes departamentos asignados para registrar soportes.');
 
         $ticket = null;
 
@@ -95,9 +102,18 @@ class SoporteController extends Controller
                 (int) $ticket->id_usuario_responsable === (int) $usuario->id_usuario,
                 403
             );
+
+            $departamentoTicketId = (int) ($ticket->areaResponsable?->id_departamento ?? 0);
+
+            abort_unless(
+                in_array($departamentoTicketId, $departamentosGestorIds, true),
+                403,
+                'No puedes registrar soportes para tickets fuera de tus departamentos asignados.'
+            );
         }
 
         $departamentos = Departamento::query()
+            ->whereIn('id_departamento', $departamentosGestorIds)
             ->where('activo', true)
             ->whereNull('deleted_at')
             ->orderBy('nombre')
@@ -109,18 +125,46 @@ class SoporteController extends Controller
             ->orderBy('nombre')
             ->get();
 
-        $solicitantes = Usuario::query()
-            ->where('activo', true)
-            ->whereNull('deleted_at')
-            ->orderBy('nombres')
-            ->orderBy('apellidos')
+        $solicitantes = $this->obtenerSolicitantesConDepartamento();
+
+        $tiposServicio = TipoServicio::query()
+            ->select('tik_tipos_servicio.*')
+            ->join('org_areas as oa', 'oa.id_area', '=', 'tik_tipos_servicio.id_area_responsable')
+            ->whereIn('oa.id_departamento', $departamentosGestorIds)
+            ->whereNull('oa.deleted_at')
+            ->where('tik_tipos_servicio.activo', true)
+            ->whereNull('tik_tipos_servicio.deleted_at')
+            ->with([
+                'servicios' => function ($query) {
+                    $query->where('activo', true)
+                        ->whereNull('deleted_at')
+                        ->orderBy('nombre');
+                },
+                'areaResponsable.departamento',
+            ])
+            ->orderBy('tik_tipos_servicio.nombre')
+            ->get()
+            ->filter(fn ($tipoServicio) => $tipoServicio->servicios->isNotEmpty())
+            ->values();
+
+        $incidencias = Incidencia::query()
+            ->select('tik_incidencias.*')
+            ->join('org_areas as oa', 'oa.id_area', '=', 'tik_incidencias.id_area_responsable')
+            ->whereIn('oa.id_departamento', $departamentosGestorIds)
+            ->whereNull('oa.deleted_at')
+            ->where('tik_incidencias.activo', true)
+            ->whereNull('tik_incidencias.deleted_at')
+            ->with('areaResponsable.departamento')
+            ->orderBy('tik_incidencias.nombre')
             ->get();
 
         return view('tik.soportes.create', compact(
             'ticket',
             'departamentos',
             'proyectos',
-            'solicitantes'
+            'solicitantes',
+            'tiposServicio',
+            'incidencias'
         ));
     }
 
@@ -128,6 +172,10 @@ class SoporteController extends Controller
     {
         $usuario = auth()->user();
         $data = $request->validated();
+
+        $departamentosGestorIds = $this->obtenerDepartamentosGestorIds((int) $usuario->id_usuario);
+
+        abort_if(empty($departamentosGestorIds), 403, 'No tienes departamentos asignados para registrar soportes.');
 
         $ticket = null;
 
@@ -144,11 +192,27 @@ class SoporteController extends Controller
                 403
             );
 
+            $departamentoTicketId = (int) ($ticket->areaResponsable?->id_departamento ?? 0);
+
+            abort_unless(
+                in_array($departamentoTicketId, $departamentosGestorIds, true),
+                403,
+                'No puedes registrar soportes para tickets fuera de tus departamentos asignados.'
+            );
+
             $data['id_usuario_solicitante'] = $ticket->id_usuario_solicitante;
-            $data['id_departamento'] = $ticket->areaResponsable?->id_departamento;
+            $data['id_departamento'] = $departamentoTicketId;
 
             if ($ticket->es_proyecto && ($data['tipo_registro'] ?? null) === 'TICKET') {
                 $data['tipo_registro'] = 'AVANCE';
+            }
+        } else {
+            if (!in_array((int) $data['id_departamento'], $departamentosGestorIds, true)) {
+                return back()
+                    ->withErrors([
+                        'id_departamento' => 'No puedes registrar soportes en un departamento que no te pertenece.',
+                    ])
+                    ->withInput();
             }
         }
 
@@ -186,29 +250,25 @@ class SoporteController extends Controller
 
         $serviciosValidos = DB::table('tik_servicios as s')
             ->join('tik_tipos_servicio as ts', 'ts.id_tipo_servicio', '=', 's.id_tipo_servicio')
-            ->join('org_areas as a', 'a.id_area', '=', 'ts.id_area_responsable')
-            ->join('org_departamentos as d', 'd.id_departamento', '=', 'a.id_departamento')
+            ->join('org_areas as oa', 'oa.id_area', '=', 'ts.id_area_responsable')
+            ->whereIn('oa.id_departamento', $departamentosGestorIds)
             ->whereIn('s.id_servicio', $serviciosIds)
             ->whereNull('s.deleted_at')
             ->whereNull('ts.deleted_at')
-            ->whereNull('a.deleted_at')
-            ->whereNull('d.deleted_at')
+            ->whereNull('oa.deleted_at')
             ->where('s.activo', 1)
             ->where('ts.activo', 1)
-            ->where('d.id_departamento', (int) $data['id_departamento'])
             ->pluck('s.id_servicio')
             ->map(fn ($id) => (int) $id)
             ->toArray();
 
         $incidenciasValidas = DB::table('tik_incidencias as i')
-            ->join('org_areas as a', 'a.id_area', '=', 'i.id_area_responsable')
-            ->join('org_departamentos as d', 'd.id_departamento', '=', 'a.id_departamento')
+            ->join('org_areas as oa', 'oa.id_area', '=', 'i.id_area_responsable')
+            ->whereIn('oa.id_departamento', $departamentosGestorIds)
             ->whereIn('i.id_incidencia', $incidenciasIds)
             ->whereNull('i.deleted_at')
-            ->whereNull('a.deleted_at')
-            ->whereNull('d.deleted_at')
+            ->whereNull('oa.deleted_at')
             ->where('i.activo', 1)
-            ->where('d.id_departamento', (int) $data['id_departamento'])
             ->pluck('i.id_incidencia')
             ->map(fn ($id) => (int) $id)
             ->toArray();
@@ -229,7 +289,7 @@ class SoporteController extends Controller
             if (!in_array((int) $seleccion['servicio_id'], $serviciosValidos, true)) {
                 return back()
                     ->withErrors([
-                        'selecciones' => 'Uno de los servicios seleccionados no pertenece al departamento indicado.',
+                        'selecciones' => 'Uno de los servicios seleccionados no pertenece a tus departamentos permitidos.',
                     ])
                     ->withInput();
             }
@@ -237,7 +297,7 @@ class SoporteController extends Controller
             if (!in_array((int) $seleccion['incidencia_id'], $incidenciasValidas, true)) {
                 return back()
                     ->withErrors([
-                        'selecciones' => 'Una de las incidencias seleccionadas no pertenece al departamento indicado.',
+                        'selecciones' => 'Una de las incidencias seleccionadas no pertenece a tus departamentos permitidos.',
                     ])
                     ->withInput();
             }
@@ -282,5 +342,39 @@ class SoporteController extends Controller
         return redirect()
             ->route('tik.soportes.index')
             ->with('success', 'Soporte registrado correctamente.');
+    }
+
+    private function obtenerDepartamentosGestorIds(int $idUsuario): array
+    {
+        return DB::table('org_usuario_area as oua')
+            ->join('org_areas as oa', 'oa.id_area', '=', 'oua.id_area')
+            ->where('oua.id_usuario', $idUsuario)
+            ->whereNull('oa.deleted_at')
+            ->pluck('oa.id_departamento')
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->toArray();
+    }
+
+    private function obtenerSolicitantesConDepartamento(): Collection
+    {
+        return Usuario::query()
+            ->select('seg_usuarios.*')
+            ->selectSub(function ($query) {
+                $query->from('org_usuario_area as oua')
+                    ->join('org_areas as oa', 'oa.id_area', '=', 'oua.id_area')
+                    ->whereColumn('oua.id_usuario', 'seg_usuarios.id_usuario')
+                    ->whereNull('oa.deleted_at')
+                    ->orderByDesc('oua.es_principal')
+                    ->orderBy('oua.id_usuario_area')
+                    ->limit(1)
+                    ->select('oa.id_departamento');
+            }, 'id_departamento')
+            ->where('seg_usuarios.activo', true)
+            ->whereNull('seg_usuarios.deleted_at')
+            ->orderBy('seg_usuarios.nombres')
+            ->orderBy('seg_usuarios.apellidos')
+            ->get();
     }
 }

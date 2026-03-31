@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Seg\Models\Usuario;
 use App\Modules\Org\Models\Departamento;
 use App\Modules\Org\Models\Proyecto;
-use App\Modules\Tik\Models\SoporteDetalle;
 
 class Soporte extends Model
 {
@@ -22,9 +21,6 @@ class Soporte extends Model
         'id_usuario_solicitante',
         'id_departamento',
         'id_proyecto',
-        'id_seccion',
-        'id_servicio',
-        'id_incidencia',
         'tipo_registro',
         'asunto',
         'descripcion',
@@ -64,21 +60,6 @@ class Soporte extends Model
     public function proyecto()
     {
         return $this->belongsTo(Proyecto::class, 'id_proyecto', 'id_proyecto');
-    }
-
-    public function seccion()
-    {
-        return $this->belongsTo(Seccion::class, 'id_seccion', 'id_seccion');
-    }
-
-    public function servicio()
-    {
-        return $this->belongsTo(Servicio::class, 'id_servicio', 'id_servicio');
-    }
-
-    public function incidencia()
-    {
-        return $this->belongsTo(Incidencia::class, 'id_incidencia', 'id_incidencia');
     }
 
     public function getFechaInicioFormateadaAttribute(): string

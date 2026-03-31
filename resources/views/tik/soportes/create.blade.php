@@ -6,7 +6,13 @@
     @php
         $ticketId = old('id_ticket', $ticket?->id_ticket);
         $defaultTipo = old('tipo_registro', $ticket ? ($ticket->es_proyecto ? 'AVANCE' : 'TICKET') : 'EXTERNO');
-        $departamentoInicial = old('id_departamento', $ticket?->areaResponsable?->id_departamento);
+
+        $incidenciasJs = $incidencias->map(function ($item) {
+            return [
+                'id' => $item->id_incidencia,
+                'nombre' => $item->nombre,
+            ];
+        })->values()->toArray();
     @endphp
 
     <style>
@@ -328,6 +334,7 @@
                                     </option>
                                 @endforeach
                             </select>
+
                             @if ($ticket && $ticket->areaResponsable?->id_departamento)
                                 <input type="hidden" name="id_departamento" value="{{ $ticket->areaResponsable->id_departamento }}">
                             @endif
@@ -345,17 +352,19 @@
                             </select>
                         </div>
 
-                        <div>
+                        <div class="full">
                             <label class="form-label" for="id_usuario_solicitante">Solicitante</label>
                             <select name="id_usuario_solicitante" id="id_usuario_solicitante" class="form-control" required {{ $ticket ? 'disabled' : '' }}>
                                 <option value="">Seleccione</option>
                                 @foreach ($solicitantes as $solicitante)
                                     <option value="{{ $solicitante->id_usuario }}"
+                                        data-departamento="{{ $solicitante->id_departamento ?? '' }}"
                                         {{ (string) old('id_usuario_solicitante', $ticket?->id_usuario_solicitante) === (string) $solicitante->id_usuario ? 'selected' : '' }}>
                                         {{ trim(($solicitante->nombres ?? '') . ' ' . ($solicitante->apellidos ?? '')) }}
                                     </option>
                                 @endforeach
                             </select>
+
                             @if ($ticket)
                                 <input type="hidden" name="id_usuario_solicitante" value="{{ $ticket->id_usuario_solicitante }}">
                             @endif
@@ -396,14 +405,39 @@
                 <section class="support-card">
                     <h2>Servicios del soporte</h2>
                     <p class="text-muted" style="margin-top: 0; margin-bottom: 16px;">
-                        Selecciona uno o varios servicios. Al marcar uno, deberás elegir su incidencia.
+                        Se muestran únicamente los tipos de servicio, servicios e incidencias
+                        correspondientes a los departamentos asignados al gestor.
                     </p>
 
-                    <div id="service-types-container">
-                        <div class="support-empty">
-                            Selecciona un departamento para cargar los servicios disponibles.
+                    @forelse ($tiposServicio as $tipoServicio)
+                        <div class="service-type-block">
+                            <div class="service-type-header">
+                                {{ $tipoServicio->nombre }}
+                                @if ($tipoServicio->areaResponsable?->departamento?->nombre)
+                                    <div style="font-size: 12px; font-weight: 500; color: #64748b; margin-top: 4px;">
+                                        Departamento: {{ $tipoServicio->areaResponsable->departamento->nombre }}
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="service-grid">
+                                @foreach ($tipoServicio->servicios as $servicio)
+                                    <label class="service-check"
+                                           data-service-id="{{ $servicio->id_servicio }}"
+                                           data-service-name="{{ $servicio->nombre }}">
+                                        <input type="checkbox"
+                                               class="service-selector"
+                                               value="{{ $servicio->id_servicio }}">
+                                        <span>{{ $servicio->nombre }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="support-empty">
+                            No hay servicios configurados para tus departamentos asignados.
+                        </div>
+                    @endforelse
                 </section>
             </div>
         </form>
@@ -429,131 +463,31 @@
     <script>
         (() => {
             const departmentSelect = document.getElementById('id_departamento');
+            const applicantSelect = document.getElementById('id_usuario_solicitante');
             const hiddenSelections = document.getElementById('frmSoporte_hddSelecciones');
+            const serviceChecks = document.querySelectorAll('.service-selector');
             const supportSelectedList = document.getElementById('support-selected-list');
-            const serviceTypesContainer = document.getElementById('service-types-container');
 
             const modalBackdrop = document.getElementById('incidenceModalBackdrop');
             const incidenceGrid = document.getElementById('incidenceGrid');
             const incidenceModalServiceName = document.getElementById('incidenceModalServiceName');
             const btnCloseIncidenceModal = document.getElementById('btnCloseIncidenceModal');
 
-            const incidenciasUsuarioUrl = @json(route('tik.catalogos.incidencias.usuario'));
-            const tiposServicioUsuarioUrl = @json(route('tik.catalogos.tipos-servicio.usuario'));
-            const serviciosPorTipoBaseUrl = @json(url('/tik/catalogos/tipos-servicio'));
+            const incidencias = @json($incidenciasJs);
 
-            const departamentoInicial = @json((string) $departamentoInicial);
-
-            let incidencias = [];
-            let tiposServicio = [];
+            const selections = {};
             let currentServiceId = null;
             let currentServiceName = null;
-            const selections = {};
-
-            function getDepartmentId() {
-                return departmentSelect ? String(departmentSelect.value || '') : '';
-            }
-
-            async function fetchJson(url) {
-                const response = await fetch(url, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('No fue posible cargar el catálogo.');
-                }
-
-                return await response.json();
-            }
-
-            async function cargarCatalogosBase() {
-                incidencias = await fetchJson(incidenciasUsuarioUrl);
-                tiposServicio = await fetchJson(tiposServicioUsuarioUrl);
-            }
-
-            function filtrarIncidenciasPorDepartamento() {
-                const deptoId = getDepartmentId();
-
-                if (!deptoId) {
-                    return [];
-                }
-
-                return incidencias.filter(item => String(item.id_departamento) === deptoId);
-            }
-
-            async function renderTiposServicio() {
-                const deptoId = getDepartmentId();
-
-                if (!deptoId) {
-                    serviceTypesContainer.innerHTML = `
-                        <div class="support-empty">
-                            Selecciona un departamento para cargar los servicios disponibles.
-                        </div>
-                    `;
-                    return;
-                }
-
-                const tiposFiltrados = tiposServicio.filter(item => String(item.id_departamento) === deptoId);
-
-                if (!tiposFiltrados.length) {
-                    serviceTypesContainer.innerHTML = `
-                        <div class="support-empty">
-                            No hay tipos de servicio disponibles para el departamento seleccionado.
-                        </div>
-                    `;
-                    return;
-                }
-
-                serviceTypesContainer.innerHTML = `<div class="support-empty">Cargando servicios...</div>`;
-
-                const bloques = [];
-
-                for (const tipo of tiposFiltrados) {
-                    const servicios = await fetchJson(`${serviciosPorTipoBaseUrl}/${tipo.codigo}/servicios`);
-
-                    const serviciosHtml = servicios.length
-                        ? `
-                            <div class="service-grid">
-                                ${servicios.map(servicio => `
-                                    <label class="service-check ${selections[String(servicio.id_servicio)] ? 'active' : ''}"
-                                           data-service-id="${servicio.id_servicio}"
-                                           data-service-name="${servicio.nombre}">
-                                        <input type="checkbox"
-                                               class="service-selector"
-                                               value="${servicio.id_servicio}"
-                                               ${selections[String(servicio.id_servicio)] ? 'checked' : ''}>
-                                        <span>${servicio.nombre}</span>
-                                    </label>
-                                `).join('')}
-                            </div>
-                        `
-                        : `
-                            <div class="support-empty" style="margin: 14px;">
-                                No hay servicios configurados para este tipo.
-                            </div>
-                        `;
-
-                    bloques.push(`
-                        <div class="service-type-block">
-                            <div class="service-type-header">${tipo.nombre}</div>
-                            ${serviciosHtml}
-                        </div>
-                    `);
-                }
-
-                serviceTypesContainer.innerHTML = bloques.join('');
-
-                bindServiceChecks();
-            }
 
             function openIncidenceModal(serviceId, serviceName) {
-                const filtered = filtrarIncidenciasPorDepartamento();
+                currentServiceId = String(serviceId);
+                currentServiceName = serviceName;
+                incidenceModalServiceName.textContent = serviceName;
 
-                if (!filtered.length) {
-                    alert('No hay incidencias disponibles para el departamento seleccionado.');
+                incidenceGrid.innerHTML = '';
+
+                if (!incidencias.length) {
+                    alert('No hay incidencias disponibles para tus departamentos asignados.');
                     const checkbox = document.querySelector(`.service-selector[value="${serviceId}"]`);
                     if (checkbox) {
                         checkbox.checked = false;
@@ -562,23 +496,16 @@
                     return;
                 }
 
-                currentServiceId = String(serviceId);
-                currentServiceName = serviceName;
-                incidenceModalServiceName.textContent = serviceName;
-
-                incidenceGrid.innerHTML = '';
-
-                filtered.forEach(item => {
+                incidencias.forEach(item => {
                     const button = document.createElement('button');
                     button.type = 'button';
                     button.className = 'incidence-option';
                     button.textContent = item.nombre;
-
                     button.addEventListener('click', () => {
                         selections[currentServiceId] = {
                             servicio_id: Number(currentServiceId),
                             servicio_nombre: currentServiceName,
-                            incidencia_id: item.id_incidencia,
+                            incidencia_id: item.id,
                             incidencia_nombre: item.nombre,
                         };
 
@@ -623,40 +550,52 @@
                 `).join('');
             }
 
-            function bindServiceChecks() {
-                const serviceChecks = document.querySelectorAll('.service-selector');
+            function filterApplicantsByDepartment() {
+                if (!departmentSelect || !applicantSelect) {
+                    return;
+                }
 
-                serviceChecks.forEach(check => {
-                    check.addEventListener('change', function () {
-                        const wrapper = this.closest('.service-check');
-                        const serviceId = this.value;
-                        const serviceName = wrapper?.dataset.serviceName ?? 'Servicio';
+                const selectedDepartment = departmentSelect.value;
 
-                        if (this.checked) {
-                            wrapper?.classList.add('active');
-                            openIncidenceModal(serviceId, serviceName);
-                        } else {
-                            wrapper?.classList.remove('active');
-                            delete selections[String(serviceId)];
-                            syncHiddenSelections();
-                            renderSelections();
-                        }
-                    });
+                Array.from(applicantSelect.options).forEach((option, index) => {
+                    if (index === 0) {
+                        option.hidden = false;
+                        return;
+                    }
+
+                    const optionDepartment = option.dataset.departamento || '';
+
+                    option.hidden = selectedDepartment !== ''
+                        ? optionDepartment !== '' && optionDepartment !== selectedDepartment
+                        : false;
                 });
+
+                const selectedOption = applicantSelect.selectedOptions[0] ?? null;
+
+                if (selectedOption && selectedOption.hidden) {
+                    applicantSelect.value = '';
+                }
             }
 
-            function resetSelections() {
-                Object.keys(selections).forEach(key => delete selections[key]);
-                syncHiddenSelections();
-                renderSelections();
-            }
+            serviceChecks.forEach(check => {
+                check.addEventListener('change', function () {
+                    const wrapper = this.closest('.service-check');
+                    const serviceId = this.value;
+                    const serviceName = wrapper?.dataset.serviceName ?? 'Servicio';
 
-            if (departmentSelect) {
-                departmentSelect.addEventListener('change', async () => {
-                    resetSelections();
-                    await renderTiposServicio();
+                    if (this.checked) {
+                        wrapper?.classList.add('active');
+                        openIncidenceModal(serviceId, serviceName);
+                    } else {
+                        wrapper?.classList.remove('active');
+                        delete selections[String(serviceId)];
+                        syncHiddenSelections();
+                        renderSelections();
+                    }
                 });
-            }
+            });
+
+            departmentSelect?.addEventListener('change', filterApplicantsByDepartment);
 
             btnCloseIncidenceModal?.addEventListener('click', () => {
                 if (currentServiceId && !selections[currentServiceId]) {
@@ -666,6 +605,7 @@
                         checkbox.closest('.service-check')?.classList.remove('active');
                     }
                 }
+
                 closeIncidenceModal();
             });
 
@@ -678,28 +618,13 @@
                             checkbox.closest('.service-check')?.classList.remove('active');
                         }
                     }
+
                     closeIncidenceModal();
                 }
             });
 
-            (async () => {
-                try {
-                    await cargarCatalogosBase();
-
-                    if (departmentSelect && departamentoInicial) {
-                        departmentSelect.value = departamentoInicial;
-                    }
-
-                    await renderTiposServicio();
-                    renderSelections();
-                } catch (error) {
-                    serviceTypesContainer.innerHTML = `
-                        <div class="support-empty">
-                            Ocurrió un problema al cargar los catálogos de soporte.
-                        </div>
-                    `;
-                }
-            })();
+            filterApplicantsByDepartment();
+            renderSelections();
         })();
     </script>
 @endsection

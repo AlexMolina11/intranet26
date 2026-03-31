@@ -68,14 +68,10 @@ class StoreSoporteRequest extends FormRequest
                 'date',
                 'after_or_equal:fecha_inicio',
             ],
-
-            // JSON original
             'selecciones' => [
                 'required',
                 'string',
             ],
-
-            // JSON decodificado
             'selecciones_array' => [
                 'required',
                 'array',

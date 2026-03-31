@@ -520,3 +520,28 @@ Los catálogos restantes se incorporarán en una etapa posterior.
 
 ### Consecuencia
 La sección de configuración del módulo Tickets queda operativa, coherente y lista para pruebas integrales antes de nuevas expansiones.
+
+## - Catálogos de soporte restringidos por departamentos del gestor
+
+### Contexto
+El flujo de soportes estaba mezclando dos responsabilidades distintas:
+1. el departamento seleccionado en el formulario,
+2. y el alcance real de catálogos permitido para el usuario gestor.
+
+Eso provocaba inconsistencias, dependencia excesiva del formulario y errores al cargar o validar servicios e incidencias.
+
+### Decisión
+Se decidió que los catálogos de `tipos de servicio`, `servicios` e `incidencias` en el módulo de soportes se restrinjan exclusivamente según los departamentos asociados al usuario gestor autenticado.
+
+El campo `departamento` dentro del formulario no define el universo de catálogos permitidos. Su función queda limitada a:
+- apoyar el filtrado visual del solicitante,
+- servir como dato general del soporte registrado.
+
+Además, se eliminaron del flujo las referencias operativas a `secciones`, ya que no forman parte del modelo funcional actual del soporte.
+
+### Implicaciones
+- El backend se convierte en la fuente real de autorización funcional para los catálogos del soporte.
+- Se evita que un usuario manipule el formulario para registrar servicios o incidencias fuera de sus departamentos autorizados.
+- El formulario queda más simple y coherente con el rol del gestor.
+- La lógica se adapta a la estructura real de la base de datos, evitando asumir `soft deletes` en tablas que no tienen columna `deleted_at`, como `org_usuario_area`.
+- El modelo `Soporte` queda alineado con un esquema de cabecera y detalle, dejando los servicios e incidencias en `SoporteDetalle`.
