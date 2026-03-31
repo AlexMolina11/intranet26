@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Modules\Tik\Models\TicketRrhh;
 use App\Modules\Tik\Models\EncuestaSoporte;
 use App\Modules\Tik\Requests\StoreEncuestaSoporteRequest;
+use App\Modules\Tik\Services\TicketFlowNotificationService;
 
 class TicketController extends Controller
 {
@@ -80,7 +81,7 @@ class TicketController extends Controller
         ));
     }
 
-    public function store(StoreTicketRequest $request)
+    public function store(StoreTicketRequest $request, TicketFlowNotificationService $notificationService)
     {
         $data = $request->validated();
 
@@ -157,6 +158,16 @@ class TicketController extends Controller
                 'comentario' => 'Ticket registrado en el sistema.',
             ]);
         });
+
+        $ticket->load([
+            'solicitante',
+            'responsable',
+            'tipoTicket',
+            'estadoTicket',
+        ]);
+
+        $notificationService->enviarSegunEstado($ticket, 'usuario');
+        $notificationService->enviarSegunEstado($ticket, 'admin');
 
         return redirect()
             ->route('tik.tickets.show', $ticket->id_ticket)
@@ -267,7 +278,7 @@ class TicketController extends Controller
         }
     }
 
-    public function cancel(int $ticket)
+    public function cancel(int $ticket, TicketFlowNotificationService $notificationService)
     {
         try {
             $ticket = Ticket::with('estadoTicket')->findOrFail($ticket);
@@ -299,6 +310,17 @@ class TicketController extends Controller
                     'comentario' => 'Ticket cancelado por el usuario.',
                 ]);
             });
+
+            $ticket->refresh();
+            $ticket->load([
+                'solicitante',
+                'responsable',
+                'tipoTicket',
+                'estadoTicket',
+            ]);
+
+            $notificationService->enviarSegunEstado($ticket, 'usuario');
+            $notificationService->enviarSegunEstado($ticket, 'admin');
 
             return Response::json([
                 'success' => true,
@@ -355,7 +377,7 @@ class TicketController extends Controller
             ->with('success', 'Archivo adjuntado correctamente.');
     }
 
-    public function storeTracking(StoreSeguimientoTicketRequest $request, int $ticket)
+    public function storeTracking(StoreSeguimientoTicketRequest $request, int $ticket, TicketFlowNotificationService $notificationService)
     {
         $ticket = Ticket::with('estadoTicket')->findOrFail($ticket);
         $usuario = auth()->user();
@@ -384,6 +406,17 @@ class TicketController extends Controller
                 'comentario' => $comentario,
             ]);
         });
+
+        $ticket->refresh();
+        $ticket->load([
+            'solicitante',
+            'responsable',
+            'tipoTicket',
+            'estadoTicket',
+        ]);
+
+        $notificationService->enviarSegunEstado($ticket, 'usuario');
+        $notificationService->enviarSegunEstado($ticket, 'admin');
 
         return redirect()
             ->route('tik.tickets.show', $ticket->id_ticket)

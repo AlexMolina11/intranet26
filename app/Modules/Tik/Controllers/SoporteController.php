@@ -6,10 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Tik\Models\Soporte;
 use App\Modules\Tik\Models\SoporteDetalle;
 use App\Modules\Tik\Models\Ticket;
-use App\Modules\Tik\Models\Incidencia;
-use App\Modules\Tik\Models\Seccion;
 use App\Modules\Tik\Models\SeguimientoTicket;
-use App\Modules\Tik\Models\TipoServicio;
 use App\Modules\Tik\Requests\StoreSoporteRequest;
 use App\Modules\Seg\Models\Usuario;
 use App\Modules\Org\Models\Departamento;
@@ -29,7 +26,6 @@ class SoporteController extends Controller
             'solicitante',
             'departamento',
             'proyecto',
-            'seccion',
             'detalles.servicio.tipoServicio',
             'detalles.incidencia',
         ])->where('id_usuario_gestor', $usuario->id_usuario);
@@ -113,20 +109,6 @@ class SoporteController extends Controller
             ->orderBy('nombre')
             ->get();
 
-        $secciones = Seccion::query()
-            ->where('activo', true)
-            ->whereNull('deleted_at')
-            ->orderBy('orden')
-            ->orderBy('nombre')
-            ->get();
-
-        $incidencias = Incidencia::query()
-            ->with('areaResponsable.departamento')
-            ->where('activo', true)
-            ->whereNull('deleted_at')
-            ->orderBy('nombre')
-            ->get();
-
         $solicitantes = Usuario::query()
             ->where('activo', true)
             ->whereNull('deleted_at')
@@ -134,28 +116,11 @@ class SoporteController extends Controller
             ->orderBy('apellidos')
             ->get();
 
-        $tiposServicio = TipoServicio::query()
-            ->with([
-                'servicios' => function ($query) {
-                    $query->where('activo', true)
-                        ->whereNull('deleted_at')
-                        ->orderBy('nombre');
-                },
-            ])
-            ->where('activo', true)
-            ->whereNull('deleted_at')
-            ->orderBy('orden')
-            ->orderBy('nombre')
-            ->get();
-
         return view('tik.soportes.create', compact(
             'ticket',
             'departamentos',
             'proyectos',
-            'secciones',
-            'incidencias',
-            'solicitantes',
-            'tiposServicio'
+            'solicitantes'
         ));
     }
 
@@ -197,6 +162,57 @@ class SoporteController extends Controller
                 ->withInput();
         }
 
+        $serviciosIds = collect($selecciones)
+            ->pluck('servicio_id')
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        $incidenciasIds = collect($selecciones)
+            ->pluck('incidencia_id')
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        if ($serviciosIds->isEmpty() || $incidenciasIds->isEmpty()) {
+            return back()
+                ->withErrors([
+                    'selecciones' => 'Cada selección debe incluir servicio e incidencia.',
+                ])
+                ->withInput();
+        }
+
+        $serviciosValidos = DB::table('tik_servicios as s')
+            ->join('tik_tipos_servicio as ts', 'ts.id_tipo_servicio', '=', 's.id_tipo_servicio')
+            ->join('org_areas as a', 'a.id_area', '=', 'ts.id_area_responsable')
+            ->join('org_departamentos as d', 'd.id_departamento', '=', 'a.id_departamento')
+            ->whereIn('s.id_servicio', $serviciosIds)
+            ->whereNull('s.deleted_at')
+            ->whereNull('ts.deleted_at')
+            ->whereNull('a.deleted_at')
+            ->whereNull('d.deleted_at')
+            ->where('s.activo', 1)
+            ->where('ts.activo', 1)
+            ->where('d.id_departamento', (int) $data['id_departamento'])
+            ->pluck('s.id_servicio')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+
+        $incidenciasValidas = DB::table('tik_incidencias as i')
+            ->join('org_areas as a', 'a.id_area', '=', 'i.id_area_responsable')
+            ->join('org_departamentos as d', 'd.id_departamento', '=', 'a.id_departamento')
+            ->whereIn('i.id_incidencia', $incidenciasIds)
+            ->whereNull('i.deleted_at')
+            ->whereNull('a.deleted_at')
+            ->whereNull('d.deleted_at')
+            ->where('i.activo', 1)
+            ->where('d.id_departamento', (int) $data['id_departamento'])
+            ->pluck('i.id_incidencia')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+
         foreach ($selecciones as $seleccion) {
             if (
                 !is_array($seleccion) ||
@@ -209,6 +225,22 @@ class SoporteController extends Controller
                     ])
                     ->withInput();
             }
+
+            if (!in_array((int) $seleccion['servicio_id'], $serviciosValidos, true)) {
+                return back()
+                    ->withErrors([
+                        'selecciones' => 'Uno de los servicios seleccionados no pertenece al departamento indicado.',
+                    ])
+                    ->withInput();
+            }
+
+            if (!in_array((int) $seleccion['incidencia_id'], $incidenciasValidas, true)) {
+                return back()
+                    ->withErrors([
+                        'selecciones' => 'Una de las incidencias seleccionadas no pertenece al departamento indicado.',
+                    ])
+                    ->withInput();
+            }
         }
 
         DB::transaction(function () use ($usuario, $data, $ticket, $selecciones) {
@@ -218,7 +250,6 @@ class SoporteController extends Controller
                 'id_usuario_solicitante' => $data['id_usuario_solicitante'],
                 'id_departamento' => $data['id_departamento'],
                 'id_proyecto' => $data['id_proyecto'] ?? null,
-                'id_seccion' => $data['id_seccion'] ?? null,
                 'tipo_registro' => $data['tipo_registro'],
                 'asunto' => $data['asunto'],
                 'descripcion' => $data['descripcion'],

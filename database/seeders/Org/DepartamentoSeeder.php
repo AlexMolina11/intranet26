@@ -37,6 +37,18 @@ class DepartamentoSeeder extends Seeder
                 'descripcion' => 'Departamento de talento humano',
                 'activo' => 1,
             ],
+            [
+                'codigo' => 'SG',
+                'nombre' => 'Servicios Generales',
+                'descripcion' => 'Departamento de servicios generales',
+                'activo' => 1,
+            ],
+            [
+                'codigo' => 'COM',
+                'nombre' => 'Comunicaciones',
+                'descripcion' => 'Departamento de comunicaciones',
+                'activo' => 1,
+            ],
         ];
 
         foreach ($departamentos as $departamento) {

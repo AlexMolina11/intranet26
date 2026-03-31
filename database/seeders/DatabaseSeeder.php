@@ -65,10 +65,10 @@ class DatabaseSeeder extends Seeder
             TipoTicketRrhhSeeder::class,
             FormatoTicketSeeder::class,
             EstadoTicketSeeder::class,
-            FlujoTicketSeeder::class,
-            IncidenciaSeeder::class,
             TipoServicioSeeder::class,
-            ServicioSeeder::class,
+            ServicioSeeder::class, 
+            IncidenciaSeeder::class,
+            FlujoTicketSeeder::class,
 
             TikUsuarioDemoSeeder::class,
             TikUsuarioSistemaSeeder::class,

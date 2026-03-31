@@ -26,20 +26,20 @@ class FlujoTicketSeeder extends Seeder
             [
                 'estado' => 'ASIGNADO',
                 'orden' => 2,
-                'mensaje_usuario' => 'Su ticket con <b>ID [[id]]</b> ha sido asignado, en breve nos pondremos en contacto con usted.<br>A continuación se presentan los datos:',
+                'mensaje_usuario' => 'Su ticket con <b>ID [[id]]</b> ha sido asignado. En breve nos pondremos en contacto con usted.<br>A continuación se presentan los datos:',
                 'mensaje_admin' => 'Se le ha asignado un ticket. A continuación se presentan los datos:',
             ],
             [
                 'estado' => 'PLANIFICADO',
                 'orden' => 3,
                 'mensaje_usuario' => 'A continuación le compartimos la planificación de su ticket con <b>ID [[id]]</b>:',
-                'mensaje_admin' => '',
+                'mensaje_admin' => 'El ticket <b>[[id]]</b> ha sido planificado.',
             ],
             [
                 'estado' => 'EN_PROCESO',
                 'orden' => 4,
-                'mensaje_usuario' => '',
-                'mensaje_admin' => '',
+                'mensaje_usuario' => 'Su ticket con <b>ID [[id]]</b> se encuentra actualmente en proceso.',
+                'mensaje_admin' => 'El ticket <b>[[id]]</b> se encuentra en proceso.',
             ],
             [
                 'estado' => 'FINALIZADO',
@@ -50,14 +50,14 @@ class FlujoTicketSeeder extends Seeder
             [
                 'estado' => 'NO_APLICA',
                 'orden' => 6,
-                'mensaje_usuario' => '',
-                'mensaje_admin' => '',
+                'mensaje_usuario' => 'El ticket con <b>ID [[id]]</b> ha sido marcado como no aplica.',
+                'mensaje_admin' => 'El ticket <b>[[id]]</b> ha sido marcado como no aplica.',
             ],
             [
                 'estado' => 'CANCELADO',
                 'orden' => 7,
-                'mensaje_usuario' => '',
-                'mensaje_admin' => '',
+                'mensaje_usuario' => 'El ticket con <b>ID [[id]]</b> ha sido cancelado.',
+                'mensaje_admin' => 'El ticket <b>[[id]]</b> ha sido cancelado.',
             ],
         ];
 
@@ -74,6 +74,10 @@ class FlujoTicketSeeder extends Seeder
             }
 
             foreach ($base as $fila) {
+                if (!isset($estados[$fila['estado']])) {
+                    continue;
+                }
+
                 DB::table('tik_flujos_ticket')->updateOrInsert(
                     [
                         'id_tipo_ticket' => $tipos[$codigoTipo],
@@ -98,8 +102,8 @@ class FlujoTicketSeeder extends Seeder
                     'id_estado_ticket' => $estados['PROYECTO'],
                 ],
                 [
-                    'mensaje_usuario' => '',
-                    'mensaje_admin' => '',
+                    'mensaje_usuario' => 'Su ticket con <b>ID [[id]]</b> ha pasado a estado de proyecto.',
+                    'mensaje_admin' => 'El ticket <b>[[id]]</b> ha pasado a estado de proyecto.',
                     'orden' => 8,
                     'activo' => true,
                     'updated_at' => now(),
@@ -115,8 +119,8 @@ class FlujoTicketSeeder extends Seeder
                     'id_estado_ticket' => $estados['PROYECTO_FINALIZADO'],
                 ],
                 [
-                    'mensaje_usuario' => '<b>Su ticket ha sido resuelto.<br><span style="color: red;">Tiene 3 días hábiles para validar los cambios, después de este periodo se dará el ticket como cerrado.</span></b><br>A continuación se presentan los datos del ticket:',
-                    'mensaje_admin' => '<b>Ticket resuelto.<br><span style="color: red;">Se tienen 3 días hábiles para validar los cambios, después de este periodo se dará el ticket como cerrado.</span></b><br>A continuación se presentan los datos del ticket:',
+                    'mensaje_usuario' => '<b>Su ticket ha sido resuelto.</b><br><span style="color: red;">Tiene 3 días hábiles para validar los cambios, después de este periodo se dará el ticket como cerrado.</span><br>A continuación se presentan los datos del ticket:',
+                    'mensaje_admin' => '<b>Ticket resuelto.</b><br><span style="color: red;">Se tienen 3 días hábiles para validar los cambios, después de este periodo se dará el ticket como cerrado.</span><br>A continuación se presentan los datos del ticket:',
                     'orden' => 9,
                     'activo' => true,
                     'updated_at' => now(),
@@ -132,8 +136,8 @@ class FlujoTicketSeeder extends Seeder
                     'id_estado_ticket' => $estados['PROYECTO'],
                 ],
                 [
-                    'mensaje_usuario' => '',
-                    'mensaje_admin' => '',
+                    'mensaje_usuario' => 'Su ticket con <b>ID [[id]]</b> ha pasado a estado de proyecto.',
+                    'mensaje_admin' => 'El ticket <b>[[id]]</b> ha pasado a estado de proyecto.',
                     'orden' => 8,
                     'activo' => true,
                     'updated_at' => now(),
@@ -149,8 +153,8 @@ class FlujoTicketSeeder extends Seeder
                     'id_estado_ticket' => $estados['PROYECTO_FINALIZADO'],
                 ],
                 [
-                    'mensaje_usuario' => '<b>Su ticket ha sido resuelto.<br><span style="color: red;">Tiene 3 días hábiles para validar los cambios, después de este periodo se dará el ticket como cerrado.</span></b><br>A continuación se presentan los datos del ticket:',
-                    'mensaje_admin' => '<b>Ticket resuelto.<br><span style="color: red;">Se tienen 3 días hábiles para validar los cambios, después de este periodo se dará el ticket como cerrado.</span></b><br>A continuación se presentan los datos del ticket:',
+                    'mensaje_usuario' => '<b>Su ticket ha sido resuelto.</b><br><span style="color: red;">Tiene 3 días hábiles para validar los cambios, después de este periodo se dará el ticket como cerrado.</span><br>A continuación se presentan los datos del ticket:',
+                    'mensaje_admin' => '<b>Ticket resuelto.</b><br><span style="color: red;">Se tienen 3 días hábiles para validar los cambios, después de este periodo se dará el ticket como cerrado.</span><br>A continuación se presentan los datos del ticket:',
                     'orden' => 9,
                     'activo' => true,
                     'updated_at' => now(),
