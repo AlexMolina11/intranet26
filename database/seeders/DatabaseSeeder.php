@@ -39,6 +39,21 @@ use Database\Seeders\Bib\BibRolSeeder;
 use Database\Seeders\Bib\BibRolPermisoSeeder;
 use Database\Seeders\Bib\BibMenuSeeder;
 use Database\Seeders\Bib\BibMenuItemSeeder;
+use Database\Seeders\Bib\Catalogos\AutorSeeder;
+use Database\Seeders\Bib\Catalogos\EditorialSeeder;
+use Database\Seeders\Bib\Catalogos\ClasificacionSeeder;
+use Database\Seeders\Bib\Catalogos\GeneroSeeder;
+use Database\Seeders\Bib\Catalogos\IdiomaSeeder;
+use Database\Seeders\Bib\Catalogos\PaisSeeder;
+use Database\Seeders\Bib\Catalogos\NivelBibliograficoSeeder;
+use Database\Seeders\Bib\Catalogos\TipoRecursoBibliotecaSeeder;
+use Database\Seeders\Bib\Catalogos\TipoAdquisicionBibliotecaSeeder;
+use Database\Seeders\Bib\Catalogos\TipoAccesoBibliotecaSeeder;
+use Database\Seeders\Bib\Catalogos\EtiquetaBibliotecaSeeder;
+use Database\Seeders\Bib\Catalogos\DisponibilidadBibliotecaSeeder;
+use Database\Seeders\Bib\Catalogos\EstadoEjemplarBibliotecaSeeder;
+use Database\Seeders\Bib\Catalogos\EstadoPrestamoBibliotecaSeeder;
+use Database\Seeders\Bib\Catalogos\EstadoSolicitudBibliotecaSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -89,6 +104,22 @@ class DatabaseSeeder extends Seeder
             BibRolPermisoSeeder::class,
             BibMenuSeeder::class,
             BibMenuItemSeeder::class,
+
+            AutorSeeder::class,
+            EditorialSeeder::class,
+            ClasificacionSeeder::class,
+            GeneroSeeder::class,
+            IdiomaSeeder::class,
+            PaisSeeder::class,
+            NivelBibliograficoSeeder::class,
+            TipoRecursoBibliotecaSeeder::class,
+            TipoAdquisicionBibliotecaSeeder::class,
+            TipoAccesoBibliotecaSeeder::class,
+            EtiquetaBibliotecaSeeder::class,
+            DisponibilidadBibliotecaSeeder::class,
+            EstadoEjemplarBibliotecaSeeder::class,
+            EstadoPrestamoBibliotecaSeeder::class,
+            EstadoSolicitudBibliotecaSeeder::class,
         ]);
     }
 }

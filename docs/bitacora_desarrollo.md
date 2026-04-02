@@ -681,3 +681,49 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
   - multa diaria por defecto
 - En `bib_tipos_acceso`, `bib_disponibilidades`, `bib_estados_ejemplar`, `bib_estados_prestamo` y `bib_estados_solicitud` se incorporaron banderas booleanas orientadas a reglas futuras del sistema, para evitar depender de comparaciones por nombre o código en la lógica de negocio.
 - Se dejó preparada la base de catálogos para continuar con modelos, seeders y CRUD de configuración en la siguiente parte del Día 20.
+
+## Día 20 - Modelos y seeders base de catálogos de Biblioteca
+
+- Se completó la tercera parte del Día 20, enfocada en dejar operativos los catálogos del sistema Biblioteca a nivel de dominio y datos iniciales.
+- Se crearon los modelos Eloquent del módulo `App\Modules\Bib\Models` para los catálogos base:
+  - `Autor`
+  - `Editorial`
+  - `Clasificacion`
+  - `Genero`
+  - `Idioma`
+  - `Pais`
+  - `NivelBibliografico`
+  - `TipoRecurso`
+  - `TipoAdquisicion`
+  - `TipoAcceso`
+  - `Etiqueta`
+  - `Disponibilidad`
+  - `EstadoEjemplar`
+  - `EstadoPrestamo`
+  - `EstadoSolicitud`
+- Cada modelo fue configurado con:
+  - tabla correspondiente `bib_*`
+  - llave primaria personalizada `id_*`
+  - `fillable`
+  - `casts`
+  - `SoftDeletes`
+- Se crearon seeders básicos para poblar los catálogos iniciales del sistema Biblioteca.
+- Se sembraron autores de ejemplo para pruebas iniciales del módulo.
+- Se sembraron editoriales base y etiquetas generales para clasificación interna.
+- Se sembraron catálogos bibliográficos principales:
+  - clasificaciones
+  - géneros
+  - idiomas
+  - países
+  - niveles bibliográficos
+- Se sembraron tipos de recurso con parametrización inicial de circulación:
+  - días de préstamo por defecto
+  - renovaciones por defecto
+  - multa diaria por defecto
+- Se sembraron tipos de adquisición y tipos de acceso con banderas funcionales para uso posterior en reglas del sistema.
+- Se sembraron disponibilidades y estados separados para:
+  - ejemplares
+  - préstamos
+  - solicitudes
+- Se actualizó `DatabaseSeeder` para integrar todos los seeders de catálogos del sistema Biblioteca dentro del flujo general de inicialización de la base de datos.
+- Con esta parte quedó lista la base lógica y semántica de los catálogos bibliográficos, permitiendo avanzar a la administración CRUD de configuración del módulo Biblioteca.

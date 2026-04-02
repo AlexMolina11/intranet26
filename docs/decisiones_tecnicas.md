@@ -590,3 +590,25 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
   - permitir aprobación o rechazo
 - Se decidió dejar en `bib_tipos_recurso` una parametrización mínima de circulación mediante campos por defecto, como apoyo transitorio antes de implementar `bib_politicas_prestamo` en el Día 22.
 - Se mantuvo el uso de `softDeletes()` en los catálogos, para preservar integridad histórica y evitar pérdida lógica de referencias cuando el sistema empiece a relacionar recursos, ejemplares, préstamos y multas.
+
+## Día 20 - Decisión técnica: poblar catálogos bibliográficos antes del CRUD operativo
+
+- Se decidió crear primero los modelos y seeders base de los catálogos bibliográficos antes de implementar los CRUD de administración.
+- Esta decisión permite que el sistema Biblioteca tenga datos mínimos utilizables desde el inicio y evita desarrollar formularios vacíos o pantallas sin contexto funcional.
+- Los modelos `bib_*` fueron creados con una convención homogénea basada en:
+  - tabla explícita
+  - llave primaria personalizada
+  - asignación masiva controlada con `fillable`
+  - tipado mediante `casts`
+  - soporte de borrado lógico con `SoftDeletes`
+- Se decidió poblar catálogos con datos semilla iniciales suficientemente representativos para pruebas funcionales, pero sin sobrecargar el sistema con catálogos extensos en esta etapa.
+- Los seeders utilizan `updateOrInsert` para facilitar reejecuciones durante desarrollo sin duplicar registros ni romper el flujo de pruebas.
+- Se mantuvo la separación entre:
+  - dominio bibliográfico descriptivo
+  - parámetros operativos
+  - estados funcionales
+- Esta separación facilitará posteriormente la implementación de:
+  - formularios de administración
+  - validaciones por catálogo
+  - reglas de circulación
+  - relaciones con recursos, ejemplares, solicitudes y préstamos
