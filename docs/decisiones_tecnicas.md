@@ -571,3 +571,22 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
 - Se mantuvo el criterio de navegación dinámica por sistema activo, agregando la resolución del código `BIB` en `ActiveSystemResolver`.
 - Se decidió crear placeholders temporales para pantallas de configuración mientras se desarrollan los CRUD reales, de forma que los menús puedan sembrarse desde el inicio sin romper navegación.
 - Se dejó preparado el menú operativo de Biblioteca desde la fase base, aunque varias rutas funcionales serán implementadas en los días siguientes conforme avance el núcleo bibliográfico y de circulación.
+
+## Día 20 - Decisión técnica: catálogos bibliográficos separados y orientados a reglas de negocio
+
+- Se decidió modelar los catálogos bibliográficos del sistema Biblioteca en tablas independientes `bib_*`, en lugar de concentrar múltiples dominios en estructuras genéricas.
+- Esta decisión mantiene claridad semántica, facilita validaciones específicas y reduce acoplamiento en controladores, modelos y formularios.
+- Se separaron los estados en tres tablas distintas:
+  - `bib_estados_ejemplar`
+  - `bib_estados_prestamo`
+  - `bib_estados_solicitud`
+- La separación responde a que cada tipo de estado representa ciclos de vida diferentes y será utilizado en reglas operativas distintas dentro del sistema.
+- En lugar de resolver comportamiento por nombres hardcodeados, se incorporaron banderas booleanas en varios catálogos para soportar reglas futuras de negocio, por ejemplo:
+  - permitir préstamo
+  - permitir reserva
+  - generar multa
+  - ser estado inicial o final
+  - afectar inventario
+  - permitir aprobación o rechazo
+- Se decidió dejar en `bib_tipos_recurso` una parametrización mínima de circulación mediante campos por defecto, como apoyo transitorio antes de implementar `bib_politicas_prestamo` en el Día 22.
+- Se mantuvo el uso de `softDeletes()` en los catálogos, para preservar integridad histórica y evitar pérdida lógica de referencias cuando el sistema empiece a relacionar recursos, ejemplares, préstamos y multas.

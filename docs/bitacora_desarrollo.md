@@ -645,3 +645,39 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - Se registraron los primeros items de menú del sistema, dejando listos los accesos para dashboard, catálogos y futuras pantallas operativas.
 - Se agregaron vistas placeholder temporales para catálogos de configuración, con el fin de evitar rutas rotas mientras se implementan los CRUD reales del Día 20.
 - Se actualizaron `routes/bib.php`, `DatabaseSeeder` y `config/access.php` para integrar Biblioteca al flujo general del proyecto.
+
+## Día 20 - Migraciones de catálogos del sistema Biblioteca
+
+- Se avanzó con la segunda parte del Día 20, enfocada en la estructura física inicial del módulo Biblioteca.
+- Se crearon las migraciones de catálogos base `bib_*` necesarias para comenzar la construcción del sistema bibliográfico.
+- Se implementaron tablas para catálogos generales:
+  - `bib_autores`
+  - `bib_editoriales`
+  - `bib_etiquetas`
+- Se implementaron tablas para catálogos parametrizables:
+  - `bib_clasificaciones`
+  - `bib_generos`
+  - `bib_idiomas`
+  - `bib_paises`
+  - `bib_niveles_bibliograficos`
+  - `bib_tipos_recurso`
+  - `bib_tipos_adquisicion`
+  - `bib_tipos_acceso`
+  - `bib_disponibilidades`
+- Se implementaron tablas separadas para estados funcionales del módulo:
+  - `bib_estados_ejemplar`
+  - `bib_estados_prestamo`
+  - `bib_estados_solicitud`
+- Se mantuvo la convención general del proyecto:
+  - llaves primarias personalizadas `id_*`
+  - campos `activo`
+  - `timestamps`
+  - `softDeletes()`
+  - índices para búsqueda y ordenamiento
+- En los catálogos parametrizables se incorporaron campos `codigo`, `nombre`, `descripcion`, `orden` y banderas funcionales según el caso.
+- En `bib_tipos_recurso` se dejaron valores base para parametrización inicial de circulación:
+  - días de préstamo por defecto
+  - renovaciones por defecto
+  - multa diaria por defecto
+- En `bib_tipos_acceso`, `bib_disponibilidades`, `bib_estados_ejemplar`, `bib_estados_prestamo` y `bib_estados_solicitud` se incorporaron banderas booleanas orientadas a reglas futuras del sistema, para evitar depender de comparaciones por nombre o código en la lógica de negocio.
+- Se dejó preparada la base de catálogos para continuar con modelos, seeders y CRUD de configuración en la siguiente parte del Día 20.
