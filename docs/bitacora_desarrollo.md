@@ -606,3 +606,42 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - Se actualizaron las vistas de gestor y administrador para mostrar comentarios del solicitante y archivos adjuntos con opción de descarga.
 - Se corrigió la configuración de permisos en `config/access.php` para permitir que el solicitante comente, adjunte archivos, descargue anexos y cancele su ticket usando permisos de detalle, en lugar de permisos de gestión.
 - Se eliminó del mapeo de acceso la ruta de seguimiento del solicitante, ya que ese flujo dejó de estar disponible.
+
+## Día 20 - Base del sistema Biblioteca (BIB)
+
+- Se inició el tercer sistema del proyecto: Biblioteca.
+- Se definió la base estructural del módulo `BIB`, siguiendo la misma lógica arquitectónica utilizada en Tickets:
+  - sistema propio en `seg_sistemas`
+  - permisos propios en `seg_permisos`
+  - roles del sistema en `seg_roles`
+  - asignación de permisos a roles
+  - menú y opciones propias en `seg_menus` y `seg_menu_items`
+  - dashboard independiente
+  - rutas con prefijo `bib.` y middleware `route.access`
+- Se creó `BibDashboardController` y la vista `bib.dashboard` como punto de entrada del sistema.
+- Se agregó soporte para resolver el sistema activo `BIB` desde `ActiveSystemResolver`, permitiendo que la navegación dinámica reconozca correctamente el módulo Biblioteca.
+- Se sembró el sistema `BIB` en `seg_sistemas` con su código, slug, descripción y orden.
+- Se definieron permisos base del módulo para:
+  - acceso general
+  - dashboard
+  - catálogos
+  - recursos
+  - ejemplares
+  - solicitudes
+  - préstamos
+  - multas
+  - políticas
+  - consulta bibliográfica
+- Se crearon roles iniciales para Biblioteca:
+  - Super Administrador
+  - Administrador Biblioteca
+  - Bibliotecario
+  - Consulta Biblioteca
+- Se asignaron permisos por rol para dejar operativa la seguridad inicial del sistema.
+- Se creó el menú base del sistema Biblioteca con tres grupos:
+  - Inicio
+  - Operación
+  - Configuración
+- Se registraron los primeros items de menú del sistema, dejando listos los accesos para dashboard, catálogos y futuras pantallas operativas.
+- Se agregaron vistas placeholder temporales para catálogos de configuración, con el fin de evitar rutas rotas mientras se implementan los CRUD reales del Día 20.
+- Se actualizaron `routes/bib.php`, `DatabaseSeeder` y `config/access.php` para integrar Biblioteca al flujo general del proyecto.

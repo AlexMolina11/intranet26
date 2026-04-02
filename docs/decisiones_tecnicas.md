@@ -554,3 +554,20 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
 - Se descartó el uso de `TIK_TICKETS_GESTIONAR` para acciones del solicitante, ya que ese permiso representa una capacidad operativa más amplia y generaba bloqueos incorrectos sobre funciones básicas del usuario final.
 - La visibilidad de comentarios y anexos se incorporó tanto en el panel del gestor como en el panel del administrador para asegurar trazabilidad completa del caso sin duplicar estructuras ni tablas adicionales.
 - Se mantuvo la validación en controlador además del middleware de acceso, para garantizar que solo el solicitante pueda comentar o adjuntar sobre su propio ticket aunque la ruta esté accesible por permiso.
+
+## Día 20 - Decisión técnica: inicialización de Biblioteca como sistema independiente
+
+- Se decidió iniciar el módulo Biblioteca como un sistema independiente dentro de la Intranet, replicando la arquitectura ya consolidada en Tickets.
+- Antes de crear las tablas bibliográficas `bib_*`, se dejó preparada la base transversal del sistema:
+  - registro en `seg_sistemas`
+  - permisos
+  - roles
+  - relaciones rol-permiso
+  - menú
+  - items de menú
+  - dashboard
+  - prefijo de rutas `bib.`
+- Esta decisión evita construir tablas y catálogos aislados sin integración real con navegación, autorización y visibilidad por sistema.
+- Se mantuvo el criterio de navegación dinámica por sistema activo, agregando la resolución del código `BIB` en `ActiveSystemResolver`.
+- Se decidió crear placeholders temporales para pantallas de configuración mientras se desarrollan los CRUD reales, de forma que los menús puedan sembrarse desde el inicio sin romper navegación.
+- Se dejó preparado el menú operativo de Biblioteca desde la fase base, aunque varias rutas funcionales serán implementadas en los días siguientes conforme avance el núcleo bibliográfico y de circulación.

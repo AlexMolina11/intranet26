@@ -165,5 +165,24 @@ return [
         'tik.config.servicios.store' => ['TIK_CATALOGOS_CREAR'],
         'tik.config.servicios.edit' => ['TIK_CATALOGOS_EDITAR'],
         'tik.config.servicios.update' => ['TIK_CATALOGOS_EDITAR'],
+
+        //Accesos Sistema de Biblioteca
+        'bib.dashboard' => 'BIB_DASHBOARD_VER',
+
+        'bib.config.autores.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.editoriales.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.clasificaciones.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.generos.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.idiomas.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.paises.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.niveles-bibliograficos.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.tipos-recurso.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.tipos-adquisicion.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.tipos-acceso.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.etiquetas.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.disponibilidades.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.estados-ejemplar.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.estados-prestamo.index' => 'BIB_CATALOGOS_VER',
+        'bib.config.estados-solicitud.index' => 'BIB_CATALOGOS_VER',
     ],
 ];

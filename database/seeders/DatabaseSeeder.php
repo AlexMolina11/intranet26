@@ -33,6 +33,12 @@ use Database\Seeders\Tik\TikUsuarioSistemaSeeder;
 use Database\Seeders\Tik\TikUsuarioRolSeeder;
 use Database\Seeders\Tik\TikMenuSeeder;
 use Database\Seeders\Tik\TikMenuItemSeeder;
+use Database\Seeders\Bib\BibSistemaSeeder;
+use Database\Seeders\Bib\PermisoBibliotecaSeeder;
+use Database\Seeders\Bib\BibRolSeeder;
+use Database\Seeders\Bib\BibRolPermisoSeeder;
+use Database\Seeders\Bib\BibMenuSeeder;
+use Database\Seeders\Bib\BibMenuItemSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -66,7 +72,7 @@ class DatabaseSeeder extends Seeder
             FormatoTicketSeeder::class,
             EstadoTicketSeeder::class,
             TipoServicioSeeder::class,
-            ServicioSeeder::class, 
+            ServicioSeeder::class,
             IncidenciaSeeder::class,
             FlujoTicketSeeder::class,
 
@@ -76,6 +82,13 @@ class DatabaseSeeder extends Seeder
 
             TikMenuSeeder::class,
             TikMenuItemSeeder::class,
+
+            BibSistemaSeeder::class,
+            PermisoBibliotecaSeeder::class,
+            BibRolSeeder::class,
+            BibRolPermisoSeeder::class,
+            BibMenuSeeder::class,
+            BibMenuItemSeeder::class,
         ]);
     }
 }

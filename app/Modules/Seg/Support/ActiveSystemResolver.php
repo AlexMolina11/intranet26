@@ -26,6 +26,10 @@ class ActiveSystemResolver
             return 'TIK';
         }
 
+        if (str_starts_with($routeName, 'bib.')) {
+            return 'BIB';
+        }
+
         if (str_starts_with($routeName, 'seg.')) {
             return 'INTRANET';
         }
