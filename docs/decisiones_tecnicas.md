@@ -612,3 +612,25 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
   - validaciones por catálogo
   - reglas de circulación
   - relaciones con recursos, ejemplares, solicitudes y préstamos
+
+  ## Día 20 - Decisión técnica: eliminar parámetros genéricos `{item}` en CRUD de Biblioteca
+
+- Se decidió eliminar el uso de parámetros genéricos `{item}` en las rutas de catálogos del sistema Biblioteca.
+- Aunque `{item}` reducía repetición aparente, generaba incompatibilidades con el route model binding automático de Laravel, especialmente al trabajar con controladores base y tipos de modelo distintos.
+- Para evitar ambigüedad y errores en edición y actualización, se adoptó un enfoque explícito usando parámetros de ruta por entidad, por ejemplo:
+  - `{clasificacion}`
+  - `{editorial}`
+  - `{genero}`
+  - `{idioma}`
+  - `{pais}`
+  - `{nivelBibliografico}`
+  - `{tipoAdquisicion}`
+  - `{etiqueta}`
+- También se decidió que los controladores base manejen únicamente operaciones comunes de creación y listado, mientras que los métodos `edit` y `update` queden definidos en cada controlador concreto con su modelo real.
+- Esta decisión mejora:
+  - claridad del código
+  - compatibilidad con Laravel
+  - facilidad de depuración
+  - mantenibilidad futura del módulo
+- Se complementó el ajuste con una estrategia explícita en los requests mediante `routeParam()`, para que las validaciones únicas de edición se resuelvan sobre el modelo correcto.
+- Con esta decisión, el CRUD de catálogos de Biblioteca queda alineado con una implementación más estable y consistente con la arquitectura general del proyecto.
