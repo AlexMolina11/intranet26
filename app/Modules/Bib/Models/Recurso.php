@@ -4,6 +4,7 @@ namespace App\Modules\Bib\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Bib\Models\Ejemplar;
 
 class Recurso extends Model
 {
@@ -130,5 +131,10 @@ class Recurso extends Model
         return $this->subtitulo
             ? $this->titulo . ': ' . $this->subtitulo
             : $this->titulo;
+    }
+
+    public function ejemplares()
+    {
+        return $this->hasMany(Ejemplar::class, 'id_recurso', 'id_recurso');
     }
 }

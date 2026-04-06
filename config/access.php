@@ -103,7 +103,6 @@ return [
         // Tickets dashboard
         'tik.dashboard' => ['TIK_VER'],
 
-
         // Tickets solicitante
         'tik.tickets.index' => ['TIK_TICKETS_VER'],
         'tik.tickets.create' => ['TIK_TICKETS_CREAR'],
@@ -175,6 +174,12 @@ return [
         'bib.recursos.store' => ['BIB_RECURSOS_CREAR'],
         'bib.recursos.edit' => ['BIB_RECURSOS_EDITAR'],
         'bib.recursos.update' => ['BIB_RECURSOS_EDITAR'],
+
+        'bib.ejemplares.index' => ['BIB_EJEMPLARES_VER'],
+        'bib.ejemplares.create' => ['BIB_EJEMPLARES_CREAR'],
+        'bib.ejemplares.store' => ['BIB_EJEMPLARES_CREAR'],
+        'bib.ejemplares.edit' => ['BIB_EJEMPLARES_EDITAR'],
+        'bib.ejemplares.update' => ['BIB_EJEMPLARES_EDITAR'],
 
         'bib.config.autores.index' => 'BIB_CATALOGOS_VER',
         'bib.config.autores.create' => 'BIB_CATALOGOS_CREAR',

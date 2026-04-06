@@ -346,11 +346,11 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
 
 - Se redefinieron los roles funcionales del sistema Tickets para representar mejor la operación real del módulo.
 - Se sustituyeron los roles genéricos por perfiles específicos:
-  - Super Administrador
-  - Administrador Tickets
-  - Gestor Tickets
-  - Solicitante
-  - Consulta Tickets
+    - Super Administrador
+    - Administrador Tickets
+    - Gestor Tickets
+    - Solicitante
+    - Consulta Tickets
 - Se reorganizó la asignación de permisos por rol dentro de Tickets, alineándola con las rutas y paneles ya existentes del sistema.
 - Se creó un seeder de usuarios demo para validar escenarios reales de acceso y navegación.
 - Se amplió la asignación de acceso al sistema `TIK` para múltiples usuarios de prueba.
@@ -361,16 +361,16 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
 
 - Se creó la semilla de menús raíz del sistema `TIK` para separar su navegación de la intranet general.
 - Se definieron dos grupos iniciales de navegación:
-  - Inicio
-  - Operación
+    - Inicio
+    - Operación
 - Se sembraron items de menú únicamente para rutas ya existentes del módulo Tickets.
 - Se incorporaron accesos directos a:
-  - mis tickets
-  - crear ticket
-  - bandeja administrativa
-  - bandeja de gestión
-  - soportes
-  - crear soporte
+    - mis tickets
+    - crear ticket
+    - bandeja administrativa
+    - bandeja de gestión
+    - soportes
+    - crear soporte
 - Se dejó pendiente una segunda fase de menú para dashboard específico y catálogos, la cual dependerá de crear primero esas rutas y vistas.
 
 ## Día Bonus 3 - Separación clara entre seeders base y seeders de Tickets
@@ -378,8 +378,8 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
 - Se mantuvo el usuario `admin@intranet.local` como cuenta raíz de la intranet.
 - Se dejó la asignación del admin global restringida al sistema base `INTRANET`.
 - Se separó conceptualmente la responsabilidad de los seeders:
-  - `Seg` conserva la administración base del sistema
-  - `Tik` administra usuarios demo, accesos y roles específicos del módulo Tickets
+    - `Seg` conserva la administración base del sistema
+    - `Tik` administra usuarios demo, accesos y roles específicos del módulo Tickets
 - Esta separación deja la base lista para que cada sistema evolucione su propia navegación y perfiles sin mezclar responsabilidades.
 
 Etapa 4 — Probar la siembra y validar accesos
@@ -388,7 +388,7 @@ Objetivo
 Ejecutar todo y confirmar que los perfiles se sembraron bien.
 
 1. Ejecutar migración fresca con seeders
-php artisan migrate:fresh --seed
+   php artisan migrate:fresh --seed
 2. Probar usuarios
 
 Usa estas credenciales:
@@ -402,8 +402,7 @@ consulta.tickets@intranet.local
 
 Clave para todos:
 
-Admin2026*
-3. Validaciones esperadas
+Admin2026\* 3. Validaciones esperadas
 admin@intranet.local
 
 Debe poder entrar a:
@@ -477,10 +476,13 @@ Agrega esto a docs/decisiones_tecnicas.md:
 Se decidió validar la arquitectura de Tickets mediante usuarios demo específicos por perfil antes de avanzar con cambios mayores de navegación y dashboard.
 
 ### Motivo
+
 La navegación contextual y los paneles funcionales dependen directamente de que roles, permisos y accesos estén correctamente sembrados.
 
 ### Decisión
+
 Se utilizarán usuarios demo diferenciados para probar:
+
 - solicitante
 - gestor
 - administrador del módulo
@@ -488,6 +490,7 @@ Se utilizarán usuarios demo diferenciados para probar:
 - super administrador
 
 ### Consecuencia
+
 Las siguientes fases del proyecto podrán construirse sobre una base de permisos ya verificada y no sobre supuestos.
 Commit de esta etapa
 git add .
@@ -504,12 +507,12 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 
 - Se actualizó `NavigationService` para soportar filtrado por sistema activo.
 - Se mantuvo el formato de salida compatible con el layout actual:
-  - sistemas
-  - menús
-  - items
-  - hijos
-  - url
-  - route_name
+    - sistemas
+    - menús
+    - items
+    - hijos
+    - url
+    - route_name
 - Se evitó rehacer la vista base desde cero y se aprovechó la estructura ya existente del sidebar.
 
 ## - Inyección del contexto activo en la vista base
@@ -530,24 +533,24 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - Se diseñó e implementó un dashboard independiente para el módulo de Tickets (`TIK`), separado del dashboard general de la intranet.
 - Se creó el controlador `TikDashboardController` para centralizar la lógica de métricas operativas del sistema.
 - Se incorporaron indicadores clave:
-  - total de tickets del solicitante
-  - tickets abiertos y cerrados
-  - tickets asignados al usuario
-  - tickets en proceso
-  - tickets pendientes de asignación
+    - total de tickets del solicitante
+    - tickets abiertos y cerrados
+    - tickets asignados al usuario
+    - tickets en proceso
+    - tickets pendientes de asignación
 - Se implementó un resumen de tickets por estado para visualizar la distribución actual del sistema.
 - Se agregó una tabla de tickets recientes para facilitar la revisión rápida de actividad.
 - Se creó la vista `tik/dashboard.blade.php` con estructura de tarjetas, tablas y acciones rápidas.
 - Se integraron botones de acción contextual según permisos:
-  - creación de tickets
-  - creación de soportes
+    - creación de tickets
+    - creación de soportes
 - Se registró la ruta `tik.dashboard` como entrada principal del módulo.
 - Se protegió la ruta mediante el permiso base `TIK_VER`.
 - Se actualizó el menú del sistema `TIK` para incluir el dashboard como primer acceso dentro del menú "Inicio".
 - Se validó el funcionamiento del dashboard con diferentes perfiles:
-  - solicitante
-  - gestor
-  - administrador
+    - solicitante
+    - gestor
+    - administrador
 - Se confirmó la correcta integración con la navegación contextual del sistema, mostrando únicamente opciones del módulo Tickets al estar dentro de `tik.*`.
 
 ## - Refinamiento visual y funcional del dashboard de Tickets
@@ -563,25 +566,25 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 
 - Se consolidó la integración de la sección de configuración del sistema Tickets.
 - Se completó la revisión de:
-  - rutas
-  - permisos
-  - controladores
-  - vistas
-  - modelos y relaciones necesarias
+    - rutas
+    - permisos
+    - controladores
+    - vistas
+    - modelos y relaciones necesarias
 - Se definió el cierre funcional de los primeros catálogos administrativos del módulo:
-  - tipos de ticket
-  - estados
-  - flujos
-  - incidencias
-  - tipos de servicio
-  - servicios
+    - tipos de ticket
+    - estados
+    - flujos
+    - incidencias
+    - tipos de servicio
+    - servicios
 - Se ajustó la estrategia de seeders para alinear el menú de configuración únicamente con rutas ya implementadas.
 - Se dejó lista la base para una fase posterior que incorpore:
-  - tipos RRHH
-  - secciones
-  - ampliación adicional del menú de configuración
-  
-  ## - Ajuste de soportes por departamentos del gestor y limpieza de secciones
+    - tipos RRHH
+    - secciones
+    - ampliación adicional del menú de configuración
+
+    ## - Ajuste de soportes por departamentos del gestor y limpieza de secciones
 
 - Se revisó el flujo del módulo de soportes debido a fallos al cargar catálogos de tipos de servicio, servicios e incidencias.
 - Se identificó que la vista de creación requería catálogos que no estaban siendo cargados correctamente desde el controlador.
@@ -611,37 +614,37 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 
 - Se inició el tercer sistema del proyecto: Biblioteca.
 - Se definió la base estructural del módulo `BIB`, siguiendo la misma lógica arquitectónica utilizada en Tickets:
-  - sistema propio en `seg_sistemas`
-  - permisos propios en `seg_permisos`
-  - roles del sistema en `seg_roles`
-  - asignación de permisos a roles
-  - menú y opciones propias en `seg_menus` y `seg_menu_items`
-  - dashboard independiente
-  - rutas con prefijo `bib.` y middleware `route.access`
+    - sistema propio en `seg_sistemas`
+    - permisos propios en `seg_permisos`
+    - roles del sistema en `seg_roles`
+    - asignación de permisos a roles
+    - menú y opciones propias en `seg_menus` y `seg_menu_items`
+    - dashboard independiente
+    - rutas con prefijo `bib.` y middleware `route.access`
 - Se creó `BibDashboardController` y la vista `bib.dashboard` como punto de entrada del sistema.
 - Se agregó soporte para resolver el sistema activo `BIB` desde `ActiveSystemResolver`, permitiendo que la navegación dinámica reconozca correctamente el módulo Biblioteca.
 - Se sembró el sistema `BIB` en `seg_sistemas` con su código, slug, descripción y orden.
 - Se definieron permisos base del módulo para:
-  - acceso general
-  - dashboard
-  - catálogos
-  - recursos
-  - ejemplares
-  - solicitudes
-  - préstamos
-  - multas
-  - políticas
-  - consulta bibliográfica
+    - acceso general
+    - dashboard
+    - catálogos
+    - recursos
+    - ejemplares
+    - solicitudes
+    - préstamos
+    - multas
+    - políticas
+    - consulta bibliográfica
 - Se crearon roles iniciales para Biblioteca:
-  - Super Administrador
-  - Administrador Biblioteca
-  - Bibliotecario
-  - Consulta Biblioteca
+    - Super Administrador
+    - Administrador Biblioteca
+    - Bibliotecario
+    - Consulta Biblioteca
 - Se asignaron permisos por rol para dejar operativa la seguridad inicial del sistema.
 - Se creó el menú base del sistema Biblioteca con tres grupos:
-  - Inicio
-  - Operación
-  - Configuración
+    - Inicio
+    - Operación
+    - Configuración
 - Se registraron los primeros items de menú del sistema, dejando listos los accesos para dashboard, catálogos y futuras pantallas operativas.
 - Se agregaron vistas placeholder temporales para catálogos de configuración, con el fin de evitar rutas rotas mientras se implementan los CRUD reales del Día 20.
 - Se actualizaron `routes/bib.php`, `DatabaseSeeder` y `config/access.php` para integrar Biblioteca al flujo general del proyecto.
@@ -651,34 +654,34 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - Se avanzó con la segunda parte del Día 20, enfocada en la estructura física inicial del módulo Biblioteca.
 - Se crearon las migraciones de catálogos base `bib_*` necesarias para comenzar la construcción del sistema bibliográfico.
 - Se implementaron tablas para catálogos generales:
-  - `bib_autores`
-  - `bib_editoriales`
-  - `bib_etiquetas`
+    - `bib_autores`
+    - `bib_editoriales`
+    - `bib_etiquetas`
 - Se implementaron tablas para catálogos parametrizables:
-  - `bib_clasificaciones`
-  - `bib_generos`
-  - `bib_idiomas`
-  - `bib_paises`
-  - `bib_niveles_bibliograficos`
-  - `bib_tipos_recurso`
-  - `bib_tipos_adquisicion`
-  - `bib_tipos_acceso`
-  - `bib_disponibilidades`
+    - `bib_clasificaciones`
+    - `bib_generos`
+    - `bib_idiomas`
+    - `bib_paises`
+    - `bib_niveles_bibliograficos`
+    - `bib_tipos_recurso`
+    - `bib_tipos_adquisicion`
+    - `bib_tipos_acceso`
+    - `bib_disponibilidades`
 - Se implementaron tablas separadas para estados funcionales del módulo:
-  - `bib_estados_ejemplar`
-  - `bib_estados_prestamo`
-  - `bib_estados_solicitud`
+    - `bib_estados_ejemplar`
+    - `bib_estados_prestamo`
+    - `bib_estados_solicitud`
 - Se mantuvo la convención general del proyecto:
-  - llaves primarias personalizadas `id_*`
-  - campos `activo`
-  - `timestamps`
-  - `softDeletes()`
-  - índices para búsqueda y ordenamiento
+    - llaves primarias personalizadas `id_*`
+    - campos `activo`
+    - `timestamps`
+    - `softDeletes()`
+    - índices para búsqueda y ordenamiento
 - En los catálogos parametrizables se incorporaron campos `codigo`, `nombre`, `descripcion`, `orden` y banderas funcionales según el caso.
 - En `bib_tipos_recurso` se dejaron valores base para parametrización inicial de circulación:
-  - días de préstamo por defecto
-  - renovaciones por defecto
-  - multa diaria por defecto
+    - días de préstamo por defecto
+    - renovaciones por defecto
+    - multa diaria por defecto
 - En `bib_tipos_acceso`, `bib_disponibilidades`, `bib_estados_ejemplar`, `bib_estados_prestamo` y `bib_estados_solicitud` se incorporaron banderas booleanas orientadas a reglas futuras del sistema, para evitar depender de comparaciones por nombre o código en la lógica de negocio.
 - Se dejó preparada la base de catálogos para continuar con modelos, seeders y CRUD de configuración en la siguiente parte del Día 20.
 
@@ -686,114 +689,145 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 
 - Se completó la tercera parte del Día 20, enfocada en dejar operativos los catálogos del sistema Biblioteca a nivel de dominio y datos iniciales.
 - Se crearon los modelos Eloquent del módulo `App\Modules\Bib\Models` para los catálogos base:
-  - `Autor`
-  - `Editorial`
-  - `Clasificacion`
-  - `Genero`
-  - `Idioma`
-  - `Pais`
-  - `NivelBibliografico`
-  - `TipoRecurso`
-  - `TipoAdquisicion`
-  - `TipoAcceso`
-  - `Etiqueta`
-  - `Disponibilidad`
-  - `EstadoEjemplar`
-  - `EstadoPrestamo`
-  - `EstadoSolicitud`
+    - `Autor`
+    - `Editorial`
+    - `Clasificacion`
+    - `Genero`
+    - `Idioma`
+    - `Pais`
+    - `NivelBibliografico`
+    - `TipoRecurso`
+    - `TipoAdquisicion`
+    - `TipoAcceso`
+    - `Etiqueta`
+    - `Disponibilidad`
+    - `EstadoEjemplar`
+    - `EstadoPrestamo`
+    - `EstadoSolicitud`
 - Cada modelo fue configurado con:
-  - tabla correspondiente `bib_*`
-  - llave primaria personalizada `id_*`
-  - `fillable`
-  - `casts`
-  - `SoftDeletes`
+    - tabla correspondiente `bib_*`
+    - llave primaria personalizada `id_*`
+    - `fillable`
+    - `casts`
+    - `SoftDeletes`
 - Se crearon seeders básicos para poblar los catálogos iniciales del sistema Biblioteca.
 - Se sembraron autores de ejemplo para pruebas iniciales del módulo.
 - Se sembraron editoriales base y etiquetas generales para clasificación interna.
 - Se sembraron catálogos bibliográficos principales:
-  - clasificaciones
-  - géneros
-  - idiomas
-  - países
-  - niveles bibliográficos
+    - clasificaciones
+    - géneros
+    - idiomas
+    - países
+    - niveles bibliográficos
 - Se sembraron tipos de recurso con parametrización inicial de circulación:
-  - días de préstamo por defecto
-  - renovaciones por defecto
-  - multa diaria por defecto
+    - días de préstamo por defecto
+    - renovaciones por defecto
+    - multa diaria por defecto
 - Se sembraron tipos de adquisición y tipos de acceso con banderas funcionales para uso posterior en reglas del sistema.
 - Se sembraron disponibilidades y estados separados para:
-  - ejemplares
-  - préstamos
-  - solicitudes
+    - ejemplares
+    - préstamos
+    - solicitudes
 - Se actualizó `DatabaseSeeder` para integrar todos los seeders de catálogos del sistema Biblioteca dentro del flujo general de inicialización de la base de datos.
 - Con esta parte quedó lista la base lógica y semántica de los catálogos bibliográficos, permitiendo avanzar a la administración CRUD de configuración del módulo Biblioteca.
 
-## Día 20 - Ajuste de rutas y binding en CRUD de catálogos de Biblioteca 
- 
-- Se corrigió la estructura de rutas del CRUD de catálogos del sistema Biblioteca para alinearla con el comportamiento esperado de Laravel y evitar fallos de route model binding. 
-- Se reemplazó el uso genérico de parámetros `{item}` por parámetros explícitos según cada catálogo, por ejemplo: 
-  - `{editorial}` 
-  - `{clasificacion}` 
-  - `{genero}` 
-  - `{idioma}` 
-  - `{pais}` 
-  - `{nivelBibliografico}` 
-  - `{tipoAdquisicion}` 
-  - `{etiqueta}` 
-- Se actualizó `routes/bib.php` para dejar todas las rutas de configuración BIB con parámetros consistentes y compatibles con binding automático. 
-- Se ajustaron los controladores base de catálogos para que solo manejen: 
-  - listado 
-  - creación 
-  - almacenamiento 
-- Se movió la lógica de edición y actualización a cada controlador concreto, usando su modelo específico para permitir binding explícito por tipo. 
-- Se corrigieron los controladores de catálogos simples para trabajar correctamente con sus respectivos modelos: 
-  - `ClasificacionController` 
-  - `GeneroController` 
-  - `IdiomaController` 
-  - `PaisController` 
-  - `NivelBibliograficoController` 
-  - `TipoAdquisicionController` 
-  - `EditorialController` 
-  - `EtiquetaController` 
-- Se ajustaron los requests base de catálogos para soportar un nuevo método `routeParam()`, permitiendo resolver correctamente el registro actual durante validaciones únicas en edición. 
-- Se actualizaron los requests concretos de cada catálogo para indicar explícitamente qué parámetro de ruta deben usar. 
-- Se realizaron ajustes menores en vistas de edición para mantener consistencia con los datos enviados por los controladores actualizados. 
-- Con este ajuste quedó estabilizada la base técnica del CRUD de catálogos de Biblioteca, evitando errores de compatibilidad entre controladores, validaciones y route model binding. 
+## Día 20 - Ajuste de rutas y binding en CRUD de catálogos de Biblioteca
+
+- Se corrigió la estructura de rutas del CRUD de catálogos del sistema Biblioteca para alinearla con el comportamiento esperado de Laravel y evitar fallos de route model binding.
+- Se reemplazó el uso genérico de parámetros `{item}` por parámetros explícitos según cada catálogo, por ejemplo:
+    - `{editorial}`
+    - `{clasificacion}`
+    - `{genero}`
+    - `{idioma}`
+    - `{pais}`
+    - `{nivelBibliografico}`
+    - `{tipoAdquisicion}`
+    - `{etiqueta}`
+- Se actualizó `routes/bib.php` para dejar todas las rutas de configuración BIB con parámetros consistentes y compatibles con binding automático.
+- Se ajustaron los controladores base de catálogos para que solo manejen:
+    - listado
+    - creación
+    - almacenamiento
+- Se movió la lógica de edición y actualización a cada controlador concreto, usando su modelo específico para permitir binding explícito por tipo.
+- Se corrigieron los controladores de catálogos simples para trabajar correctamente con sus respectivos modelos:
+    - `ClasificacionController`
+    - `GeneroController`
+    - `IdiomaController`
+    - `PaisController`
+    - `NivelBibliograficoController`
+    - `TipoAdquisicionController`
+    - `EditorialController`
+    - `EtiquetaController`
+- Se ajustaron los requests base de catálogos para soportar un nuevo método `routeParam()`, permitiendo resolver correctamente el registro actual durante validaciones únicas en edición.
+- Se actualizaron los requests concretos de cada catálogo para indicar explícitamente qué parámetro de ruta deben usar.
+- Se realizaron ajustes menores en vistas de edición para mantener consistencia con los datos enviados por los controladores actualizados.
+- Con este ajuste quedó estabilizada la base técnica del CRUD de catálogos de Biblioteca, evitando errores de compatibilidad entre controladores, validaciones y route model binding.
 
 ## Día 21 - Recursos bibliográficos base
 
 - Se implementó la entidad principal `bib_recursos` como catálogo transaccional base del sistema Biblioteca.
 - Se crearon las migraciones:
-  - `bib_recursos`
-  - `bib_recurso_autor`
-  - `bib_recurso_genero`
-  - `bib_recurso_clasificacion`
-  - `bib_recurso_etiqueta`
+    - `bib_recursos`
+    - `bib_recurso_autor`
+    - `bib_recurso_genero`
+    - `bib_recurso_clasificacion`
+    - `bib_recurso_etiqueta`
 - Se modelaron relaciones many-to-many entre recursos y:
-  - autores
-  - géneros
-  - clasificaciones
-  - etiquetas
+    - autores
+    - géneros
+    - clasificaciones
+    - etiquetas
 - Se creó el modelo `Recurso` con relaciones hacia catálogos bibliográficos y parámetros operativos.
 - Se implementaron los requests:
-  - `StoreRecursoRequest`
-  - `UpdateRecursoRequest`
+    - `StoreRecursoRequest`
+    - `UpdateRecursoRequest`
 - Se implementó `RecursoController` con acciones:
-  - listado
-  - creación
-  - almacenamiento
-  - detalle
-  - edición
-  - actualización
+    - listado
+    - creación
+    - almacenamiento
+    - detalle
+    - edición
+    - actualización
 - Se crearon las vistas del módulo:
-  - `bib.recursos.index`
-  - `bib.recursos.create`
-  - `bib.recursos.edit`
-  - `bib.recursos.show`
-  - parcial `bib.recursos._form`
+    - `bib.recursos.index`
+    - `bib.recursos.create`
+    - `bib.recursos.edit`
+    - `bib.recursos.show`
+    - parcial `bib.recursos._form`
 - Se integraron las rutas `bib.recursos.*` al sistema Biblioteca.
 - Se ajustó la protección de acceso por ruta en `config/access.php` usando permisos separados:
-  - `BIB_RECURSOS_VER`
-  - `BIB_RECURSOS_CREAR`
-  - `BIB_RECURSOS_EDITAR`
+    - `BIB_RECURSOS_VER`
+    - `BIB_RECURSOS_CREAR`
+    - `BIB_RECURSOS_EDITAR`
 - Se dejó operativo el primer catálogo central del dominio bibliográfico, listo para enlazarse posteriormente con ejemplares, circulación y préstamos.
+
+## Día 22 - Inventario de ejemplares
+
+- Se implementó la entidad `bib_ejemplares` para representar copias físicas y digitales de los recursos bibliográficos.
+- Se creó el modelo `Ejemplar` con relaciones hacia:
+    - recurso
+    - estado de ejemplar
+    - disponibilidad
+- Se incorporó la relación inversa `ejemplares()` en `Recurso`.
+- Se corrigieron y completaron los requests:
+    - `StoreEjemplarRequest`
+    - `UpdateEjemplarRequest`
+- Se implementó `EjemplarController` con acciones:
+    - listado
+    - creación
+    - almacenamiento
+    - edición
+    - actualización
+- Se añadieron filtros por:
+    - búsqueda general
+    - recurso
+    - estado del ejemplar
+    - disponibilidad
+    - estado activo
+- Se integraron vistas Blade para ejemplares:
+    - `bib.ejemplares.index`
+    - `bib.ejemplares.create`
+    - `bib.ejemplares.edit`
+    - parcial `bib.ejemplares._form`
+- Se completó la protección de rutas `bib.ejemplares.*` en `config/access.php`.
+- Se confirmó que los permisos, roles y menú de ejemplares ya estaban contemplados en los seeders del sistema Biblioteca.

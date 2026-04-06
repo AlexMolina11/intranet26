@@ -18,6 +18,7 @@ use App\Modules\Bib\Controllers\Config\EstadoEjemplarController;
 use App\Modules\Bib\Controllers\Config\EstadoPrestamoController;
 use App\Modules\Bib\Controllers\Config\EstadoSolicitudController;
 use App\Modules\Bib\Controllers\RecursoController;
+use App\Modules\Bib\Controllers\EjemplarController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('bib')
@@ -31,6 +32,12 @@ Route::middleware(['auth', 'route.access'])
         Route::get('/recursos/{recurso}', [RecursoController::class, 'show'])->name('recursos.show');
         Route::get('/recursos/{recurso}/editar', [RecursoController::class, 'edit'])->name('recursos.edit');
         Route::put('/recursos/{recurso}', [RecursoController::class, 'update'])->name('recursos.update');
+
+        Route::get('/ejemplares', [EjemplarController::class, 'index'])->name('ejemplares.index');
+        Route::get('/ejemplares/crear', [EjemplarController::class, 'create'])->name('ejemplares.create');
+        Route::post('/ejemplares', [EjemplarController::class, 'store'])->name('ejemplares.store');
+        Route::get('/ejemplares/{ejemplar}/editar', [EjemplarController::class, 'edit'])->name('ejemplares.edit');
+        Route::put('/ejemplares/{ejemplar}', [EjemplarController::class, 'update'])->name('ejemplares.update');
 
         Route::prefix('config')
             ->as('config.')

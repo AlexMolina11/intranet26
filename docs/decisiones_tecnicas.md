@@ -329,25 +329,29 @@ Se ajustó el trait de permisos para soportar múltiples permisos por ruta, perm
 - Se corrigieron problemas de autoload PSR-4 asegurando consistencia entre namespace y ubicación de archivos.
 - Se reforzó el uso de relaciones Eloquent para evitar consultas manuales y mejorar mantenibilidad.
 
-
 ## Decisión técnica - Roles funcionales específicos para Tickets
 
 Se decidió abandonar la estrategia de roles genéricos dentro del sistema Tickets (`Administrador`, `Consulta`) y adoptar roles más cercanos a la operación real del módulo.
 
 ### Motivo
+
 El sistema ya cuenta con separación funcional entre:
+
 - panel solicitante
 - panel administrador
 - panel gestor
 
 Mantener roles demasiado genéricos dificulta:
+
 - la validación de permisos
 - la construcción de dashboards por perfil
 - la navegación contextual
 - las pruebas integrales del módulo
 
 ### Decisión
+
 Se definen los siguientes roles específicos para `TIK`:
+
 - Super Administrador
 - Administrador Tickets
 - Gestor Tickets
@@ -355,6 +359,7 @@ Se definen los siguientes roles específicos para `TIK`:
 - Consulta Tickets
 
 ### Consecuencia
+
 Los seeders del módulo Tickets deben asignar permisos y accesos con base en estos perfiles, y no solo por lectura o administración genérica.
 
 ## Decisión técnica - Menús de Tickets solo con rutas existentes
@@ -362,10 +367,13 @@ Los seeders del módulo Tickets deben asignar permisos y accesos con base en est
 Se decidió sembrar inicialmente el menú del sistema Tickets únicamente con rutas ya registradas en `routes/tik.php`.
 
 ### Motivo
+
 La navegación actual valida la existencia de rutas, por lo que sembrar accesos a endpoints aún no implementados generaría navegación inconsistente o elementos invisibles.
 
 ### Decisión
+
 En esta etapa solo se incluyen en el menú de Tickets:
+
 - Mis Tickets
 - Crear Ticket
 - Bandeja Administrativa
@@ -374,6 +382,7 @@ En esta etapa solo se incluyen en el menú de Tickets:
 - Crear Soporte
 
 ### Consecuencia
+
 El menú de configuración y el dashboard específico de Tickets se incorporarán en una etapa posterior, cuando existan sus rutas, controladores y vistas.
 
 ## Decisión técnica - Separación de responsabilidades entre seeders `Seg` y `Tik`
@@ -381,20 +390,23 @@ El menú de configuración y el dashboard específico de Tickets se incorporará
 Se decidió mantener los seeders del módulo de seguridad (`Seg`) enfocados en la base institucional de la intranet y trasladar al módulo Tickets (`Tik`) toda la configuración operativa específica de ese sistema.
 
 ### Motivo
+
 Mezclar usuarios demo, roles operativos y accesos del módulo Tickets dentro de seeders genéricos de seguridad complica el mantenimiento y vuelve menos clara la intención de cada archivo.
 
 ### Decisión
+
 - `Seg` conserva:
-  - admin global
-  - acceso base a INTRANET
-  - rol base de super administrador de la intranet
+    - admin global
+    - acceso base a INTRANET
+    - rol base de super administrador de la intranet
 - `Tik` define:
-  - usuarios demo del módulo
-  - roles operativos de Tickets
-  - asignación de acceso al sistema `TIK`
-  - asignación de roles de Tickets
+    - usuarios demo del módulo
+    - roles operativos de Tickets
+    - asignación de acceso al sistema `TIK`
+    - asignación de roles de Tickets
 
 ### Consecuencia
+
 Cada sistema puede crecer de forma más aislada, mantenible y coherente con su propio dominio funcional.
 
 ## Decisión técnica - Validación temprana con usuarios demo por perfil
@@ -402,10 +414,13 @@ Cada sistema puede crecer de forma más aislada, mantenible y coherente con su p
 Se decidió validar la arquitectura de Tickets mediante usuarios demo específicos por perfil antes de avanzar con cambios mayores de navegación y dashboard.
 
 ### Motivo
+
 La navegación contextual y los paneles funcionales dependen directamente de que roles, permisos y accesos estén correctamente sembrados.
 
 ### Decisión
+
 Se utilizarán usuarios demo diferenciados para probar:
+
 - solicitante
 - gestor
 - administrador del módulo
@@ -413,6 +428,7 @@ Se utilizarán usuarios demo diferenciados para probar:
 - super administrador
 
 ### Consecuencia
+
 Las siguientes fases del proyecto podrán construirse sobre una base de permisos ya verificada y no sobre supuestos.
 
 ## Decisión técnica - Resolver sistema activo según prefijo de ruta
@@ -420,14 +436,17 @@ Las siguientes fases del proyecto podrán construirse sobre una base de permisos
 Se decidió determinar el sistema activo a partir del prefijo del nombre de la ruta actual.
 
 ### Motivo
+
 La aplicación ya usa una convención clara de nombres de rutas por módulo (`tik.*`, `seg.*`, `org.*`), por lo que esta estrategia permite activar navegación contextual sin modificar estructura de base de datos ni agregar parámetros extra.
 
 ### Decisión
+
 - `tik.*` => `TIK`
 - `seg.*` y `org.*` => `INTRANET`
 - `dashboard` e `inicio` => contexto general
 
 ### Consecuencia
+
 La navegación lateral podrá filtrarse por sistema activo y mostrará solo el módulo correspondiente al contexto actual.
 
 ## Decisión técnica - Navegación contextual por sistema activo
@@ -437,10 +456,13 @@ La navegación lateral podrá filtrarse por sistema activo y mostrará solo el m
 Se decidió adaptar el servicio de navegación al formato que ya consume `layouts/app.blade.php`, en lugar de rediseñar por completo la vista base.
 
 ### Motivo
+
 El layout actual ya cuenta con una estructura funcional, responsive y estable para renderizar sidebar, menús e hijos. Reemplazarla completamente aumentaría el riesgo de regresiones visuales innecesarias.
 
 ### Decisión
+
 `NavigationService` seguirá devolviendo la estructura esperada por Blade:
+
 - `menus`
 - `items`
 - `url`
@@ -450,6 +472,7 @@ El layout actual ya cuenta con una estructura funcional, responsive y estable pa
 - `hijos`
 
 ### Consecuencia
+
 La navegación contextual podrá integrarse con cambios mínimos en la vista y menor riesgo de ruptura visual.
 
 ## Decisión técnica - Compartir navegación y sistema activo desde el provider
@@ -457,15 +480,19 @@ La navegación contextual podrá integrarse con cambios mínimos en la vista y m
 Se decidió centralizar la construcción de navegación contextual en el `AppServiceProvider`.
 
 ### Motivo
+
 El layout principal requiere conocer tanto la navegación filtrada como el sistema activo, y resolver esa lógica en un solo punto reduce duplicidad y facilita mantenimiento.
 
 ### Decisión
+
 El `View::composer` de `layouts.app` calcula:
+
 - usuario autenticado
 - sistema activo
 - navegación correspondiente a ese contexto
 
 ### Consecuencia
+
 Las vistas quedan más limpias y la navegación contextual puede evolucionar sin dispersar lógica entre múltiples controladores o plantillas.
 
 ## Decisión técnica - Ajuste incremental del layout principal en lugar de reemplazo completo
@@ -473,14 +500,18 @@ Las vistas quedan más limpias y la navegación contextual puede evolucionar sin
 Se decidió modificar únicamente el bloque funcional del sidebar dentro de `layouts/app.blade.php` y conservar el resto del layout.
 
 ### Motivo
+
 La plantilla principal ya cuenta con estilos, responsive y comportamiento JavaScript estables. Reemplazarla completa no aportaba valor y aumentaba el riesgo de inconsistencias.
 
 ### Decisión
+
 Se reemplaza únicamente el bloque del sidebar para soportar:
+
 - navegación contextual por sistema activo
 - accesos resumidos en dashboard general
 
 ### Consecuencia
+
 Se mejora la experiencia de navegación sin romper la estructura visual consolidada del proyecto.
 
 ## Decisión técnica - Refinar el dashboard de Tickets antes de expandir catálogos y reportería
@@ -488,16 +519,20 @@ Se mejora la experiencia de navegación sin romper la estructura visual consolid
 Se decidió fortalecer primero la utilidad operativa del dashboard de Tickets antes de extender el módulo hacia reportería avanzada o nuevas secciones administrativas.
 
 ### Motivo
+
 El dashboard es la entrada principal contextual del sistema y debe entregar valor inmediato a solicitantes, gestores y administradores.
 
 ### Decisión
+
 Se mejoró el dashboard con:
+
 - métricas más útiles
 - accesos rápidos
 - estados con color
 - tabla de tickets recientes con acción directa
 
 ### Consecuencia
+
 El sistema Tickets dispone ahora de una entrada funcional más clara, útil y preparada para una evolución posterior hacia indicadores más avanzados.
 
 ## Decisión técnica - Cerrar primero los catálogos implementados antes de ampliar más la configuración
@@ -505,10 +540,13 @@ El sistema Tickets dispone ahora de una entrada funcional más clara, útil y pr
 Se decidió consolidar completamente los catálogos ya implementados antes de seguir expandiendo la sección de configuración del sistema Tickets.
 
 ### Motivo
+
 Agregar más opciones de menú o más CRUDs sin cerrar primero rutas, permisos, relaciones y vistas de los catálogos actuales incrementa el riesgo de inconsistencias funcionales.
 
 ### Decisión
+
 La fase actual se cierra con los catálogos ya implementados:
+
 - tipos de ticket
 - estados
 - flujos
@@ -519,27 +557,33 @@ La fase actual se cierra con los catálogos ya implementados:
 Los catálogos restantes se incorporarán en una etapa posterior.
 
 ### Consecuencia
+
 La sección de configuración del módulo Tickets queda operativa, coherente y lista para pruebas integrales antes de nuevas expansiones.
 
 ## - Catálogos de soporte restringidos por departamentos del gestor
 
 ### Contexto
+
 El flujo de soportes estaba mezclando dos responsabilidades distintas:
+
 1. el departamento seleccionado en el formulario,
 2. y el alcance real de catálogos permitido para el usuario gestor.
 
 Eso provocaba inconsistencias, dependencia excesiva del formulario y errores al cargar o validar servicios e incidencias.
 
 ### Decisión
+
 Se decidió que los catálogos de `tipos de servicio`, `servicios` e `incidencias` en el módulo de soportes se restrinjan exclusivamente según los departamentos asociados al usuario gestor autenticado.
 
 El campo `departamento` dentro del formulario no define el universo de catálogos permitidos. Su función queda limitada a:
+
 - apoyar el filtrado visual del solicitante,
 - servir como dato general del soporte registrado.
 
 Además, se eliminaron del flujo las referencias operativas a `secciones`, ya que no forman parte del modelo funcional actual del soporte.
 
 ### Implicaciones
+
 - El backend se convierte en la fuente real de autorización funcional para los catálogos del soporte.
 - Se evita que un usuario manipule el formulario para registrar servicios o incidencias fuera de sus departamentos autorizados.
 - El formulario queda más simple y coherente con el rol del gestor.
@@ -559,14 +603,14 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
 
 - Se decidió iniciar el módulo Biblioteca como un sistema independiente dentro de la Intranet, replicando la arquitectura ya consolidada en Tickets.
 - Antes de crear las tablas bibliográficas `bib_*`, se dejó preparada la base transversal del sistema:
-  - registro en `seg_sistemas`
-  - permisos
-  - roles
-  - relaciones rol-permiso
-  - menú
-  - items de menú
-  - dashboard
-  - prefijo de rutas `bib.`
+    - registro en `seg_sistemas`
+    - permisos
+    - roles
+    - relaciones rol-permiso
+    - menú
+    - items de menú
+    - dashboard
+    - prefijo de rutas `bib.`
 - Esta decisión evita construir tablas y catálogos aislados sin integración real con navegación, autorización y visibilidad por sistema.
 - Se mantuvo el criterio de navegación dinámica por sistema activo, agregando la resolución del código `BIB` en `ActiveSystemResolver`.
 - Se decidió crear placeholders temporales para pantallas de configuración mientras se desarrollan los CRUD reales, de forma que los menús puedan sembrarse desde el inicio sin romper navegación.
@@ -577,17 +621,17 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
 - Se decidió modelar los catálogos bibliográficos del sistema Biblioteca en tablas independientes `bib_*`, en lugar de concentrar múltiples dominios en estructuras genéricas.
 - Esta decisión mantiene claridad semántica, facilita validaciones específicas y reduce acoplamiento en controladores, modelos y formularios.
 - Se separaron los estados en tres tablas distintas:
-  - `bib_estados_ejemplar`
-  - `bib_estados_prestamo`
-  - `bib_estados_solicitud`
+    - `bib_estados_ejemplar`
+    - `bib_estados_prestamo`
+    - `bib_estados_solicitud`
 - La separación responde a que cada tipo de estado representa ciclos de vida diferentes y será utilizado en reglas operativas distintas dentro del sistema.
 - En lugar de resolver comportamiento por nombres hardcodeados, se incorporaron banderas booleanas en varios catálogos para soportar reglas futuras de negocio, por ejemplo:
-  - permitir préstamo
-  - permitir reserva
-  - generar multa
-  - ser estado inicial o final
-  - afectar inventario
-  - permitir aprobación o rechazo
+    - permitir préstamo
+    - permitir reserva
+    - generar multa
+    - ser estado inicial o final
+    - afectar inventario
+    - permitir aprobación o rechazo
 - Se decidió dejar en `bib_tipos_recurso` una parametrización mínima de circulación mediante campos por defecto, como apoyo transitorio antes de implementar `bib_politicas_prestamo` en el Día 22.
 - Se mantuvo el uso de `softDeletes()` en los catálogos, para preservar integridad histórica y evitar pérdida lógica de referencias cuando el sistema empiece a relacionar recursos, ejemplares, préstamos y multas.
 
@@ -596,42 +640,42 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
 - Se decidió crear primero los modelos y seeders base de los catálogos bibliográficos antes de implementar los CRUD de administración.
 - Esta decisión permite que el sistema Biblioteca tenga datos mínimos utilizables desde el inicio y evita desarrollar formularios vacíos o pantallas sin contexto funcional.
 - Los modelos `bib_*` fueron creados con una convención homogénea basada en:
-  - tabla explícita
-  - llave primaria personalizada
-  - asignación masiva controlada con `fillable`
-  - tipado mediante `casts`
-  - soporte de borrado lógico con `SoftDeletes`
+    - tabla explícita
+    - llave primaria personalizada
+    - asignación masiva controlada con `fillable`
+    - tipado mediante `casts`
+    - soporte de borrado lógico con `SoftDeletes`
 - Se decidió poblar catálogos con datos semilla iniciales suficientemente representativos para pruebas funcionales, pero sin sobrecargar el sistema con catálogos extensos en esta etapa.
 - Los seeders utilizan `updateOrInsert` para facilitar reejecuciones durante desarrollo sin duplicar registros ni romper el flujo de pruebas.
 - Se mantuvo la separación entre:
-  - dominio bibliográfico descriptivo
-  - parámetros operativos
-  - estados funcionales
+    - dominio bibliográfico descriptivo
+    - parámetros operativos
+    - estados funcionales
 - Esta separación facilitará posteriormente la implementación de:
-  - formularios de administración
-  - validaciones por catálogo
-  - reglas de circulación
-  - relaciones con recursos, ejemplares, solicitudes y préstamos
+    - formularios de administración
+    - validaciones por catálogo
+    - reglas de circulación
+    - relaciones con recursos, ejemplares, solicitudes y préstamos
 
-  ## Día 20 - Decisión técnica: eliminar parámetros genéricos `{item}` en CRUD de Biblioteca
+    ## Día 20 - Decisión técnica: eliminar parámetros genéricos `{item}` en CRUD de Biblioteca
 
 - Se decidió eliminar el uso de parámetros genéricos `{item}` en las rutas de catálogos del sistema Biblioteca.
 - Aunque `{item}` reducía repetición aparente, generaba incompatibilidades con el route model binding automático de Laravel, especialmente al trabajar con controladores base y tipos de modelo distintos.
 - Para evitar ambigüedad y errores en edición y actualización, se adoptó un enfoque explícito usando parámetros de ruta por entidad, por ejemplo:
-  - `{clasificacion}`
-  - `{editorial}`
-  - `{genero}`
-  - `{idioma}`
-  - `{pais}`
-  - `{nivelBibliografico}`
-  - `{tipoAdquisicion}`
-  - `{etiqueta}`
+    - `{clasificacion}`
+    - `{editorial}`
+    - `{genero}`
+    - `{idioma}`
+    - `{pais}`
+    - `{nivelBibliografico}`
+    - `{tipoAdquisicion}`
+    - `{etiqueta}`
 - También se decidió que los controladores base manejen únicamente operaciones comunes de creación y listado, mientras que los métodos `edit` y `update` queden definidos en cada controlador concreto con su modelo real.
 - Esta decisión mejora:
-  - claridad del código
-  - compatibilidad con Laravel
-  - facilidad de depuración
-  - mantenibilidad futura del módulo
+    - claridad del código
+    - compatibilidad con Laravel
+    - facilidad de depuración
+    - mantenibilidad futura del módulo
 - Se complementó el ajuste con una estrategia explícita en los requests mediante `routeParam()`, para que las validaciones únicas de edición se resuelvan sobre el modelo correcto.
 - Con esta decisión, el CRUD de catálogos de Biblioteca queda alineado con una implementación más estable y consistente con la arquitectura general del proyecto.
 
@@ -641,19 +685,42 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
 - Esta decisión permite construir primero el catálogo bibliográfico descriptivo y dejar separada la representación física de cada copia o ejemplar.
 - Se optó por modelar autores, géneros, clasificaciones y etiquetas como relaciones many-to-many, evitando sobrecargar la tabla principal `bib_recursos` con columnas repetitivas o rígidas.
 - Se mantuvo la estrategia de permisos finos para recursos:
-  - ver
-  - crear
-  - editar
-  en lugar de utilizar un permiso genérico único.
+    - ver
+    - crear
+    - editar
+      en lugar de utilizar un permiso genérico único.
 - Se decidió integrar `bib_recursos` desde esta etapa con:
-  - rutas protegidas
-  - menú del sistema
-  - permisos
-  - vistas Blade
-  para evitar construir una entidad aislada del flujo real del sistema.
+    - rutas protegidas
+    - menú del sistema
+    - permisos
+    - vistas Blade
+      para evitar construir una entidad aislada del flujo real del sistema.
 - Esta base deja preparado el módulo para una siguiente fase orientada a:
-  - `bib_ejemplares`
-  - solicitudes
-  - préstamos
-  - devoluciones
-  - multas
+    - `bib_ejemplares`
+    - solicitudes
+    - préstamos
+    - devoluciones
+    - multas
+
+    ## Día 22 - Decisión técnica: separar recurso bibliográfico de ejemplar físico
+
+- Se decidió mantener `bib_recursos` como entidad bibliográfica descriptiva y `bib_ejemplares` como representación física o digital de cada copia disponible.
+- Esta separación evita duplicar información bibliográfica en cada ejemplar y deja el sistema preparado para circulación, préstamos, devoluciones y multas.
+- Se definió que cada ejemplar tenga su propio:
+    - código de inventario
+    - código de barras
+    - estado de ejemplar
+    - disponibilidad
+    - ubicación
+    - condición
+- Se optó por manejar permisos específicos para ejemplares:
+    - ver
+    - crear
+    - editar
+      manteniendo consistencia con la estrategia usada en recursos.
+- También se decidió completar la integración de ejemplares con:
+    - rutas protegidas
+    - vistas Blade
+    - menú del sistema
+    - asignación por roles
+      antes de avanzar al flujo de solicitudes y préstamos.
