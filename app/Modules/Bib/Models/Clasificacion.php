@@ -4,6 +4,7 @@ namespace App\Modules\Bib\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Bib\Models\Recurso;
 
 class Clasificacion extends Model
 {
@@ -24,4 +25,16 @@ class Clasificacion extends Model
         'orden' => 'integer',
         'activo' => 'boolean',
     ];
+
+    public function recursos()
+    {
+        return $this->belongsToMany(
+            Recurso::class,
+            'bib_recurso_clasificacion',
+            'id_clasificacion',
+            'id_recurso',
+            'id_clasificacion',
+            'id_recurso'
+        )->withTimestamps();
+    }
 }

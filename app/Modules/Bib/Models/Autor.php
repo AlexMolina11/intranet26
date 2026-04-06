@@ -4,6 +4,7 @@ namespace App\Modules\Bib\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Bib\Models\Recurso;
 
 class Autor extends Model
 {
@@ -28,4 +29,16 @@ class Autor extends Model
         'fecha_fallecimiento' => 'date',
         'activo' => 'boolean',
     ];
+
+    public function recursos()
+    {
+        return $this->belongsToMany(
+            Recurso::class,
+            'bib_recurso_autor',
+            'id_autor',
+            'id_recurso',
+            'id_autor',
+            'id_recurso'
+        )->withPivot('orden')->withTimestamps();
+    }
 }

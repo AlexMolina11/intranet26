@@ -167,7 +167,14 @@ return [
         'tik.config.servicios.update' => ['TIK_CATALOGOS_EDITAR'],
 
         //Accesos Sistema de Biblioteca
-        'bib.dashboard' => 'BIB_DASHBOARD_VER',
+        'bib.dashboard' => ['BIB_DASHBOARD_VER'],
+
+        'bib.recursos.index' => ['BIB_RECURSOS_VER'],
+        'bib.recursos.show' => ['BIB_RECURSOS_VER'],
+        'bib.recursos.create' => ['BIB_RECURSOS_CREAR'],
+        'bib.recursos.store' => ['BIB_RECURSOS_CREAR'],
+        'bib.recursos.edit' => ['BIB_RECURSOS_EDITAR'],
+        'bib.recursos.update' => ['BIB_RECURSOS_EDITAR'],
 
         'bib.config.autores.index' => 'BIB_CATALOGOS_VER',
         'bib.config.autores.create' => 'BIB_CATALOGOS_CREAR',

@@ -4,6 +4,7 @@ namespace App\Modules\Bib\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Bib\Models\Recurso;
 
 class Genero extends Model
 {
@@ -24,4 +25,16 @@ class Genero extends Model
         'orden' => 'integer',
         'activo' => 'boolean',
     ];
+
+    public function recursos()
+    {
+        return $this->belongsToMany(
+            Recurso::class,
+            'bib_recurso_genero',
+            'id_genero',
+            'id_recurso',
+            'id_genero',
+            'id_recurso'
+        )->withTimestamps();
+    }
 }

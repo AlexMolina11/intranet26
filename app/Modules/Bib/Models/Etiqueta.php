@@ -21,4 +21,16 @@ class Etiqueta extends Model
     protected $casts = [
         'activo' => 'boolean',
     ];
+
+    public function recursos()
+    {
+        return $this->belongsToMany(
+            Recurso::class,
+            'bib_recurso_etiqueta',
+            'id_etiqueta',
+            'id_recurso',
+            'id_etiqueta',
+            'id_recurso'
+        )->withTimestamps();
+    }
 }

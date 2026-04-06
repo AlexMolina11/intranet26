@@ -634,3 +634,26 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
   - mantenibilidad futura del módulo
 - Se complementó el ajuste con una estrategia explícita en los requests mediante `routeParam()`, para que las validaciones únicas de edición se resuelvan sobre el modelo correcto.
 - Con esta decisión, el CRUD de catálogos de Biblioteca queda alineado con una implementación más estable y consistente con la arquitectura general del proyecto.
+
+## Día 21 - Decisión técnica: recurso bibliográfico como entidad central del módulo Biblioteca
+
+- Se decidió implementar `bib_recursos` como entidad central del sistema Biblioteca antes de desarrollar ejemplares, préstamos o circulación.
+- Esta decisión permite construir primero el catálogo bibliográfico descriptivo y dejar separada la representación física de cada copia o ejemplar.
+- Se optó por modelar autores, géneros, clasificaciones y etiquetas como relaciones many-to-many, evitando sobrecargar la tabla principal `bib_recursos` con columnas repetitivas o rígidas.
+- Se mantuvo la estrategia de permisos finos para recursos:
+  - ver
+  - crear
+  - editar
+  en lugar de utilizar un permiso genérico único.
+- Se decidió integrar `bib_recursos` desde esta etapa con:
+  - rutas protegidas
+  - menú del sistema
+  - permisos
+  - vistas Blade
+  para evitar construir una entidad aislada del flujo real del sistema.
+- Esta base deja preparado el módulo para una siguiente fase orientada a:
+  - `bib_ejemplares`
+  - solicitudes
+  - préstamos
+  - devoluciones
+  - multas

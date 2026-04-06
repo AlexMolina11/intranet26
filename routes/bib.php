@@ -17,12 +17,20 @@ use App\Modules\Bib\Controllers\Config\DisponibilidadController;
 use App\Modules\Bib\Controllers\Config\EstadoEjemplarController;
 use App\Modules\Bib\Controllers\Config\EstadoPrestamoController;
 use App\Modules\Bib\Controllers\Config\EstadoSolicitudController;
+use App\Modules\Bib\Controllers\RecursoController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('bib')
     ->as('bib.')
     ->group(function () {
         Route::get('/dashboard', [BibDashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('/recursos', [RecursoController::class, 'index'])->name('recursos.index');
+        Route::get('/recursos/crear', [RecursoController::class, 'create'])->name('recursos.create');
+        Route::post('/recursos', [RecursoController::class, 'store'])->name('recursos.store');
+        Route::get('/recursos/{recurso}', [RecursoController::class, 'show'])->name('recursos.show');
+        Route::get('/recursos/{recurso}/editar', [RecursoController::class, 'edit'])->name('recursos.edit');
+        Route::put('/recursos/{recurso}', [RecursoController::class, 'update'])->name('recursos.update');
 
         Route::prefix('config')
             ->as('config.')
