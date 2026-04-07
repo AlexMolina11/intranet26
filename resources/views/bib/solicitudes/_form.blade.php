@@ -8,7 +8,7 @@
                     value="{{ $usuario->id_usuario }}"
                     {{ (string) old('id_usuario', $solicitud->id_usuario ?? '') === (string) $usuario->id_usuario ? 'selected' : '' }}
                 >
-                    {{ $usuario->nombre }} ({{ $usuario->correo }})
+                    {{ $usuario->nombre_completo }} ({{ $usuario->correo }})
                 </option>
             @endforeach
         </select>
@@ -108,7 +108,7 @@
                     value="{{ $usuario->id_usuario }}"
                     {{ (string) old('id_usuario_atiende', $solicitud->id_usuario_atiende ?? '') === (string) $usuario->id_usuario ? 'selected' : '' }}
                 >
-                    {{ $usuario->nombre }}
+                    {{ $usuario->nombre_completo }}
                 </option>
             @endforeach
         </select>

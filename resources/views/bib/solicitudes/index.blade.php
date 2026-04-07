@@ -82,13 +82,13 @@
                     @forelse($solicitudes as $solicitud)
                         <tr>
                             <td>{{ $solicitud->id_solicitud }}</td>
-                            <td>{{ $solicitud->usuario?->nombre }}</td>
+                            <td>{{ $solicitud->usuario?->nombre_completo }}</td>
                             <td>{{ $solicitud->recurso?->titulo }}</td>
                             <td>{{ $solicitud->ejemplar?->codigo_inventario ?? 'N/D' }}</td>
                             <td>{{ $solicitud->estadoSolicitud?->nombre }}</td>
                             <td>{{ optional($solicitud->fecha_solicitud)->format('d/m/Y') }}</td>
                             <td>{{ optional($solicitud->fecha_requerida)->format('d/m/Y') ?? 'N/D' }}</td>
-                            <td>{{ $solicitud->usuarioAtiende?->nombre ?? 'N/D' }}</td>
+                            <td>{{ $solicitud->usuarioAtiende?->nombre_completo ?? 'N/D' }}</td>
                             <td>{{ $solicitud->activo ? 'Activo' : 'Inactivo' }}</td>
                             <td>
                                 @if(auth()->user()->tienePermiso('BIB_SOLICITUDES_GESTIONAR'))

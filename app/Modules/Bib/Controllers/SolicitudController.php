@@ -65,7 +65,8 @@ class SolicitudController extends Controller
     {
         $usuarios = Usuario::query()
             ->where('activo', true)
-            ->orderBy('nombre')
+            ->orderBy('nombres')
+            ->orderBy('apellidos')
             ->get();
 
         $recursos = Recurso::query()
@@ -106,7 +107,8 @@ class SolicitudController extends Controller
     {
         $usuarios = Usuario::query()
             ->where('activo', true)
-            ->orderBy('nombre')
+            ->orderBy('nombres')
+            ->orderBy('apellidos')
             ->get();
 
         $recursos = Recurso::query()
