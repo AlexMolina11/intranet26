@@ -181,6 +181,12 @@ return [
         'bib.ejemplares.edit' => ['BIB_EJEMPLARES_EDITAR'],
         'bib.ejemplares.update' => ['BIB_EJEMPLARES_EDITAR'],
 
+        'bib.politicas.index' => ['BIB_POLITICAS_VER'],
+        'bib.politicas.create' => ['BIB_POLITICAS_EDITAR'],
+        'bib.politicas.store' => ['BIB_POLITICAS_EDITAR'],
+        'bib.politicas.edit' => ['BIB_POLITICAS_EDITAR'],
+        'bib.politicas.update' => ['BIB_POLITICAS_EDITAR'],
+
         'bib.config.autores.index' => 'BIB_CATALOGOS_VER',
         'bib.config.autores.create' => 'BIB_CATALOGOS_CREAR',
         'bib.config.autores.store' => 'BIB_CATALOGOS_CREAR',

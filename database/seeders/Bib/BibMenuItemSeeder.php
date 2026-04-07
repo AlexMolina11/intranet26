@@ -212,6 +212,15 @@ class BibMenuItemSeeder extends Seeder
                 'orden' => 15,
                 'permiso_requerido' => 'BIB_CATALOGOS_VER',
             ],
+
+            [
+                'id_menu' => $menuConfiguracion,
+                'nombre' => 'Políticas de préstamo',
+                'ruta' => 'bib.politicas.index',
+                'icono' => 'fa-solid fa-file-signature',
+                'orden' => 16,
+                'permiso_requerido' => 'BIB_POLITICAS_VER',
+            ],
         ];
 
         foreach ($items as $item) {

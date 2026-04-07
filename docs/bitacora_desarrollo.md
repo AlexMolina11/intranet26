@@ -831,3 +831,31 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
     - parcial `bib.ejemplares._form`
 - Se completó la protección de rutas `bib.ejemplares.*` en `config/access.php`.
 - Se confirmó que los permisos, roles y menú de ejemplares ya estaban contemplados en los seeders del sistema Biblioteca.
+
+## Día 22 - Políticas de préstamo
+
+- Se implementó la tabla `bib_politicas_prestamo` para centralizar las reglas operativas de circulación del módulo Biblioteca.
+- Se definió una política de préstamo por tipo de recurso, evitando dispersar reglas directamente en préstamos o solicitudes.
+- Se incorporaron campos para:
+    - días de préstamo
+    - renovaciones máximas
+    - máximo de préstamos por usuario
+    - multa diaria
+    - permiso de reserva
+    - requerimiento de aprobación
+    - permiso de préstamo externo
+- Se creó el modelo `PoliticaPrestamo` con relación hacia `TipoRecurso`.
+- Se agregó la relación `politicaPrestamo()` en `TipoRecurso`.
+- Se implementó `PoliticaPrestamoController` con acciones:
+    - listado
+    - creación
+    - almacenamiento
+    - edición
+    - actualización
+- Se agregaron requests de validación para creación y edición.
+- Se integraron las rutas `bib.politicas.*` al sistema Biblioteca.
+- Se protegieron las rutas mediante los permisos:
+    - `BIB_POLITICAS_VER`
+    - `BIB_POLITICAS_EDITAR`
+- Se agregó la opción de menú “Políticas de préstamo” dentro de la configuración del sistema Biblioteca.
+- Se creó un seeder base para generar políticas iniciales a partir de los tipos de recurso ya existentes.

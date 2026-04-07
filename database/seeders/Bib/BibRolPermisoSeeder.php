@@ -75,6 +75,7 @@ class BibRolPermisoSeeder extends Seeder
                 'BIB_PRESTAMOS_CREAR',
                 'BIB_PRESTAMOS_DEVOLVER',
                 'BIB_MULTAS_VER',
+                'BIB_POLITICAS_VER',
                 'BIB_CONSULTA_VER',
             ],
 

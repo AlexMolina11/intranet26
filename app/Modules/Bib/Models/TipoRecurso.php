@@ -30,4 +30,9 @@ class TipoRecurso extends Model
         'orden' => 'integer',
         'activo' => 'boolean',
     ];
+
+    public function politicaPrestamo()
+    {
+        return $this->hasOne(PoliticaPrestamo::class, 'id_tipo_recurso', 'id_tipo_recurso');
+    }
 }

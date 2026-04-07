@@ -724,3 +724,15 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
     - menú del sistema
     - asignación por roles
       antes de avanzar al flujo de solicitudes y préstamos.
+
+## Día 22 - Decisión técnica: política de préstamo separada por tipo de recurso
+
+- Se decidió modelar `bib_politicas_prestamo` como una entidad independiente, en lugar de depender únicamente de los valores default almacenados en `bib_tipos_recurso`.
+- Aunque `bib_tipos_recurso` ya contiene parámetros básicos de circulación, esos campos se mantienen como referencia inicial y compatibilidad con etapas previas del desarrollo.
+- La política de préstamo se vuelve la fuente operativa de verdad para el comportamiento de circulación.
+- Se definió una política por tipo de recurso para mantener el modelo simple en esta etapa y evitar complejidad temprana por combinaciones adicionales.
+- Esta separación permite que solicitudes, préstamos, devoluciones y multas consulten reglas centralizadas sin acoplarlas directamente a recursos o ejemplares.
+- También deja preparado el módulo para futuras ampliaciones, por ejemplo:
+    - políticas por tipo de acceso
+    - políticas por perfil de usuario
+    - reglas especiales por colección
