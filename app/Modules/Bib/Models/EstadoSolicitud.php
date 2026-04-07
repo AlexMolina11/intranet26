@@ -32,4 +32,9 @@ class EstadoSolicitud extends Model
         'orden' => 'integer',
         'activo' => 'boolean',
     ];
+
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class, 'id_estado_solicitud', 'id_estado_solicitud');
+    }
 }

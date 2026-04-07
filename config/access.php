@@ -187,6 +187,12 @@ return [
         'bib.politicas.edit' => ['BIB_POLITICAS_EDITAR'],
         'bib.politicas.update' => ['BIB_POLITICAS_EDITAR'],
 
+        'bib.solicitudes.index' => ['BIB_SOLICITUDES_VER'],
+        'bib.solicitudes.create' => ['BIB_SOLICITUDES_CREAR'],
+        'bib.solicitudes.store' => ['BIB_SOLICITUDES_CREAR'],
+        'bib.solicitudes.edit' => ['BIB_SOLICITUDES_GESTIONAR'],
+        'bib.solicitudes.update' => ['BIB_SOLICITUDES_GESTIONAR'],
+
         'bib.config.autores.index' => 'BIB_CATALOGOS_VER',
         'bib.config.autores.create' => 'BIB_CATALOGOS_CREAR',
         'bib.config.autores.store' => 'BIB_CATALOGOS_CREAR',

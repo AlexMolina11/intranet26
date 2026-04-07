@@ -1,0 +1,17 @@
+@extends('layouts.app')
+
+@section('title', 'Crear solicitud')
+
+@section('content')
+    <div class="card">
+        <form method="POST" action="{{ route('bib.solicitudes.store') }}">
+            @csrf
+            @include('bib.solicitudes._form', ['solicitud' => null])
+
+            <div class="page-header-actions" style="margin-top:16px;">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{{ route('bib.solicitudes.index') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+@endsection

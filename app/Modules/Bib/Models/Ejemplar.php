@@ -45,4 +45,9 @@ class Ejemplar extends Model
     {
         return $this->belongsTo(Disponibilidad::class, 'id_disponibilidad', 'id_disponibilidad');
     }
+
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class, 'id_ejemplar', 'id_ejemplar');
+    }
 }

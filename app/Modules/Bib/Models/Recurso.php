@@ -137,4 +137,9 @@ class Recurso extends Model
     {
         return $this->hasMany(Ejemplar::class, 'id_recurso', 'id_recurso');
     }
+
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class, 'id_recurso', 'id_recurso');
+    }
 }

@@ -736,3 +736,16 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
     - políticas por tipo de acceso
     - políticas por perfil de usuario
     - reglas especiales por colección
+
+## Día 22 - Decisión técnica: separar solicitud de préstamo efectivo
+
+- Se decidió modelar `bib_solicitudes` como una entidad independiente de `bib_prestamos`.
+- La solicitud representa la intención o requerimiento de acceso a un recurso, mientras que el préstamo representa la operación efectiva de circulación.
+- Esta separación permite manejar de forma más clara:
+    - aprobaciones o rechazos
+    - atención por bibliotecario
+    - tiempos de respuesta
+    - solicitudes que no terminan convirtiéndose en préstamo
+- También permite que el sistema use `bib_estados_solicitud` como catálogo funcional propio, sin mezclarlo con estados del préstamo ni del ejemplar.
+- Se dejó `id_ejemplar` como campo opcional para permitir solicitudes a nivel de recurso general o sobre una copia específica, según el escenario operativo.
+- Esta decisión mantiene el modelo más limpio y deja una base flexible para el flujo posterior de préstamos y circulación.

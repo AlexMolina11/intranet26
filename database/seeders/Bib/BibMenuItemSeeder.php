@@ -69,10 +69,18 @@ class BibMenuItemSeeder extends Seeder
             ],
             [
                 'id_menu' => $menuOperacion,
+                'nombre' => 'Nueva solicitud',
+                'ruta' => 'bib.solicitudes.create',
+                'icono' => 'fa-solid fa-file-circle-plus',
+                'orden' =>4,
+                'permiso_requerido' => 'BIB_SOLICITUDES_CREAR',
+            ],
+            [
+                'id_menu' => $menuOperacion,
                 'nombre' => 'Préstamos',
                 'ruta' => 'bib.prestamos.index',
                 'icono' => 'fa-solid fa-right-left',
-                'orden' => 4,
+                'orden' => 5,
                 'permiso_requerido' => 'BIB_PRESTAMOS_VER',
             ],
             [
@@ -80,7 +88,7 @@ class BibMenuItemSeeder extends Seeder
                 'nombre' => 'Multas',
                 'ruta' => 'bib.multas.index',
                 'icono' => 'fa-solid fa-money-bill-wave',
-                'orden' => 5,
+                'orden' => 6,
                 'permiso_requerido' => 'BIB_MULTAS_VER',
             ],
             [
@@ -88,7 +96,7 @@ class BibMenuItemSeeder extends Seeder
                 'nombre' => 'Consulta bibliográfica',
                 'ruta' => 'bib.consulta.index',
                 'icono' => 'fa-solid fa-magnifying-glass',
-                'orden' => 6,
+                'orden' => 7,
                 'permiso_requerido' => 'BIB_CONSULTA_VER',
             ],
 

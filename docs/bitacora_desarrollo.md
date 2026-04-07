@@ -859,3 +859,36 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
     - `BIB_POLITICAS_EDITAR`
 - Se agregó la opción de menú “Políticas de préstamo” dentro de la configuración del sistema Biblioteca.
 - Se creó un seeder base para generar políticas iniciales a partir de los tipos de recurso ya existentes.
+
+## Día 22 - Solicitudes bibliográficas
+
+- Se implementó la tabla `bib_solicitudes` para registrar solicitudes de recursos dentro del módulo Biblioteca.
+- La solicitud se modeló como una entidad previa al préstamo, separada del movimiento de circulación efectivo.
+- Se incorporaron relaciones hacia:
+    - usuario solicitante
+    - recurso bibliográfico
+    - ejemplar opcional
+    - estado de solicitud
+    - usuario que atiende
+- Se agregaron campos operativos para:
+    - fecha de solicitud
+    - fecha requerida
+    - fecha de atención
+    - motivo
+    - observaciones del usuario
+    - observaciones internas
+- Se creó el modelo `Solicitud` con sus relaciones Eloquent.
+- Se implementó `SolicitudController` con acciones:
+    - listado
+    - creación
+    - almacenamiento
+    - edición
+    - actualización
+- Se agregaron requests de validación para creación y edición.
+- Se integraron las rutas `bib.solicitudes.*` al sistema Biblioteca.
+- Se protegieron las rutas mediante permisos separados para:
+    - ver solicitudes
+    - crear solicitudes
+    - gestionar solicitudes
+- Se añadieron vistas Blade para administración base de solicitudes.
+- Con esta fase quedó lista la entidad de solicitud para enlazarse posteriormente con préstamos, aprobaciones y devoluciones.

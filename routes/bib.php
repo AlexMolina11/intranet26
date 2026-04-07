@@ -20,6 +20,7 @@ use App\Modules\Bib\Controllers\Config\EstadoSolicitudController;
 use App\Modules\Bib\Controllers\RecursoController;
 use App\Modules\Bib\Controllers\EjemplarController;
 use App\Modules\Bib\Controllers\PoliticaPrestamoController;
+use App\Modules\Bib\Controllers\SolicitudController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('bib')
@@ -45,6 +46,12 @@ Route::middleware(['auth', 'route.access'])
         Route::post('/politicas', [PoliticaPrestamoController::class, 'store'])->name('politicas.store');
         Route::get('/politicas/{politica}/editar', [PoliticaPrestamoController::class, 'edit'])->name('politicas.edit');
         Route::put('/politicas/{politica}', [PoliticaPrestamoController::class, 'update'])->name('politicas.update');
+
+        Route::get('/solicitudes', [SolicitudController::class, 'index'])->name('solicitudes.index');
+        Route::get('/solicitudes/crear', [SolicitudController::class, 'create'])->name('solicitudes.create');
+        Route::post('/solicitudes', [SolicitudController::class, 'store'])->name('solicitudes.store');
+        Route::get('/solicitudes/{solicitude}/editar', [SolicitudController::class, 'edit'])->name('solicitudes.edit');
+        Route::put('/solicitudes/{solicitude}', [SolicitudController::class, 'update'])->name('solicitudes.update');
 
         Route::prefix('config')
             ->as('config.')
