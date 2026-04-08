@@ -22,6 +22,7 @@ use App\Modules\Bib\Controllers\EjemplarController;
 use App\Modules\Bib\Controllers\PoliticaPrestamoController;
 use App\Modules\Bib\Controllers\SolicitudController;
 use App\Modules\Bib\Controllers\PrestamoController;
+use App\Modules\Bib\Controllers\MultaController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('bib')
@@ -59,6 +60,12 @@ Route::middleware(['auth', 'route.access'])
         Route::post('/prestamos', [PrestamoController::class, 'store'])->name('prestamos.store');
         Route::get('/prestamos/{prestamo}/editar', [PrestamoController::class, 'edit'])->name('prestamos.edit');
         Route::put('/prestamos/{prestamo}', [PrestamoController::class, 'update'])->name('prestamos.update');
+
+        Route::get('/multas', [MultaController::class, 'index'])->name('multas.index');
+        Route::get('/multas/crear', [MultaController::class, 'create'])->name('multas.create');
+        Route::post('/multas', [MultaController::class, 'store'])->name('multas.store');
+        Route::get('/multas/{multa}/editar', [MultaController::class, 'edit'])->name('multas.edit');
+        Route::put('/multas/{multa}', [MultaController::class, 'update'])->name('multas.update');
 
         Route::prefix('config')
             ->as('config.')

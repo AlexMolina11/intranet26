@@ -85,4 +85,10 @@ class Prestamo extends Model
         return $this->hasMany(HistorialPrestamo::class, 'id_prestamo', 'id_prestamo')
             ->latest('id_historial_prestamo');
     }
+
+    public function multas()
+    {
+        return $this->hasMany(Multa::class, 'id_prestamo', 'id_prestamo')
+            ->latest('id_multa');
+    }
 }

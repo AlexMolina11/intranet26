@@ -949,3 +949,31 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - Se integró el registro automático de historial al crear y actualizar préstamos.
 - Se añadió visualización del historial dentro de la pantalla de edición del préstamo.
 - Con esta fase quedó preparada la trazabilidad del flujo de circulación para soportar mejor devoluciones, renovaciones, multas y auditoría operativa.
+
+## Día 22 - Multas bibliográficas
+
+- Se implementó la tabla `bib_multas` para registrar sanciones económicas derivadas del flujo de circulación del módulo Biblioteca.
+- Se modeló la multa como entidad separada del préstamo, permitiendo conservar detalle transaccional y no solo un monto acumulado en el préstamo.
+- Se incorporaron relaciones hacia:
+    - préstamo
+    - usuario sancionado
+    - usuario que registra la multa
+- Se agregaron campos operativos para:
+    - fecha de multa
+    - días de atraso
+    - monto
+    - monto pagado
+    - indicador de pago
+    - fecha de pago
+    - motivo
+    - observaciones
+- Se creó el modelo `Multa` con sus relaciones Eloquent.
+- Se implementó `MultaController` con acciones:
+    - listado
+    - creación
+    - almacenamiento
+    - edición
+    - actualización
+- Se integraron las rutas `bib.multas.*` al sistema Biblioteca.
+- Se añadieron vistas Blade para administración base de multas.
+- Se agregó lógica para recalcular y sincronizar `multa_acumulada` en `bib_prestamos` cada vez que una multa se crea o actualiza.

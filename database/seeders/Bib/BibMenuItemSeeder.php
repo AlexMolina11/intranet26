@@ -103,10 +103,18 @@ class BibMenuItemSeeder extends Seeder
             ],
             [
                 'id_menu' => $menuOperacion,
+                'nombre' => 'Nueva multa',
+                'ruta' => 'bib.multas.create',
+                'icono' => 'fa-solid fa-file-invoice-dollar',
+                'orden' => 8,
+                'permiso_requerido' => 'BIB_MULTAS_VER',
+            ],
+            [
+                'id_menu' => $menuOperacion,
                 'nombre' => 'Consulta bibliográfica',
                 'ruta' => 'bib.consulta.index',
                 'icono' => 'fa-solid fa-magnifying-glass',
-                'orden' => 8,
+                'orden' => 9,
                 'permiso_requerido' => 'BIB_CONSULTA_VER',
             ],
 

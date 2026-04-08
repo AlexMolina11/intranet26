@@ -199,6 +199,12 @@ return [
         'bib.prestamos.edit' => ['BIB_PRESTAMOS_DEVOLVER'],
         'bib.prestamos.update' => ['BIB_PRESTAMOS_DEVOLVER'],
 
+        'bib.multas.index' => ['BIB_MULTAS_VER'],
+        'bib.multas.create' => ['BIB_MULTAS_VER'],
+        'bib.multas.store' => ['BIB_MULTAS_VER'],
+        'bib.multas.edit' => ['BIB_MULTAS_VER'],
+        'bib.multas.update' => ['BIB_MULTAS_VER'],
+
         'bib.config.autores.index' => 'BIB_CATALOGOS_VER',
         'bib.config.autores.create' => 'BIB_CATALOGOS_CREAR',
         'bib.config.autores.store' => 'BIB_CATALOGOS_CREAR',

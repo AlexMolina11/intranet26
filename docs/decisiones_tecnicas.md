@@ -778,3 +778,15 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
     - vencimientos automáticos
     - generación de multas
     - auditoría detallada de circulación
+
+## Día 22 - Decisión técnica: separar multas del préstamo principal
+
+- Se decidió modelar `bib_multas` como entidad independiente, en lugar de depender únicamente del campo `multa_acumulada` en `bib_prestamos`.
+- El campo acumulado del préstamo se mantiene como dato operativo resumido, pero la fuente transaccional de detalle pasa a ser la tabla de multas.
+- Esta separación permite manejar con mayor claridad:
+    - multas múltiples sobre un mismo préstamo
+    - pagos parciales o completos
+    - observaciones administrativas
+    - trazabilidad económica
+- Se decidió recalcular el acumulado del préstamo desde las multas activas registradas, en lugar de editar manualmente ese total.
+- Con esto el módulo queda mejor preparado para fases posteriores de reportería, conciliación de pagos y reglas automáticas de sanción.
