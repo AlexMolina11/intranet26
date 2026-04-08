@@ -193,6 +193,12 @@ return [
         'bib.solicitudes.edit' => ['BIB_SOLICITUDES_GESTIONAR'],
         'bib.solicitudes.update' => ['BIB_SOLICITUDES_GESTIONAR'],
 
+        'bib.prestamos.index' => ['BIB_PRESTAMOS_VER'],
+        'bib.prestamos.create' => ['BIB_PRESTAMOS_CREAR'],
+        'bib.prestamos.store' => ['BIB_PRESTAMOS_CREAR'],
+        'bib.prestamos.edit' => ['BIB_PRESTAMOS_DEVOLVER'],
+        'bib.prestamos.update' => ['BIB_PRESTAMOS_DEVOLVER'],
+
         'bib.config.autores.index' => 'BIB_CATALOGOS_VER',
         'bib.config.autores.create' => 'BIB_CATALOGOS_CREAR',
         'bib.config.autores.store' => 'BIB_CATALOGOS_CREAR',

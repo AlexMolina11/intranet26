@@ -892,3 +892,36 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
     - gestionar solicitudes
 - Se añadieron vistas Blade para administración base de solicitudes.
 - Con esta fase quedó lista la entidad de solicitud para enlazarse posteriormente con préstamos, aprobaciones y devoluciones.
+
+## Día 22 - Préstamos bibliográficos
+
+- Se implementó la tabla `bib_prestamos` como entidad de circulación efectiva del módulo Biblioteca.
+- El préstamo se modeló como operación separada de la solicitud, permitiendo distinguir entre intención de acceso y entrega real del recurso.
+- Se incorporaron relaciones hacia:
+    - usuario
+    - recurso
+    - ejemplar
+    - estado de préstamo
+    - solicitud relacionada
+    - usuario que entrega
+    - usuario que recibe devolución
+- Se agregaron campos operativos para:
+    - fecha de préstamo
+    - fecha de vencimiento
+    - fecha de devolución
+    - días autorizados
+    - renovaciones usadas
+    - renovaciones máximas
+    - multa diaria
+    - multa acumulada
+- Se creó el modelo `Prestamo` con sus relaciones Eloquent.
+- Se implementó `PrestamoController` con acciones:
+    - listado
+    - creación
+    - almacenamiento
+    - edición
+    - actualización
+- Se agregaron requests de validación para creación y edición.
+- Se integraron las rutas `bib.prestamos.*` al sistema Biblioteca.
+- Se añadieron vistas Blade para administración base de préstamos.
+- Al crear un préstamo, el sistema toma los parámetros operativos desde `bib_politicas_prestamo` del tipo de recurso correspondiente.

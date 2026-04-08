@@ -59,4 +59,9 @@ class Solicitud extends Model
     {
         return $this->belongsTo(Usuario::class, 'id_usuario_atiende', 'id_usuario');
     }
+
+    public function prestamos()
+    {
+        return $this->hasMany(Prestamo::class, 'id_solicitud', 'id_solicitud');
+    }
 }

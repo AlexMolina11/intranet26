@@ -142,4 +142,9 @@ class Recurso extends Model
     {
         return $this->hasMany(Solicitud::class, 'id_recurso', 'id_recurso');
     }
+
+    public function prestamos()
+    {
+        return $this->hasMany(Prestamo::class, 'id_recurso', 'id_recurso');
+    }
 }

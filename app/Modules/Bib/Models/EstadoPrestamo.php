@@ -30,4 +30,9 @@ class EstadoPrestamo extends Model
         'orden' => 'integer',
         'activo' => 'boolean',
     ];
+
+    public function prestamos()
+    {
+        return $this->hasMany(Prestamo::class, 'id_estado_prestamo', 'id_estado_prestamo');
+    }
 }

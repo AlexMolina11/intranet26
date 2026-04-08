@@ -749,3 +749,16 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
 - También permite que el sistema use `bib_estados_solicitud` como catálogo funcional propio, sin mezclarlo con estados del préstamo ni del ejemplar.
 - Se dejó `id_ejemplar` como campo opcional para permitir solicitudes a nivel de recurso general o sobre una copia específica, según el escenario operativo.
 - Esta decisión mantiene el modelo más limpio y deja una base flexible para el flujo posterior de préstamos y circulación.
+
+## Día 22 - Decisión técnica: congelar condiciones de circulación en el préstamo
+
+- Se decidió que `bib_prestamos` almacene sus propias condiciones operativas al momento de crearse:
+    - días autorizados
+    - renovaciones máximas
+    - multa diaria
+- Aunque estas reglas provienen de `bib_politicas_prestamo`, no se consultarán dinámicamente cada vez que se lea el préstamo.
+- La razón es preservar integridad histórica: si una política cambia en el futuro, los préstamos ya emitidos deben conservar las condiciones con las que fueron autorizados originalmente.
+- También se decidió separar claramente:
+    - solicitud como intención previa
+    - préstamo como movimiento efectivo
+- Esta separación simplifica el flujo de circulación y deja una base más robusta para devoluciones, historial y multas.

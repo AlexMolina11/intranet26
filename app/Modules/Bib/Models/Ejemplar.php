@@ -50,4 +50,9 @@ class Ejemplar extends Model
     {
         return $this->hasMany(Solicitud::class, 'id_ejemplar', 'id_ejemplar');
     }
+
+    public function prestamos()
+    {
+        return $this->hasMany(Prestamo::class, 'id_ejemplar', 'id_ejemplar');
+    }
 }
