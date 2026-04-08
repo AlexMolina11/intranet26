@@ -35,4 +35,9 @@ class EstadoPrestamo extends Model
     {
         return $this->hasMany(Prestamo::class, 'id_estado_prestamo', 'id_estado_prestamo');
     }
+
+    public function historialPrestamos()
+    {
+        return $this->hasMany(HistorialPrestamo::class, 'id_estado_prestamo', 'id_estado_prestamo');
+    }
 }

@@ -79,4 +79,10 @@ class Prestamo extends Model
     {
         return $this->belongsTo(Usuario::class, 'id_usuario_recibe', 'id_usuario');
     }
+
+    public function historial()
+    {
+        return $this->hasMany(HistorialPrestamo::class, 'id_prestamo', 'id_prestamo')
+            ->latest('id_historial_prestamo');
+    }
 }

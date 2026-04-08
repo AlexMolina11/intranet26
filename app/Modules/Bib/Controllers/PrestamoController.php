@@ -13,6 +13,8 @@ use App\Modules\Bib\Requests\StorePrestamoRequest;
 use App\Modules\Bib\Requests\UpdatePrestamoRequest;
 use App\Modules\Seg\Models\Usuario;
 use Illuminate\Http\Request;
+use App\Modules\Bib\Models\HistorialPrestamo;
+use Illuminate\Support\Facades\Auth;
 
 class PrestamoController extends Controller
 {
@@ -127,7 +129,9 @@ class PrestamoController extends Controller
             }
         }
 
-        Prestamo::create($data);
+        $prestamo = Prestamo::create($data);
+
+        $this->registrarHistorial($prestamo, 'CREACION', 'Registro inicial del préstamo.');
 
         return redirect()
             ->route('bib.prestamos.index')
@@ -165,6 +169,11 @@ class PrestamoController extends Controller
             ->latest('id_solicitud')
             ->get();
 
+        $prestamo->load([
+            'historial.usuarioAccion',
+            'historial.estadoPrestamo',
+        ]);
+
         return view('bib.prestamos.edit', compact(
             'prestamo',
             'usuarios',
@@ -179,8 +188,38 @@ class PrestamoController extends Controller
     {
         $prestamo->update($request->validated());
 
+        $tipoMovimiento = 'ACTUALIZACION';
+
+        if ($prestamo->fecha_devolucion) {
+            $tipoMovimiento = 'DEVOLUCION';
+        } elseif ($prestamo->renovaciones_usadas > 0) {
+            $tipoMovimiento = 'RENOVACION';
+        }
+
+        $this->registrarHistorial($prestamo, $tipoMovimiento, 'Actualización del préstamo.');
+
         return redirect()
             ->route('bib.prestamos.index')
             ->with('success', 'Préstamo actualizado correctamente.');
+    }
+
+    private function registrarHistorial(Prestamo $prestamo, string $tipoMovimiento, ?string $observaciones = null): void
+    {
+        HistorialPrestamo::create([
+            'id_prestamo' => $prestamo->id_prestamo,
+            'id_estado_prestamo' => $prestamo->id_estado_prestamo,
+            'id_usuario_accion' => Auth::id(),
+            'tipo_movimiento' => $tipoMovimiento,
+            'fecha_movimiento' => now()->toDateString(),
+            'fecha_prestamo' => optional($prestamo->fecha_prestamo)?->format('Y-m-d'),
+            'fecha_vencimiento' => optional($prestamo->fecha_vencimiento)?->format('Y-m-d'),
+            'fecha_devolucion' => optional($prestamo->fecha_devolucion)?->format('Y-m-d'),
+            'dias_autorizados' => $prestamo->dias_autorizados,
+            'renovaciones_usadas' => $prestamo->renovaciones_usadas,
+            'renovaciones_maximas' => $prestamo->renovaciones_maximas,
+            'multa_diaria' => $prestamo->multa_diaria,
+            'multa_acumulada' => $prestamo->multa_acumulada,
+            'observaciones' => $observaciones ?? $prestamo->observaciones,
+        ]);
     }
 }

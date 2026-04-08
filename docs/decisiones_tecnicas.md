@@ -762,3 +762,19 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
     - solicitud como intención previa
     - préstamo como movimiento efectivo
 - Esta separación simplifica el flujo de circulación y deja una base más robusta para devoluciones, historial y multas.
+
+## Día 22 - Decisión técnica: separar préstamo actual de historial transaccional
+
+- Se decidió mantener `bib_prestamos` como entidad de estado actual y `bib_historial_prestamos` como bitácora de eventos del ciclo de vida del préstamo.
+- Esta separación evita sobrecargar el préstamo principal con trazabilidad repetitiva y permite conservar una línea histórica clara de movimientos.
+- Cada actualización relevante del préstamo genera un registro histórico independiente, conservando:
+    - estado del momento
+    - fechas del momento
+    - condiciones operativas del momento
+    - usuario responsable de la acción
+- Se optó por registrar el historial automáticamente desde el controlador de préstamos en esta etapa, evitando una complejidad mayor con observers o servicios adicionales.
+- Esta decisión deja el módulo listo para una evolución posterior hacia:
+    - renovaciones controladas
+    - vencimientos automáticos
+    - generación de multas
+    - auditoría detallada de circulación

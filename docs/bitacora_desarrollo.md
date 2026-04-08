@@ -925,3 +925,27 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - Se integraron las rutas `bib.prestamos.*` al sistema Biblioteca.
 - Se añadieron vistas Blade para administración base de préstamos.
 - Al crear un préstamo, el sistema toma los parámetros operativos desde `bib_politicas_prestamo` del tipo de recurso correspondiente.
+
+## Día 22 - Historial de préstamos
+
+- Se implementó la tabla `bib_historial_prestamos` para registrar la trazabilidad operativa de cada préstamo del sistema Biblioteca.
+- Se definió el historial como entidad separada del préstamo principal, manteniendo en `bib_prestamos` únicamente el estado actual del movimiento.
+- Se incorporaron campos para registrar en cada evento:
+    - préstamo relacionado
+    - estado de préstamo
+    - usuario que ejecuta la acción
+    - tipo de movimiento
+    - fecha del movimiento
+    - fechas operativas del préstamo
+    - renovaciones
+    - multa diaria
+    - multa acumulada
+    - observaciones
+- Se creó el modelo `HistorialPrestamo` con relaciones hacia:
+    - préstamo
+    - estado de préstamo
+    - usuario de la acción
+- Se agregó la relación `historial()` en `Prestamo`.
+- Se integró el registro automático de historial al crear y actualizar préstamos.
+- Se añadió visualización del historial dentro de la pantalla de edición del préstamo.
+- Con esta fase quedó preparada la trazabilidad del flujo de circulación para soportar mejor devoluciones, renovaciones, multas y auditoría operativa.
