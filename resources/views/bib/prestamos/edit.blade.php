@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Editar préstamo')
+@section('title', 'Gestionar préstamo')
 
 @section('content')
     <div class="card">
@@ -13,6 +13,17 @@
                 <button type="submit" class="btn btn-primary">Actualizar</button>
                 <a href="{{ route('bib.prestamos.index') }}" class="btn btn-secondary">Cancelar</a>
             </div>
+            @if(!$prestamo->fecha_devolucion)
+                <button
+                    type="submit"
+                    formaction="{{ route('bib.prestamos.devolver', $prestamo) }}"
+                    formmethod="POST"
+                    class="btn btn-success"
+                    onclick="return confirm('¿Registrar devolución?')"
+                >
+                    Devolver libro
+                </button>
+            @endif
         </form>
     </div>
 

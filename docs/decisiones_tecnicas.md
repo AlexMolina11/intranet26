@@ -790,3 +790,16 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
     - trazabilidad económica
 - Se decidió recalcular el acumulado del préstamo desde las multas activas registradas, en lugar de editar manualmente ese total.
 - Con esto el módulo queda mejor preparado para fases posteriores de reportería, conciliación de pagos y reglas automáticas de sanción.
+
+## Día 23 - Separación de operaciones de circulación en Biblioteca
+
+- Se decidió separar las operaciones de circulación del CRUD del préstamo.
+- Se implementó la acción `devolver()` como operación independiente.
+- Se utilizó transacción para garantizar consistencia entre:
+    - préstamo
+    - ejemplar
+    - multa
+    - historial
+- Se mantuvo el préstamo como estado actual y el historial como trazabilidad.
+- La multa se maneja como entidad independiente.
+- No se fuerza el estado físico del ejemplar al devolver, solo su disponibilidad.

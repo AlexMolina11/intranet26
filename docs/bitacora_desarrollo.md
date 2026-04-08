@@ -977,3 +977,18 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - Se integraron las rutas `bib.multas.*` al sistema Biblioteca.
 - Se añadieron vistas Blade para administración base de multas.
 - Se agregó lógica para recalcular y sincronizar `multa_acumulada` en `bib_prestamos` cada vez que una multa se crea o actualiza.
+
+## Día 23 - Automatización de devolución de préstamos
+
+- Se implementó la operación específica `bib.prestamos.devolver`.
+- Se separó la devolución del CRUD general del préstamo.
+- La devolución ahora ejecuta una transacción que:
+    - cambia el estado del préstamo a DEVUELTO
+    - registra la fecha de devolución
+    - registra el usuario que recibe el ejemplar
+    - libera el ejemplar (DISPONIBLE)
+- Se implementó cálculo automático de atraso.
+- Se genera automáticamente una multa si hay atraso.
+- Se recalcula la multa acumulada del préstamo.
+- Se registra el evento en `bib_historial_prestamos`.
+- Se agregó botón de devolución en la vista de gestión del préstamo.

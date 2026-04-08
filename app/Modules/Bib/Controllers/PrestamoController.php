@@ -222,4 +222,97 @@ class PrestamoController extends Controller
             'observaciones' => $observaciones ?? $prestamo->observaciones,
         ]);
     }
+
+    public function devolver(Prestamo $prestamo)
+    {
+        if ($prestamo->fecha_devolucion) {
+            return back()->with('error', 'El préstamo ya fue devuelto.');
+        }
+
+        DB::transaction(function () use ($prestamo) {
+
+            $estadoDevuelto = $this->estadoPorCodigo('DEVUELTO');
+            $disponible = $this->disponibilidadPorCodigo('DISPONIBLE');
+
+            $fechaHoy = now()->startOfDay();
+            $diasAtraso = 0;
+
+            if ($prestamo->fecha_vencimiento && $fechaHoy->gt($prestamo->fecha_vencimiento->copy()->startOfDay())) {
+                $diasAtraso = $prestamo->fecha_vencimiento->diffInDays($fechaHoy);
+            }
+
+            // 1. Actualizar préstamo
+            $prestamo->update([
+                'id_estado_prestamo' => $estadoDevuelto->id_estado_prestamo,
+                'fecha_devolucion' => $fechaHoy,
+                'id_usuario_recibe' => auth()->id(),
+            ]);
+
+            // 2. Liberar ejemplar
+            if ($prestamo->ejemplar) {
+                $prestamo->ejemplar->update([
+                    'id_disponibilidad' => $disponible->id_disponibilidad,
+                ]);
+            }
+
+            // 3. Generar multa
+            if ($diasAtraso > 0) {
+                $monto = $diasAtraso * (float) $prestamo->multa_diaria;
+
+                Multa::create([
+                    'id_prestamo' => $prestamo->id_prestamo,
+                    'id_usuario' => $prestamo->id_usuario,
+                    'id_usuario_registra' => auth()->id(),
+                    'fecha_multa' => $fechaHoy,
+                    'dias_atraso' => $diasAtraso,
+                    'monto' => $monto,
+                    'monto_pagado' => 0,
+                    'pagada' => false,
+                    'motivo' => 'Devolución con atraso',
+                    'activo' => true,
+                ]);
+            }
+
+            // 4. Recalcular multa acumulada
+            $this->recalcularMulta($prestamo);
+
+            // 5. Historial
+            $this->registrarHistorial(
+                $prestamo,
+                'DEVOLUCION',
+                $diasAtraso > 0
+                    ? "Devolución con {$diasAtraso} días de atraso"
+                    : "Devolución sin atraso"
+            );
+        });
+
+        return redirect()
+            ->route('bib.prestamos.edit', $prestamo)
+            ->with('success', 'Devolución registrada correctamente.');
+    }
+
+    private function estadoPorCodigo(string $codigo)
+    {
+        return EstadoPrestamo::where('codigo', $codigo)
+            ->where('activo', true)
+            ->firstOrFail();
+    }
+
+    private function disponibilidadPorCodigo(string $codigo)
+    {
+        return Disponibilidad::where('codigo', $codigo)
+            ->where('activo', true)
+            ->firstOrFail();
+    }
+
+    private function recalcularMulta(Prestamo $prestamo)
+    {
+        $total = $prestamo->multas()
+            ->where('activo', true)
+            ->sum('monto');
+
+        $prestamo->update([
+            'multa_acumulada' => $total,
+        ]);
+    }
 }
