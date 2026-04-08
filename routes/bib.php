@@ -190,9 +190,8 @@ Route::middleware(['auth', 'route.access'])
         Route::get('/prestamos/{prestamo}/editar', [PrestamoController::class, 'edit'])->name('prestamos.edit');
         Route::put('/prestamos/{prestamo}', [PrestamoController::class, 'update'])->name('prestamos.update');
 
-        // Operaciones de circulación
+        Route::post('/prestamos/{prestamo}/entregar', [PrestamoController::class, 'entregar'])->name('prestamos.entregar');
         Route::post('/prestamos/{prestamo}/devolver', [PrestamoController::class, 'devolver'])->name('prestamos.devolver');
-
         /*
         |--------------------------------------------------------------------------
         | Multas

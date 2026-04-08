@@ -992,3 +992,16 @@ git commit -m "test(seeders): validate ticket access profiles after fresh seedin
 - Se recalcula la multa acumulada del préstamo.
 - Se registra el evento en `bib_historial_prestamos`.
 - Se agregó botón de devolución en la vista de gestión del préstamo.
+
+## Día 23 - Entrega operativa de préstamos en Biblioteca
+
+- Se incorporó la acción específica `bib.prestamos.entregar` para separar la entrega real del ejemplar del registro administrativo del préstamo.
+- El préstamo ahora puede crearse primero como registro de circulación pendiente de entrega.
+- Se implementó el método `entregar()` en `PrestamoController`.
+- La entrega ejecuta una transacción operativa que:
+    - cambia el estado del préstamo a PRESTADO
+    - actualiza la disponibilidad del ejemplar a PRESTADO
+    - valida que el ejemplar asociado exista y no esté ya prestado
+- Se registra automáticamente un nuevo evento en `bib_historial_prestamos` con el movimiento de entrega.
+- Se actualizó la vista de edición del préstamo para mostrar una acción explícita de “Registrar entrega”.
+- Se ajustó el flujo visual para que la devolución solo esté disponible cuando el préstamo ya fue entregado.

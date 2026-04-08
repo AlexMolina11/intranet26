@@ -131,11 +131,15 @@ class PrestamoController extends Controller
 
         $prestamo = Prestamo::create($data);
 
-        $this->registrarHistorial($prestamo, 'CREACION', 'Registro inicial del préstamo.');
+        $this->registrarHistorial(
+            $prestamo,
+            'CREACION',
+            'Registro administrativo del préstamo pendiente de entrega.'
+        );
 
         return redirect()
-            ->route('bib.prestamos.index')
-            ->with('success', 'Préstamo registrado correctamente.');
+            ->route('bib.prestamos.edit', $prestamo)
+            ->with('success', 'Préstamo registrado correctamente. Ahora puedes entregarlo.');
     }
 
     public function edit(Prestamo $prestamo)
@@ -225,6 +229,13 @@ class PrestamoController extends Controller
 
     public function devolver(Prestamo $prestamo)
     {
+
+        $estadoPrestado = $this->estadoPorCodigo('PRESTADO');
+
+        if ((int) $prestamo->id_estado_prestamo !== (int) $estadoPrestado->id_estado_prestamo) {
+            return back()->with('error', 'Solo puedes devolver préstamos que ya hayan sido entregados.');
+        }
+
         if ($prestamo->fecha_devolucion) {
             return back()->with('error', 'El préstamo ya fue devuelto.');
         }
@@ -314,5 +325,51 @@ class PrestamoController extends Controller
         $prestamo->update([
             'multa_acumulada' => $total,
         ]);
+    }
+
+    public function entregar(Prestamo $prestamo)
+    {
+        if ($prestamo->fecha_devolucion) {
+            return back()->with('error', 'No puedes entregar un préstamo ya devuelto.');
+        }
+
+        if ($prestamo->ejemplar === null) {
+            return back()->with('error', 'El préstamo no tiene un ejemplar asociado.');
+        }
+
+        DB::transaction(function () use ($prestamo) {
+            $estadoPrestado = $this->estadoPorCodigo('PRESTADO');
+            $disponibilidadPrestado = $this->disponibilidadPorCodigo('PRESTADO');
+
+            $ejemplar = $prestamo->ejemplar()->lockForUpdate()->first();
+
+            if (!$ejemplar) {
+                abort(404, 'No se encontró el ejemplar asociado al préstamo.');
+            }
+
+            if ((int) $ejemplar->id_disponibilidad === (int) $disponibilidadPrestado->id_disponibilidad) {
+                throw new \RuntimeException('El ejemplar ya se encuentra prestado.');
+            }
+
+            $prestamo->update([
+                'id_estado_prestamo' => $estadoPrestado->id_estado_prestamo,
+            ]);
+
+            $ejemplar->update([
+                'id_disponibilidad' => $disponibilidadPrestado->id_disponibilidad,
+            ]);
+
+            $prestamo->refresh();
+
+            $this->registrarHistorial(
+                $prestamo,
+                'ENTREGA',
+                'Entrega del ejemplar al usuario y salida efectiva de circulación.'
+            );
+        });
+
+        return redirect()
+            ->route('bib.prestamos.edit', $prestamo)
+            ->with('success', 'Préstamo entregado correctamente.');
     }
 }

@@ -803,3 +803,21 @@ Además, se eliminaron del flujo las referencias operativas a `secciones`, ya qu
 - Se mantuvo el préstamo como estado actual y el historial como trazabilidad.
 - La multa se maneja como entidad independiente.
 - No se fuerza el estado físico del ejemplar al devolver, solo su disponibilidad.
+
+## Día 23 - Decisión técnica: separar creación administrativa y entrega efectiva del préstamo en Biblioteca
+
+- Se decidió no marcar automáticamente un préstamo como entregado al momento de crearlo.
+- En su lugar, la creación del préstamo representa el registro administrativo de la operación, mientras la entrega efectiva del ejemplar se ejecuta mediante la acción específica `bib.prestamos.entregar`.
+- Esta separación permite controlar mejor:
+    - validación del ejemplar disponible
+    - trazabilidad del momento real de salida
+    - coherencia entre estado del préstamo y disponibilidad del ejemplar
+- La entrega se ejecuta dentro de una transacción para asegurar consistencia entre:
+    - préstamo
+    - ejemplar
+    - historial
+- Con esta decisión, el flujo de circulación queda más claro:
+    - creación
+    - entrega
+    - devolución
+    - multa si corresponde

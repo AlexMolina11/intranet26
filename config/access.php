@@ -198,6 +198,7 @@ return [
         'bib.prestamos.store' => ['BIB_PRESTAMOS_CREAR'],
         'bib.prestamos.edit' => ['BIB_PRESTAMOS_DEVOLVER'],
         'bib.prestamos.update' => ['BIB_PRESTAMOS_DEVOLVER'],
+        'bib.prestamos.entregar' => ['BIB_PRESTAMOS_CREAR'],
         'bib.prestamos.devolver' => ['BIB_PRESTAMOS_DEVOLVER'],
 
         'bib.multas.index' => ['BIB_MULTAS_VER'],

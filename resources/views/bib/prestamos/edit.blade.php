@@ -13,6 +13,31 @@
                 <button type="submit" class="btn btn-primary">Actualizar</button>
                 <a href="{{ route('bib.prestamos.index') }}" class="btn btn-secondary">Cancelar</a>
             </div>
+
+            @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_CREAR') && !$prestamo->fecha_devolucion && $prestamo->estadoPrestamo?->codigo !== 'PRESTADO')
+                <button
+                    type="submit"
+                    formaction="{{ route('bib.prestamos.entregar', $prestamo) }}"
+                    formmethod="POST"
+                    class="btn btn-warning"
+                    onclick="return confirm('¿Deseas registrar la entrega de este préstamo?');"
+                >
+                    Registrar entrega
+                </button>
+            @endif
+
+            @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_DEVOLVER') && !$prestamo->fecha_devolucion && $prestamo->estadoPrestamo?->codigo === 'PRESTADO')
+                <button
+                    type="submit"
+                    formaction="{{ route('bib.prestamos.devolver', $prestamo) }}"
+                    formmethod="POST"
+                    class="btn btn-success"
+                    onclick="return confirm('¿Deseas registrar la devolución de este préstamo?');"
+                >
+                    Registrar devolución
+                </button>
+            @endif
+            
             @if(!$prestamo->fecha_devolucion)
                 <button
                     type="submit"
