@@ -11,11 +11,14 @@ use App\Modules\Seg\Controllers\UsuarioRolController;
 use App\Modules\Seg\Controllers\UsuarioPermisoController;
 use App\Modules\Seg\Controllers\MenuController;
 use App\Modules\Seg\Controllers\MenuItemController;
+use App\Modules\Seg\Controllers\IntranetDashboardController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('seg')
     ->as('seg.')
     ->group(function () {
+
+        Route::get('/dashboard', [IntranetDashboardController::class, 'index'])->name('dashboard');
 
         Route::prefix('usuarios')
             ->as('usuarios.')

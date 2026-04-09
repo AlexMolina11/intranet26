@@ -129,7 +129,7 @@
                     @forelse ($ticketsRecientes as $ticket)
                         <tr>
                             <td>{{ $ticket->id_ticket }}</td>
-                            <td>{{ $ticket->fecha_ticket }}</td>
+                            <td>{{ optional($ticket->fecha_ticket)->format('d/m/Y H:i') ?? '-' }}</td>
                             <td>{{ $ticket->tipoTicket->nombre ?? '-' }}</td>
                             <td>
                                 <span class="badge"
@@ -139,8 +139,8 @@
                             </td>
                             <td>{{ $ticket->asunto }}</td>
                             <td>
-                                @if(Route::has('tik.tickets.show') && auth()->user()->tienePermiso('TIK_TICKETS_DETALLE'))
-                                    <a href="{{ route('tik.tickets.show', $ticket->id_ticket) }}" class="btn btn-secondary">
+                                @if($ticket->dashboard_detail_route)
+                                    <a href="{{ $ticket->dashboard_detail_route }}" class="btn btn-secondary">
                                         Ver
                                     </a>
                                 @else

@@ -5,6 +5,7 @@ return [
 
         'inicio' => null,
         'dashboard' => null,
+        'seg.dashboard' => null,
 
         // Usuarios
         'seg.usuarios.index' => 'USUARIOS_VER',
@@ -126,6 +127,19 @@ return [
         // Panel gestor
         'tik.gestor.tickets.index' => ['TIK_PANEL_GESTOR_VER', 'TIK_TICKETS_GESTOR_VER'],
         'tik.gestor.tickets.show' => ['TIK_PANEL_GESTOR_VER', 'TIK_TICKETS_GESTOR_VER'],
+        'tik.gestor.tickets.planificar' => ['TIK_PANEL_GESTOR_VER', 'TIK_TICKETS_GESTOR_VER'],
+        'tik.gestor.tickets.iniciar' => ['TIK_PANEL_GESTOR_VER', 'TIK_TICKETS_GESTOR_VER'],
+        'tik.gestor.tickets.finalizar' => ['TIK_PANEL_GESTOR_VER', 'TIK_TICKETS_GESTOR_VER'],
+
+        // Soportes
+        'tik.soportes.index' => ['TIK_SOPORTES_VER'],
+        'tik.soportes.create' => ['TIK_SOPORTES_CREAR'],
+        'tik.soportes.store' => ['TIK_SOPORTES_CREAR'],
+
+        // Catálogos dinámicos para soportes
+        'tik.catalogos.tipos-servicio.usuario' => ['TIK_SOPORTES_CREAR', 'TIK_SOPORTES_VER'],
+        'tik.catalogos.tipos-servicio.servicios' => ['TIK_SOPORTES_CREAR', 'TIK_SOPORTES_VER'],
+        'tik.catalogos.incidencias.usuario' => ['TIK_SOPORTES_CREAR', 'TIK_SOPORTES_VER'],
 
         // Configuración Tickets - Catálogos
         'tik.config.tipos-ticket.index' => ['TIK_CATALOGOS_VER'],
@@ -202,10 +216,10 @@ return [
         'bib.prestamos.devolver' => ['BIB_PRESTAMOS_DEVOLVER'],
 
         'bib.multas.index' => ['BIB_MULTAS_VER'],
-        'bib.multas.create' => ['BIB_MULTAS_VER'],
-        'bib.multas.store' => ['BIB_MULTAS_VER'],
-        'bib.multas.edit' => ['BIB_MULTAS_VER'],
-        'bib.multas.update' => ['BIB_MULTAS_VER'],
+        'bib.multas.create' => ['BIB_MULTAS_GESTIONAR'],
+        'bib.multas.store' => ['BIB_MULTAS_GESTIONAR'],
+        'bib.multas.edit' => ['BIB_MULTAS_GESTIONAR'],
+        'bib.multas.update' => ['BIB_MULTAS_GESTIONAR'],
 
         'bib.config.autores.index' => 'BIB_CATALOGOS_VER',
         'bib.config.autores.create' => 'BIB_CATALOGOS_CREAR',

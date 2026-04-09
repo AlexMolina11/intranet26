@@ -22,15 +22,37 @@ class MenuItemSeeder extends Seeder
 
         $menus = DB::table('seg_menus')
             ->where('id_sistema', $sistema->id_sistema)
-            ->whereIn('nombre', ['Seguridad', 'Organización'])
+            ->whereIn('nombre', ['Inicio', 'Seguridad', 'Organización'])
             ->pluck('id_menu', 'nombre');
 
+        $menuInicio = $menus['Inicio'] ?? null;
         $menuSeguridad = $menus['Seguridad'] ?? null;
         $menuOrganizacion = $menus['Organización'] ?? null;
 
-        if (!$menuSeguridad || !$menuOrganizacion) {
+        if (!$menuInicio || !$menuSeguridad || !$menuOrganizacion) {
             return;
         }
+
+        DB::table('seg_menu_items')->updateOrInsert(
+            [
+                'id_menu' => $menuInicio,
+                'nombre' => 'Dashboard',
+            ],
+            [
+                'id_sistema' => $sistema->id_sistema,
+                'id_menu_item_padre' => null,
+                'ruta' => 'seg.dashboard',
+                'icono' => 'fa-solid fa-house',
+                'orden' => 1,
+                'visible' => 1,
+                'es_externo' => 0,
+                'abre_nueva_pestana' => 0,
+                'permiso_requerido' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+                'deleted_at' => null,
+            ]
+        );
 
         DB::table('seg_menu_items')->updateOrInsert(
             [
@@ -74,7 +96,6 @@ class MenuItemSeeder extends Seeder
             ]
         );
 
-
         DB::table('seg_menu_items')->updateOrInsert(
             [
                 'id_menu' => $menuSeguridad,
@@ -85,7 +106,7 @@ class MenuItemSeeder extends Seeder
                 'id_menu_item_padre' => null,
                 'ruta' => 'seg.permisos.index',
                 'icono' => 'fa-solid fa-lock',
-                'orden' => 4,
+                'orden' => 3,
                 'visible' => 1,
                 'es_externo' => 0,
                 'abre_nueva_pestana' => 0,
@@ -106,7 +127,7 @@ class MenuItemSeeder extends Seeder
                 'id_menu_item_padre' => null,
                 'ruta' => 'seg.menus.index',
                 'icono' => 'fa-solid fa-list',
-                'orden' => 5,
+                'orden' => 4,
                 'visible' => 1,
                 'es_externo' => 0,
                 'abre_nueva_pestana' => 0,

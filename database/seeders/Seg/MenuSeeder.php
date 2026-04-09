@@ -22,6 +22,12 @@ class MenuSeeder extends Seeder
 
         $menus = [
             [
+                'nombre' => 'Inicio',
+                'icono' => 'fa-solid fa-house',
+                'orden' => 0,
+                'visible' => 1,
+            ],
+            [
                 'nombre' => 'Seguridad',
                 'icono' => 'fa-solid fa-user-shield',
                 'orden' => 1,
