@@ -5,6 +5,7 @@ namespace App\Modules\Seg\Services;
 use App\Modules\Seg\Models\Sistema;
 use App\Modules\Seg\Models\Usuario;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 class NavigationService
 {
@@ -41,7 +42,7 @@ class NavigationService
         return $sistemas
             ->map(function (Sistema $sistema) use ($usuario) {
                 $menus = collect($sistema->menus)
-                    ->map(function ($menu) use ($usuario) {
+                    ->map(function ($menu) use ($usuario, $sistema) {
                         $items = collect($menu->items)
                             ->map(function ($item) use ($usuario) {
                                 $hijos = collect($item->children ?? [])
@@ -74,18 +75,20 @@ class NavigationService
                             return null;
                         }
 
+                        $placement = $this->resolveMenuPlacement($menu->nombre, $sistema->codigo);
+
                         return [
                             'id_menu' => $menu->id_menu,
                             'nombre' => $menu->nombre,
                             'icono' => $menu->icono,
+                            'placement' => $placement,
                             'items' => $items,
                         ];
                     })
                     ->filter()
-                    ->values()
-                    ->all();
+                    ->values();
 
-                if (empty($menus)) {
+                if ($menus->isEmpty()) {
                     return null;
                 }
 
@@ -95,7 +98,9 @@ class NavigationService
                     'nombre' => $sistema->nombre,
                     'slug' => $sistema->slug,
                     'icono' => $sistema->icono,
-                    'menus' => $menus,
+                    'menus' => $menus->values()->all(),
+                    'sidebar_menus' => $menus->where('placement', 'sidebar')->values()->all(),
+                    'topbar_menus' => $menus->where('placement', 'topbar')->values()->all(),
                 ];
             })
             ->filter()
@@ -141,5 +146,25 @@ class NavigationService
         }
 
         return route($item->ruta);
+    }
+
+    protected function resolveMenuPlacement(string $menuNombre, string $systemCode): string
+    {
+        $normalized = Str::lower(trim($menuNombre));
+
+        // Siempre queremos que catálogos / administración estén arriba
+        if (in_array($normalized, ['configuración', 'configuracion', 'seguridad', 'organización', 'organizacion'], true)) {
+            return 'topbar';
+        }
+
+        // En Tickets y Biblioteca:
+        // Inicio + Operación se quedan en sidebar, Configuración arriba.
+        if (in_array($normalized, ['inicio', 'operación', 'operacion'], true)) {
+            return 'sidebar';
+        }
+
+        // Fallback:
+        // para INTRANET mandamos a topbar, para otros sistemas al sidebar
+        return $systemCode === 'INTRANET' ? 'topbar' : 'sidebar';
     }
 }

@@ -78,11 +78,25 @@
         }
 
         .topbar-left,
+        .topbar-center,
         .topbar-right {
             display: flex;
             align-items: center;
             gap: 12px;
             min-width: 0;
+        }
+
+        .topbar-left {
+            flex: 0 0 auto;
+        }
+
+        .topbar-center {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .topbar-right {
+            flex: 0 0 auto;
         }
 
         .topbar-brand a {
@@ -109,13 +123,229 @@
             display: none;
         }
 
-        .user-name {
-            font-size: 14px;
-            color: rgba(255,255,255,0.92);
+        .topbar-system-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.10);
+            color: rgba(255,255,255,0.95);
+            font-size: 13px;
+            font-weight: 600;
             white-space: nowrap;
+        }
+
+        .topbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .topbar-nav-group {
+            position: relative;
+        }
+
+        .topbar-nav-button {
+            border: 1px solid rgba(255,255,255,0.14);
+            background: transparent;
+            color: var(--color-white);
+            min-height: 40px;
+            padding: 0 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .topbar-nav-button:hover,
+        .topbar-nav-group.open .topbar-nav-button {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .topbar-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            min-width: 420px;
+            max-width: min(720px, calc(100vw - 32px));
+            background: var(--color-surface);
+            color: var(--color-text);
+            border-radius: 12px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--color-border);
+            padding: 12px;
+            display: none;
+            z-index: 1300;
+        }
+
+        .topbar-nav-group.open .topbar-dropdown,
+        .user-menu.open .topbar-dropdown {
+            display: block;
+        }
+
+        .topbar-dropdown.right {
+            left: auto;
+            right: 0;
+        }
+
+        .topbar-dropdown-panel {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+            gap: 8px;
+            align-items: start;
+        }
+
+        .topbar-dropdown-block {
+            min-width: 0;
+        }
+
+        .topbar-dropdown-block.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .topbar-dropdown-link {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--color-text);
+            font-size: 14px;
+            min-width: 0;
+        }
+
+        .topbar-dropdown-link-text {
+            min-width: 0;
+        }
+
+        .topbar-dropdown-link-text strong,
+        .topbar-dropdown-link-text small {
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        @media (max-width: 900px) {
+            .topbar-dropdown {
+                min-width: 300px;
+                max-width: min(94vw, 420px);
+            }
+
+            .topbar-dropdown-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .topbar-dropdown-section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--color-text-soft);
+            font-weight: bold;
+            margin: 4px 8px 8px;
+        }
+
+        .topbar-dropdown-link {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--color-text);
+            font-size: 14px;
+        }
+
+        .topbar-dropdown-link:hover {
+            background: var(--color-surface-soft);
+        }
+
+        .topbar-dropdown-link.active {
+            background: rgba(119,145,35,0.16);
+            color: var(--color-primary-dark);
+            font-weight: bold;
+        }
+
+        .topbar-dropdown-link-icon {
+            width: 18px;
+            min-width: 18px;
+            text-align: center;
+            margin-top: 1px;
+        }
+
+        .topbar-dropdown-link-text {
+            min-width: 0;
+        }
+
+        .topbar-dropdown-link-text strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .topbar-dropdown-link-text small {
+            display: block;
+            color: var(--color-text-soft);
+            margin-top: 2px;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-trigger {
+            border: 1px solid rgba(255,255,255,0.14);
+            background: transparent;
+            color: var(--color-white);
+            min-height: 40px;
+            padding: 0 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 320px;
+        }
+
+        .user-trigger:hover,
+        .user-menu.open .user-trigger {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.16);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-summary {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 0;
+        }
+
+        .user-summary strong,
+        .user-summary small {
+            max-width: 220px;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 240px;
+            white-space: nowrap;
+        }
+
+        .user-summary small {
+            color: rgba(255,255,255,0.82);
         }
 
         .app-shell {
@@ -539,6 +769,12 @@
             font-weight: bold;
         }
 
+        @media (max-width: 1180px) {
+            .topbar-center {
+                display: none;
+            }
+        }
+
         @media (max-width: 1024px) {
             .content {
                 padding: 20px;
@@ -611,7 +847,7 @@
                 padding: 16px;
             }
 
-            .user-name {
+            .user-summary {
                 display: none;
             }
 
@@ -661,6 +897,33 @@
     </style>
 </head>
 <body>
+    @php
+        $activeSystem = !empty($activeSystemCode)
+            ? collect($navigation)->firstWhere('codigo', $activeSystemCode)
+            : null;
+
+        $sidebarSystems = !empty($activeSystemCode)
+            ? collect($navigation)
+            : collect($navigation);
+
+        $topbarMenus = $activeSystem['topbar_menus'] ?? [];
+        $sidebarMenus = $activeSystem['sidebar_menus'] ?? [];
+        $currentUser = auth()->user();
+
+        $userInitials = $currentUser
+            ? collect(explode(' ', trim($currentUser->nombre_completo ?? 'U')))
+                ->filter()
+                ->take(2)
+                ->map(fn ($part) => mb_strtoupper(mb_substr($part, 0, 1)))
+                ->implode('')
+            : 'U';
+
+        $canEditOwnUser = $currentUser
+            && Route::has('seg.usuarios.edit')
+            && method_exists($currentUser, 'tienePermiso')
+            && $currentUser->tienePermiso('USUARIOS_EDITAR');
+    @endphp
+
     <header class="topbar">
         <div class="topbar-left">
             <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Abrir menú">
@@ -674,16 +937,153 @@
             <div class="topbar-brand">
                 <a href="{{ route('dashboard') }}">Intranet 2026</a>
             </div>
+
+            @if ($activeSystem)
+                <div class="topbar-system-badge">
+                    @if(!empty($activeSystem['icono']))
+                        <i class="{{ $activeSystem['icono'] }}"></i>
+                    @endif
+                    <span>{{ $activeSystem['nombre'] }}</span>
+                </div>
+            @endif
+        </div>
+
+        <div class="topbar-center">
+            @if (!empty($topbarMenus))
+                <nav class="topbar-nav">
+                    @foreach ($topbarMenus as $menu)
+                        <div class="topbar-nav-group" data-dropdown-group>
+                            <button type="button" class="topbar-nav-button">
+                                @if(!empty($menu['icono']))
+                                    <i class="{{ $menu['icono'] }}"></i>
+                                @endif
+                                <span>{{ $menu['nombre'] }}</span>
+                                <i class="fa-solid fa-chevron-down" style="font-size:12px;"></i>
+                            </button>
+
+                            <div class="topbar-dropdown">
+                                <div class="topbar-dropdown-section-title">{{ $menu['nombre'] }}</div>
+
+                                <div class="topbar-dropdown-panel">
+                                    @foreach ($menu['items'] as $item)
+                                        @php
+                                            $isActive = !$item['externo'] && !empty($item['route_name']) && request()->routeIs($item['route_name']);
+                                            $hasChildren = !empty($item['hijos']);
+                                        @endphp
+
+                                        @if (!$hasChildren)
+                                            <div class="topbar-dropdown-block">
+                                                <a
+                                                    href="{{ $item['url'] }}"
+                                                    class="topbar-dropdown-link {{ $isActive ? 'active' : '' }}"
+                                                    @if($item['externo'] && $item['nueva_pestana']) target="_blank" @endif
+                                                >
+                                                    <span class="topbar-dropdown-link-icon">
+                                                        @if(!empty($item['icono']))
+                                                            <i class="{{ $item['icono'] }}"></i>
+                                                        @else
+                                                            <i class="fa-solid fa-circle"></i>
+                                                        @endif
+                                                    </span>
+                                                    <span class="topbar-dropdown-link-text">
+                                                        <strong>{{ $item['nombre'] }}</strong>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        @else
+                                            <div class="topbar-dropdown-block full-width">
+                                                <div class="topbar-dropdown-section-title" style="margin-top: 4px;">
+                                                    {{ $item['nombre'] }}
+                                                </div>
+
+                                                <div class="topbar-dropdown-panel">
+                                                    @foreach ($item['hijos'] as $child)
+                                                        <div class="topbar-dropdown-block">
+                                                            <a
+                                                                href="{{ $child['url'] }}"
+                                                                class="topbar-dropdown-link {{ !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']) ? 'active' : '' }}"
+                                                                @if($child['externo'] && $child['nueva_pestana']) target="_blank" @endif
+                                                            >
+                                                                <span class="topbar-dropdown-link-icon">
+                                                                    @if(!empty($child['icono']))
+                                                                        <i class="{{ $child['icono'] }}"></i>
+                                                                    @else
+                                                                        <i class="fa-regular fa-circle"></i>
+                                                                    @endif
+                                                                </span>
+                                                                <span class="topbar-dropdown-link-text">
+                                                                    <strong>{{ $child['nombre'] }}</strong>
+                                                                </span>
+                                                            </a>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </nav>
+            @endif
         </div>
 
         <div class="topbar-right">
             @auth
-                <span class="user-name">{{ auth()->user()->nombre_completo }}</span>
+                <div class="user-menu" id="userMenu" data-dropdown-group>
+                    <button type="button" class="user-trigger">
+                        <span class="user-avatar">{{ $userInitials }}</span>
+                        <span class="user-summary">
+                            <strong>{{ auth()->user()->nombre_completo }}</strong>
+                            <small>{{ auth()->user()->correo }}</small>
+                        </span>
+                        <i class="fa-solid fa-chevron-down" style="font-size:12px;"></i>
+                    </button>
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
-                </form>
+                    <div class="topbar-dropdown right">
+                        <div class="topbar-dropdown-section-title">Usuario</div>
+
+                        <div class="topbar-dropdown-link" style="cursor:default;">
+                            <span class="topbar-dropdown-link-icon">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <span class="topbar-dropdown-link-text">
+                                <strong>{{ auth()->user()->nombre_completo }}</strong>
+                                <small>{{ auth()->user()->correo }}</small>
+                            </span>
+                        </div>
+
+                        @if ($canEditOwnUser)
+                            <a href="{{ route('seg.usuarios.edit', auth()->user()) }}" class="topbar-dropdown-link">
+                                <span class="topbar-dropdown-link-icon">
+                                    <i class="fa-solid fa-user-pen"></i>
+                                </span>
+                                <span class="topbar-dropdown-link-text">
+                                    <strong>Editar mi usuario</strong>
+                                    <small>Actualizar datos de la cuenta</small>
+                                </span>
+                            </a>
+                        @endif
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="topbar-dropdown-link"
+                                style="width:100%; border:none; background:none; text-align:left; cursor:pointer;"
+                            >
+                                <span class="topbar-dropdown-link-icon">
+                                    <i class="fa-solid fa-right-from-bracket"></i>
+                                </span>
+                                <span class="topbar-dropdown-link-text">
+                                    <strong>Cerrar sesión</strong>
+                                    <small>Salir de la intranet</small>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
             @endauth
         </div>
     </header>
@@ -694,19 +1094,19 @@
         <aside class="sidebar" id="appSidebar">
             <div class="sidebar-section">
                 <a href="{{ route('dashboard') }}"
-                class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                   class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <span class="nav-link-icon">
                         <i class="fa-solid fa-house"></i>
                     </span>
-                    <span class="nav-link-label">Dashboard</span>
+                    <span class="nav-link-label">Dashboard general</span>
                 </a>
             </div>
 
             @if (!empty($activeSystemCode))
-                @forelse ($navigation as $system)
-                    <div class="sidebar-system">{{ $system['nombre'] }}</div>
+                @if ($activeSystem)
+                    <div class="sidebar-system">{{ $activeSystem['nombre'] }}</div>
 
-                    @foreach ($system['menus'] as $menu)
+                    @foreach ($sidebarMenus as $menu)
                         <div class="sidebar-menu-title">
                             @if(!empty($menu['icono']))
                                 <span class="sidebar-menu-title-icon">
@@ -725,8 +1125,8 @@
                             @endphp
 
                             <a href="{{ $item['url'] }}"
-                            class="nav-link {{ $isActive || $hasChildrenActive ? 'active' : '' }}"
-                            @if($item['externo'] && $item['nueva_pestana']) target="_blank" @endif>
+                               class="nav-link {{ $isActive || $hasChildrenActive ? 'active' : '' }}"
+                               @if($item['externo'] && $item['nueva_pestana']) target="_blank" @endif>
                                 <span class="nav-link-icon">
                                     @if(!empty($item['icono']))
                                         <i class="{{ $item['icono'] }}"></i>
@@ -741,8 +1141,8 @@
                                 <div class="nav-submenu">
                                     @foreach ($item['hijos'] as $child)
                                         <a href="{{ $child['url'] }}"
-                                        class="nav-link {{ !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']) ? 'active' : '' }}"
-                                        @if($child['externo'] && $child['nueva_pestana']) target="_blank" @endif>
+                                           class="nav-link {{ !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']) ? 'active' : '' }}"
+                                           @if($child['externo'] && $child['nueva_pestana']) target="_blank" @endif>
                                             <span class="nav-link-icon">
                                                 @if(!empty($child['icono']))
                                                     <i class="{{ $child['icono'] }}"></i>
@@ -757,11 +1157,11 @@
                             @endif
                         @endforeach
                     @endforeach
-                @empty
+                @else
                     <div style="color:#eef4dd; font-size:14px;">
                         No hay navegación disponible.
                     </div>
-                @endforelse
+                @endif
             @else
                 @if (!empty($navigation))
                     <div class="sidebar-system">Sistemas disponibles</div>
@@ -770,7 +1170,7 @@
                         @php
                             $firstUrl = null;
 
-                            foreach ($system['menus'] as $menu) {
+                            foreach (($system['sidebar_menus'] ?? $system['menus']) as $menu) {
                                 foreach ($menu['items'] as $item) {
                                     if (!empty($item['url'])) {
                                         $firstUrl = $item['url'];
@@ -863,6 +1263,33 @@
                 if (window.innerWidth > 900) {
                     body.classList.remove('mobile-sidebar-open');
                 }
+            });
+
+            document.addEventListener('click', function (event) {
+                const groups = document.querySelectorAll('[data-dropdown-group]');
+
+                groups.forEach(function (group) {
+                    if (!group.contains(event.target)) {
+                        group.classList.remove('open');
+                    }
+                });
+            });
+
+            document.querySelectorAll('[data-dropdown-group] > button').forEach(function (button) {
+                button.addEventListener('click', function (event) {
+                    event.stopPropagation();
+
+                    const group = button.parentElement;
+                    const isOpen = group.classList.contains('open');
+
+                    document.querySelectorAll('[data-dropdown-group]').forEach(function (otherGroup) {
+                        otherGroup.classList.remove('open');
+                    });
+
+                    if (!isOpen) {
+                        group.classList.add('open');
+                    }
+                });
             });
         })();
     </script>
