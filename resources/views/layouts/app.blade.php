@@ -75,6 +75,7 @@
             gap: 16px;
             padding: 0 16px;
             border-bottom: 1px solid rgba(255,255,255,0.12);
+            overflow: visible;
         }
 
         .topbar-left,
@@ -93,6 +94,7 @@
         .topbar-center {
             flex: 1 1 auto;
             min-width: 0;
+            overflow: visible;
         }
 
         .topbar-right {
@@ -141,8 +143,8 @@
             align-items: center;
             gap: 8px;
             min-width: 0;
-            overflow-x: auto;
-            scrollbar-width: thin;
+            /*overflow-x: auto;
+            scrollbar-width: thin;*/
         }
 
         .topbar-nav-group {
@@ -174,14 +176,14 @@
             position: absolute;
             top: calc(100% + 10px);
             left: 0;
-            min-width: 420px;
-            max-width: min(720px, calc(100vw - 32px));
+            min-width: 280px;
+            max-width: min(94vw, 340px);
             background: var(--color-surface);
             color: var(--color-text);
             border-radius: 12px;
             box-shadow: var(--shadow-card);
             border: 1px solid var(--color-border);
-            padding: 12px;
+            padding: 8px;
             display: none;
             z-index: 1300;
         }
@@ -197,10 +199,7 @@
         }
 
         .topbar-dropdown-panel {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(180px, 1fr));
-            gap: 8px;
-            align-items: start;
+            display: block;
         }
 
         .topbar-dropdown-block {
@@ -208,7 +207,7 @@
         }
 
         .topbar-dropdown-block.full-width {
-            grid-column: 1 / -1;
+            display: block;
         }
 
         .topbar-dropdown-link {
@@ -235,12 +234,17 @@
 
         @media (max-width: 900px) {
             .topbar-dropdown {
-                min-width: 300px;
-                max-width: min(94vw, 420px);
+                min-width: 260px;
+                max-width: min(94vw, 320px);
             }
 
             .topbar-dropdown-panel {
-                grid-template-columns: 1fr;
+                display: block;
+            }
+
+            .topbar-nav {
+                overflow-x: auto;
+                scrollbar-width: thin;
             }
         }
 
@@ -377,32 +381,42 @@
         }
 
         .sidebar-system {
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
-            color: #d7e8a9;
+            color: #a0c525;
             font-weight: bold;
             margin: 18px 8px 8px;
             line-height: 1.3;
+            letter-spacing: 0.08em;
         }
 
         .sidebar-menu-title {
             display: flex;
             align-items: center;
-            font-size: 13px;
-            color: #e5efd0;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #c8dfa0;
             font-weight: bold;
-            margin: 12px 8px 6px;
+            margin: 16px 8px 6px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(160, 197, 37, 0.25);
             line-height: 1.3;
         }
 
         .sidebar-menu-title-icon {
-            width: 18px;
-            min-width: 18px;
+            width: 16px;
+            min-width: 16px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-right: 8px;
-            font-size: 14px;
+            margin-right: 7px;
+            font-size: 12px;
+            color: #a0c525;
+        }
+
+        .sidebar-topbar-menus {
+            display: none;
         }
 
         .nav-link {
@@ -769,10 +783,66 @@
             font-weight: bold;
         }
 
+        .sidebar-close-row {
+            display: none;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-close-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #eef4dd;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-close-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar-top-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .sidebar-top-row .nav-link {
+            margin-bottom: 0;
+        }
+
+        .sidebar-close-btn {
+            display: none;
+        }
+
+        .sidebar-topbar-menus {
+            display: none;
+        }
+
         @media (max-width: 1180px) {
+            .sidebar-topbar-menus {
+                display: block;
+                margin-top: 8px;
+                padding-top: 8px;
+                border-top: 1px solid rgba(255, 255, 255, 0.12);
+            }
+
             .topbar-center {
                 display: none;
             }
+        }
+
+        /* Collapsed: oculta títulos de sección topbar también */
+        body.sidebar-collapsed .sidebar-topbar-menus .sidebar-menu-title,
+        body.sidebar-collapsed .sidebar-topbar-menus .nav-link-label {
+            display: none;
         }
 
         @media (max-width: 1024px) {
@@ -854,6 +924,17 @@
             .page-header-text h1 {
                 font-size: 24px;
             }
+
+            .sidebar-close-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            .sidebar-close-row {
+                display: flex;
+            }
         }
 
         @media (max-width: 640px) {
@@ -927,11 +1008,11 @@
     <header class="topbar">
         <div class="topbar-left">
             <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Abrir menú">
-                ☰
+                <i class="fa-solid fa-bars"></i>
             </button>
 
             <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Comprimir sidebar">
-                ☰
+                <i class="fa-solid fa-bars"></i>
             </button>
 
             <div class="topbar-brand">
@@ -951,9 +1032,13 @@
         <div class="topbar-center">
             @if (!empty($topbarMenus))
                 <nav class="topbar-nav">
-                    @foreach ($topbarMenus as $menu)
-                        <div class="topbar-nav-group" data-dropdown-group>
-                            <button type="button" class="topbar-nav-button">
+                    @foreach ($topbarMenus as $menuIndex => $menu)
+                        <div class="topbar-nav-group" 
+                            id="topbarMenu{{ $menuIndex }}" 
+                            data-dropdown-group>
+                            <button type="button" 
+                                    class="topbar-nav-button" 
+                                    onclick="toggleDropdown('topbarMenu{{ $menuIndex }}')">
                                 @if(!empty($menu['icono']))
                                     <i class="{{ $menu['icono'] }}"></i>
                                 @endif
@@ -964,64 +1049,54 @@
                             <div class="topbar-dropdown">
                                 <div class="topbar-dropdown-section-title">{{ $menu['nombre'] }}</div>
 
-                                <div class="topbar-dropdown-panel">
-                                    @foreach ($menu['items'] as $item)
-                                        @php
-                                            $isActive = !$item['externo'] && !empty($item['route_name']) && request()->routeIs($item['route_name']);
-                                            $hasChildren = !empty($item['hijos']);
-                                        @endphp
+                                @foreach ($menu['items'] as $item)
+                                    @php
+                                        $isActive = !$item['externo'] && !empty($item['route_name']) && request()->routeIs($item['route_name']);
+                                        $hasChildren = !empty($item['hijos']);
+                                    @endphp
 
-                                        @if (!$hasChildren)
-                                            <div class="topbar-dropdown-block">
-                                                <a
-                                                    href="{{ $item['url'] }}"
-                                                    class="topbar-dropdown-link {{ $isActive ? 'active' : '' }}"
-                                                    @if($item['externo'] && $item['nueva_pestana']) target="_blank" @endif
-                                                >
-                                                    <span class="topbar-dropdown-link-icon">
-                                                        @if(!empty($item['icono']))
-                                                            <i class="{{ $item['icono'] }}"></i>
-                                                        @else
-                                                            <i class="fa-solid fa-circle"></i>
-                                                        @endif
-                                                    </span>
-                                                    <span class="topbar-dropdown-link-text">
-                                                        <strong>{{ $item['nombre'] }}</strong>
-                                                    </span>
-                                                </a>
-                                            </div>
-                                        @else
-                                            <div class="topbar-dropdown-block full-width">
-                                                <div class="topbar-dropdown-section-title" style="margin-top: 4px;">
-                                                    {{ $item['nombre'] }}
-                                                </div>
+                                    @if (!$hasChildren)
+                                        <a
+                                            href="{{ $item['url'] }}"
+                                            class="topbar-dropdown-link {{ $isActive ? 'active' : '' }}"
+                                            @if($item['externo'] && $item['nueva_pestana']) target="_blank" @endif
+                                        >
+                                            <span class="topbar-dropdown-link-icon">
+                                                @if(!empty($item['icono']))
+                                                    <i class="{{ $item['icono'] }}"></i>
+                                                @else
+                                                    <i class="fa-solid fa-circle"></i>
+                                                @endif
+                                            </span>
+                                            <span class="topbar-dropdown-link-text">
+                                                <strong>{{ $item['nombre'] }}</strong>
+                                            </span>
+                                        </a>
+                                    @else
+                                        <div class="topbar-dropdown-section-title" style="margin-top: 10px;">
+                                            {{ $item['nombre'] }}
+                                        </div>
 
-                                                <div class="topbar-dropdown-panel">
-                                                    @foreach ($item['hijos'] as $child)
-                                                        <div class="topbar-dropdown-block">
-                                                            <a
-                                                                href="{{ $child['url'] }}"
-                                                                class="topbar-dropdown-link {{ !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']) ? 'active' : '' }}"
-                                                                @if($child['externo'] && $child['nueva_pestana']) target="_blank" @endif
-                                                            >
-                                                                <span class="topbar-dropdown-link-icon">
-                                                                    @if(!empty($child['icono']))
-                                                                        <i class="{{ $child['icono'] }}"></i>
-                                                                    @else
-                                                                        <i class="fa-regular fa-circle"></i>
-                                                                    @endif
-                                                                </span>
-                                                                <span class="topbar-dropdown-link-text">
-                                                                    <strong>{{ $child['nombre'] }}</strong>
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </div>
+                                        @foreach ($item['hijos'] as $child)
+                                            <a
+                                                href="{{ $child['url'] }}"
+                                                class="topbar-dropdown-link {{ !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']) ? 'active' : '' }}"
+                                                @if($child['externo'] && $child['nueva_pestana']) target="_blank" @endif
+                                            >
+                                                <span class="topbar-dropdown-link-icon">
+                                                    @if(!empty($child['icono']))
+                                                        <i class="{{ $child['icono'] }}"></i>
+                                                    @else
+                                                        <i class="fa-regular fa-circle"></i>
+                                                    @endif
+                                                </span>
+                                                <span class="topbar-dropdown-link-text">
+                                                    <strong>{{ $child['nombre'] }}</strong>
+                                                </span>
+                                            </a>
+                                        @endforeach
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
                     @endforeach
@@ -1032,7 +1107,7 @@
         <div class="topbar-right">
             @auth
                 <div class="user-menu" id="userMenu" data-dropdown-group>
-                    <button type="button" class="user-trigger">
+                    <button type="button" class="user-trigger" onclick="toggleDropdown('userMenu')">
                         <span class="user-avatar">{{ $userInitials }}</span>
                         <span class="user-summary">
                             <strong>{{ auth()->user()->nombre_completo }}</strong>
@@ -1092,14 +1167,19 @@
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
         <aside class="sidebar" id="appSidebar">
-            <div class="sidebar-section">
+            <div class="sidebar-top-row">
                 <a href="{{ route('dashboard') }}"
-                   class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                style="flex: 1;">
                     <span class="nav-link-icon">
                         <i class="fa-solid fa-house"></i>
                     </span>
                     <span class="nav-link-label">Dashboard general</span>
                 </a>
+
+                <button type="button" id="sidebarClose" class="sidebar-close-btn" aria-label="Cerrar menú">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
             @if (!empty($activeSystemCode))
@@ -1157,6 +1237,62 @@
                             @endif
                         @endforeach
                     @endforeach
+
+                    @if (!empty($topbarMenus))
+                        <div class="sidebar-topbar-menus">
+                            @foreach ($topbarMenus as $menu)
+                                <div class="sidebar-menu-title">
+                                    @if(!empty($menu['icono']))
+                                        <span class="sidebar-menu-title-icon">
+                                            <i class="{{ $menu['icono'] }}"></i>
+                                        </span>
+                                    @endif
+                                    {{ $menu['nombre'] }}
+                                </div>
+
+                                @foreach ($menu['items'] as $item)
+                                    @php
+                                        $isActive = !$item['externo'] && !empty($item['route_name']) && request()->routeIs($item['route_name']);
+                                        $hasChildrenActive = collect($item['hijos'])->contains(function ($child) {
+                                            return !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']);
+                                        });
+                                    @endphp
+
+                                    <a href="{{ $item['url'] }}"
+                                    class="nav-link {{ $isActive || $hasChildrenActive ? 'active' : '' }}"
+                                    @if($item['externo'] && $item['nueva_pestana']) target="_blank" @endif>
+                                        <span class="nav-link-icon">
+                                            @if(!empty($item['icono']))
+                                                <i class="{{ $item['icono'] }}"></i>
+                                            @else
+                                                <i class="fa-solid fa-circle"></i>
+                                            @endif
+                                        </span>
+                                        <span class="nav-link-label">{{ $item['nombre'] }}</span>
+                                    </a>
+
+                                    @if (!empty($item['hijos']))
+                                        <div class="nav-submenu">
+                                            @foreach ($item['hijos'] as $child)
+                                                <a href="{{ $child['url'] }}"
+                                                class="nav-link {{ !$child['externo'] && !empty($child['route_name']) && request()->routeIs($child['route_name']) ? 'active' : '' }}"
+                                                @if($child['externo'] && $child['nueva_pestana']) target="_blank" @endif>
+                                                    <span class="nav-link-icon">
+                                                        @if(!empty($child['icono']))
+                                                            <i class="{{ $child['icono'] }}"></i>
+                                                        @else
+                                                            <i class="fa-regular fa-circle"></i>
+                                                        @endif
+                                                    </span>
+                                                    <span class="nav-link-label">{{ $child['nombre'] }}</span>
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                @endforeach
+                            @endforeach
+                        </div>
+                    @endif
                 @else
                     <div style="color:#eef4dd; font-size:14px;">
                         No hay navegación disponible.
@@ -1227,16 +1363,14 @@
     <script>
         (function () {
             const body = document.body;
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-
             const desktopStateKey = 'intranet.sidebar.collapsed';
 
+            // ── Sidebar collapse (desktop) ─────────────────────────────
             if (localStorage.getItem(desktopStateKey) === '1' && window.innerWidth > 900) {
                 body.classList.add('sidebar-collapsed');
             }
 
+            const sidebarToggle = document.getElementById('sidebarToggle');
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', function () {
                     body.classList.toggle('sidebar-collapsed');
@@ -1247,51 +1381,50 @@
                 });
             }
 
-            if (mobileMenuToggle) {
-                mobileMenuToggle.addEventListener('click', function () {
-                    body.classList.toggle('mobile-sidebar-open');
-                });
-            }
+            // ── Sidebar móvil ──────────────────────────────────────────
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebarBackdrop  = document.getElementById('sidebarBackdrop');
+            const sidebarClose     = document.getElementById('sidebarClose');
 
-            if (sidebarBackdrop) {
-                sidebarBackdrop.addEventListener('click', function () {
-                    body.classList.remove('mobile-sidebar-open');
-                });
-            }
+            function openMobileSidebar()  { body.classList.add('mobile-sidebar-open'); }
+            function closeMobileSidebar() { body.classList.remove('mobile-sidebar-open'); }
+
+            if (mobileMenuToggle) mobileMenuToggle.addEventListener('click', openMobileSidebar);
+            if (sidebarBackdrop)  sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+            if (sidebarClose)     sidebarClose.addEventListener('click', closeMobileSidebar);
 
             window.addEventListener('resize', function () {
-                if (window.innerWidth > 900) {
-                    body.classList.remove('mobile-sidebar-open');
+                if (window.innerWidth > 900) closeMobileSidebar();
+            });
+
+            // ── Dropdowns ──────────────────────────────────────────────
+            function closeAllDropdowns() {
+                document.querySelectorAll('[data-dropdown-group]').forEach(function (g) {
+                    g.classList.remove('open');
+                });
+            }
+
+            // Acepta tanto un string ID como un elemento DOM
+            window.toggleDropdown = function (target) {
+                var group = typeof target === 'string'
+                    ? document.getElementById(target)
+                    : target;
+
+                if (!group) return;
+
+                var isOpen = group.classList.contains('open');
+                closeAllDropdowns();
+                if (!isOpen) group.classList.add('open');
+            };
+
+            // Cierra dropdowns al hacer click fuera
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('[data-dropdown-group]')) {
+                    closeAllDropdowns();
                 }
             });
 
-            document.addEventListener('click', function (event) {
-                const groups = document.querySelectorAll('[data-dropdown-group]');
-
-                groups.forEach(function (group) {
-                    if (!group.contains(event.target)) {
-                        group.classList.remove('open');
-                    }
-                });
-            });
-
-            document.querySelectorAll('[data-dropdown-group] > button').forEach(function (button) {
-                button.addEventListener('click', function (event) {
-                    event.stopPropagation();
-
-                    const group = button.parentElement;
-                    const isOpen = group.classList.contains('open');
-
-                    document.querySelectorAll('[data-dropdown-group]').forEach(function (otherGroup) {
-                        otherGroup.classList.remove('open');
-                    });
-
-                    if (!isOpen) {
-                        group.classList.add('open');
-                    }
-                });
-            });
         })();
-    </script>
+        </script>
 </body>
 </html>
