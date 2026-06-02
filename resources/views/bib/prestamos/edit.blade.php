@@ -20,7 +20,7 @@
         </form>
 
         <div class="page-header-actions" style="margin-top:16px;">
-            @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_CREAR') && !$prestamo->fecha_devolucion && $prestamo->estadoPrestamo?->codigo !== 'ENTREGADO')
+            @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_CREAR') && !$prestamo->fecha_devolucion && $prestamo->estadoPrestamo?->codigo === 'PENDIENTE_ENTREGA')
                 <form method="POST" action="{{ route('bib.prestamos.entregar', $prestamo) }}" style="display:inline-block;">
                     @csrf
                     <button

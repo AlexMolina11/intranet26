@@ -118,6 +118,15 @@ class PrestamoController extends Controller
     {
         $data = $request->validated();
 
+        $estadoPendiente = $this->estadoPorCodigo('PENDIENTE_ENTREGA');
+
+        $data['id_estado_prestamo'] = $estadoPendiente->id_estado_prestamo;
+        $data['fecha_devolucion'] = null;
+        $data['id_usuario_entrega'] = null;
+        $data['id_usuario_recibe'] = null;
+        $data['renovaciones_usadas'] = 0;
+        $data['multa_acumulada'] = 0;
+
         $recurso = Recurso::query()->find($data['id_recurso']);
 
         if ($recurso) {
@@ -129,6 +138,7 @@ class PrestamoController extends Controller
                 $data['dias_autorizados'] = $politica->dias_prestamo;
                 $data['renovaciones_maximas'] = $politica->max_renovaciones;
                 $data['multa_diaria'] = $politica->multa_diaria;
+                $data['fecha_vencimiento'] = now()->addDays((int) $politica->dias_prestamo)->toDateString();
             }
         }
 
@@ -193,20 +203,32 @@ class PrestamoController extends Controller
 
     public function update(UpdatePrestamoRequest $request, Prestamo $prestamo)
     {
-        $prestamo->update($request->validated());
-
-        $tipoMovimiento = 'ACTUALIZACION';
-
         if ($prestamo->fecha_devolucion) {
-            $tipoMovimiento = 'DEVOLUCION';
-        } elseif ($prestamo->renovaciones_usadas > 0) {
-            $tipoMovimiento = 'RENOVACION';
+            return back()->with('error', 'No puedes actualizar un préstamo ya devuelto.');
         }
 
-        $this->registrarHistorial($prestamo, $tipoMovimiento, 'Actualización del préstamo.');
+        $data = $request->validated();
+
+        unset(
+            $data['id_estado_prestamo'],
+            $data['fecha_devolucion'],
+            $data['id_usuario_entrega'],
+            $data['id_usuario_recibe'],
+            $data['renovaciones_usadas'],
+            $data['multa_acumulada']
+        );
+
+        $prestamo->update($data);
+        $prestamo->refresh();
+
+        $this->registrarHistorial(
+            $prestamo,
+            'ACTUALIZACION',
+            'Actualización administrativa del préstamo.'
+        );
 
         return redirect()
-            ->route('bib.prestamos.index')
+            ->route('bib.prestamos.edit', $prestamo)
             ->with('success', 'Préstamo actualizado correctamente.');
     }
 
@@ -232,11 +254,10 @@ class PrestamoController extends Controller
 
     public function devolver(Prestamo $prestamo)
     {
+        $estadoEntregado = $this->estadoPorCodigo('ENTREGADO');
 
-        $estadoPrestado = $this->estadoPorCodigo('ENTREGADO');
-
-        if ((int) $prestamo->id_estado_prestamo !== (int) $estadoPrestado->id_estado_prestamo) {
-            return back()->with('error', 'Solo puedes devolver préstamos que ya hayan sido entregados.');
+        if ((int) $prestamo->id_estado_prestamo !== (int) $estadoEntregado->id_estado_prestamo) {
+            return back()->with('error', 'Solo puedes devolver préstamos entregados.');
         }
 
         if ($prestamo->fecha_devolucion) {
@@ -244,7 +265,6 @@ class PrestamoController extends Controller
         }
 
         DB::transaction(function () use ($prestamo) {
-
             $estadoDevuelto = $this->estadoPorCodigo('DEVUELTO');
             $disponible = $this->disponibilidadPorCodigo('DISPONIBLE');
 
@@ -252,24 +272,21 @@ class PrestamoController extends Controller
             $diasAtraso = 0;
 
             if ($prestamo->fecha_vencimiento && $fechaHoy->gt($prestamo->fecha_vencimiento->copy()->startOfDay())) {
-                $diasAtraso = $prestamo->fecha_vencimiento->diffInDays($fechaHoy);
+                $diasAtraso = $prestamo->fecha_vencimiento->copy()->startOfDay()->diffInDays($fechaHoy);
             }
 
-            // 1. Actualizar préstamo
             $prestamo->update([
                 'id_estado_prestamo' => $estadoDevuelto->id_estado_prestamo,
-                'fecha_devolucion' => $fechaHoy,
+                'fecha_devolucion' => $fechaHoy->toDateString(),
                 'id_usuario_recibe' => auth()->id(),
             ]);
 
-            // 2. Liberar ejemplar
             if ($prestamo->ejemplar) {
                 $prestamo->ejemplar->update([
                     'id_disponibilidad' => $disponible->id_disponibilidad,
                 ]);
             }
 
-            // 3. Generar multa
             if ($diasAtraso > 0) {
                 $monto = $diasAtraso * (float) $prestamo->multa_diaria;
 
@@ -277,7 +294,7 @@ class PrestamoController extends Controller
                     'id_prestamo' => $prestamo->id_prestamo,
                     'id_usuario' => $prestamo->id_usuario,
                     'id_usuario_registra' => auth()->id(),
-                    'fecha_multa' => $fechaHoy,
+                    'fecha_multa' => $fechaHoy->toDateString(),
                     'dias_atraso' => $diasAtraso,
                     'monto' => $monto,
                     'monto_pagado' => 0,
@@ -287,16 +304,16 @@ class PrestamoController extends Controller
                 ]);
             }
 
-            // 4. Recalcular multa acumulada
             $this->recalcularMulta($prestamo);
 
-            // 5. Historial
+            $prestamo->refresh();
+
             $this->registrarHistorial(
                 $prestamo,
                 'DEVOLUCION',
                 $diasAtraso > 0
-                    ? "Devolución con {$diasAtraso} días de atraso"
-                    : "Devolución sin atraso"
+                    ? "Devolución con {$diasAtraso} días de atraso."
+                    : 'Devolución sin atraso.'
             );
         });
 
@@ -332,6 +349,12 @@ class PrestamoController extends Controller
 
     public function entregar(Prestamo $prestamo)
     {
+        $estadoPendiente = $this->estadoPorCodigo('PENDIENTE_ENTREGA');
+
+        if ((int) $prestamo->id_estado_prestamo !== (int) $estadoPendiente->id_estado_prestamo) {
+            return back()->with('error', 'Solo puedes entregar préstamos pendientes de entrega.');
+        }
+
         if ($prestamo->fecha_devolucion) {
             return back()->with('error', 'No puedes entregar un préstamo ya devuelto.');
         }
@@ -341,8 +364,9 @@ class PrestamoController extends Controller
         }
 
         DB::transaction(function () use ($prestamo) {
-            $estadoPrestado = $this->estadoPorCodigo('ENTREGADO');
+            $estadoEntregado = $this->estadoPorCodigo('ENTREGADO');
             $disponibilidadPrestado = $this->disponibilidadPorCodigo('PRESTADO');
+            $disponibilidadDisponible = $this->disponibilidadPorCodigo('DISPONIBLE');
 
             $ejemplar = $prestamo->ejemplar()->lockForUpdate()->first();
 
@@ -350,13 +374,13 @@ class PrestamoController extends Controller
                 abort(404, 'No se encontró el ejemplar asociado al préstamo.');
             }
 
-            if ((int) $ejemplar->id_disponibilidad === (int) $disponibilidadPrestado->id_disponibilidad) {
-                throw new \RuntimeException('El ejemplar ya se encuentra prestado.');
+            if ((int) $ejemplar->id_disponibilidad !== (int) $disponibilidadDisponible->id_disponibilidad) {
+                throw new \RuntimeException('El ejemplar no está disponible para préstamo.');
             }
 
             $prestamo->update([
-                'id_estado_prestamo' => $estadoPrestado->id_estado_prestamo,
-                'fecha_prestamo' => $prestamo->fecha_prestamo ?? now()->toDateString(),
+                'id_estado_prestamo' => $estadoEntregado->id_estado_prestamo,
+                'fecha_prestamo' => now()->toDateString(),
                 'id_usuario_entrega' => auth()->id(),
             ]);
 
@@ -380,10 +404,10 @@ class PrestamoController extends Controller
 
     public function renovar(Prestamo $prestamo)
     {
-        $estadoPrestado = $this->estadoPorCodigo('ENTREGADO');
+        $estadoEntregado = $this->estadoPorCodigo('ENTREGADO');
 
-        if ((int) $prestamo->id_estado_prestamo !== (int) $estadoPrestado->id_estado_prestamo) {
-            return back()->with('error', 'Solo puedes renovar préstamos que están entregados.');
+        if ((int) $prestamo->id_estado_prestamo !== (int) $estadoEntregado->id_estado_prestamo) {
+            return back()->with('error', 'Solo puedes renovar préstamos entregados.');
         }
 
         if ($prestamo->fecha_devolucion) {
