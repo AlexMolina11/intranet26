@@ -35,7 +35,7 @@ class BibDashboardController extends Controller
         $prestamosActivos = Prestamo::query()
             ->whereNull('fecha_devolucion')
             ->whereHas('estadoPrestamo', function ($query) {
-                $query->whereIn('codigo', ['PRESTADO', 'ENTREGADO']);
+                $query->whereIn('codigo', ['ENTREGADO', 'VENCIDO']);
             })
             ->count();
 

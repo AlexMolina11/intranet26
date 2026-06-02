@@ -7,47 +7,56 @@
         <form method="POST" action="{{ route('bib.prestamos.update', $prestamo) }}">
             @csrf
             @method('PUT')
-            @include('bib.prestamos._form', ['prestamo' => $prestamo, 'soloLecturaPolitica' => false])
+
+            @include('bib.prestamos._form', [
+                'prestamo' => $prestamo,
+                'soloLecturaPolitica' => false
+            ])
 
             <div class="page-header-actions" style="margin-top:16px;">
                 <button type="submit" class="btn btn-primary">Actualizar</button>
                 <a href="{{ route('bib.prestamos.index') }}" class="btn btn-secondary">Cancelar</a>
             </div>
-
-            @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_CREAR') && !$prestamo->fecha_devolucion && $prestamo->estadoPrestamo?->codigo !== 'PRESTADO')
-                <button
-                    type="submit"
-                    formaction="{{ route('bib.prestamos.entregar', $prestamo) }}"
-                    formmethod="POST"
-                    class="btn btn-warning"
-                    onclick="return confirm('¿Deseas registrar la entrega de este préstamo?');"
-                >
-                    Registrar entrega
-                </button>
-            @endif
-
-            @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_DEVOLVER') && !$prestamo->fecha_devolucion && $prestamo->estadoPrestamo?->codigo === 'PRESTADO')
-                <button
-                    type="submit"
-                    formaction="{{ route('bib.prestamos.renovar', $prestamo) }}"
-                    formmethod="POST"
-                    class="btn btn-secondary"
-                    onclick="return confirm('¿Deseas renovar este préstamo?');"
-                >
-                    Renovar préstamo
-                </button>
-
-                <button
-                    type="submit"
-                    formaction="{{ route('bib.prestamos.devolver', $prestamo) }}"
-                    formmethod="POST"
-                    class="btn btn-success"
-                    onclick="return confirm('¿Deseas registrar la devolución de este préstamo?');"
-                >
-                    Registrar devolución
-                </button>
-            @endif
         </form>
+
+        <div class="page-header-actions" style="margin-top:16px;">
+            @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_CREAR') && !$prestamo->fecha_devolucion && $prestamo->estadoPrestamo?->codigo !== 'ENTREGADO')
+                <form method="POST" action="{{ route('bib.prestamos.entregar', $prestamo) }}" style="display:inline-block;">
+                    @csrf
+                    <button
+                        type="submit"
+                        class="btn btn-warning"
+                        onclick="return confirm('¿Deseas registrar la entrega de este préstamo?');"
+                    >
+                        Registrar entrega
+                    </button>
+                </form>
+            @endif
+
+            @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_DEVOLVER') && !$prestamo->fecha_devolucion && $prestamo->estadoPrestamo?->codigo === 'ENTREGADO')
+                <form method="POST" action="{{ route('bib.prestamos.renovar', $prestamo) }}" style="display:inline-block;">
+                    @csrf
+                    <button
+                        type="submit"
+                        class="btn btn-secondary"
+                        onclick="return confirm('¿Deseas renovar este préstamo?');"
+                    >
+                        Renovar préstamo
+                    </button>
+                </form>
+
+                <form method="POST" action="{{ route('bib.prestamos.devolver', $prestamo) }}" style="display:inline-block;">
+                    @csrf
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                        onclick="return confirm('¿Deseas registrar la devolución de este préstamo?');"
+                    >
+                        Registrar devolución
+                    </button>
+                </form>
+            @endif
+        </div>
     </div>
 
     <div class="card" style="margin-top:16px;">

@@ -233,7 +233,7 @@ class PrestamoController extends Controller
     public function devolver(Prestamo $prestamo)
     {
 
-        $estadoPrestado = $this->estadoPorCodigo('PRESTADO');
+        $estadoPrestado = $this->estadoPorCodigo('ENTREGADO');
 
         if ((int) $prestamo->id_estado_prestamo !== (int) $estadoPrestado->id_estado_prestamo) {
             return back()->with('error', 'Solo puedes devolver préstamos que ya hayan sido entregados.');
@@ -341,7 +341,7 @@ class PrestamoController extends Controller
         }
 
         DB::transaction(function () use ($prestamo) {
-            $estadoPrestado = $this->estadoPorCodigo('PRESTADO');
+            $estadoPrestado = $this->estadoPorCodigo('ENTREGADO');
             $disponibilidadPrestado = $this->disponibilidadPorCodigo('PRESTADO');
 
             $ejemplar = $prestamo->ejemplar()->lockForUpdate()->first();
@@ -380,7 +380,7 @@ class PrestamoController extends Controller
 
     public function renovar(Prestamo $prestamo)
     {
-        $estadoPrestado = $this->estadoPorCodigo('PRESTADO');
+        $estadoPrestado = $this->estadoPorCodigo('ENTREGADO');
 
         if ((int) $prestamo->id_estado_prestamo !== (int) $estadoPrestado->id_estado_prestamo) {
             return back()->with('error', 'Solo puedes renovar préstamos que están entregados.');
