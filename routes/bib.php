@@ -192,6 +192,7 @@ Route::middleware(['auth', 'route.access'])
 
         Route::post('/prestamos/{prestamo}/entregar', [PrestamoController::class, 'entregar'])->name('prestamos.entregar');
         Route::post('/prestamos/{prestamo}/devolver', [PrestamoController::class, 'devolver'])->name('prestamos.devolver');
+        Route::post('/prestamos/{prestamo}/renovar', [PrestamoController::class, 'renovar'])->name('prestamos.renovar');
         /*
         |--------------------------------------------------------------------------
         | Multas

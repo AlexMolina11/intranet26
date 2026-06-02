@@ -11,9 +11,5 @@ Route::middleware('guest')->group(function () {
 
 //rutas del dashboard y logout solo funcionan si hay sesión
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
-
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });

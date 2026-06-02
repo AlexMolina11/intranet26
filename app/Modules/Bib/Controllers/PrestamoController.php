@@ -15,6 +15,9 @@ use App\Modules\Seg\Models\Usuario;
 use Illuminate\Http\Request;
 use App\Modules\Bib\Models\HistorialPrestamo;
 use Illuminate\Support\Facades\Auth;
+use App\Modules\Bib\Models\Disponibilidad;
+use App\Modules\Bib\Models\Multa;
+use Illuminate\Support\Facades\DB;
 
 class PrestamoController extends Controller
 {
@@ -353,6 +356,8 @@ class PrestamoController extends Controller
 
             $prestamo->update([
                 'id_estado_prestamo' => $estadoPrestado->id_estado_prestamo,
+                'fecha_prestamo' => $prestamo->fecha_prestamo ?? now()->toDateString(),
+                'id_usuario_entrega' => auth()->id(),
             ]);
 
             $ejemplar->update([
@@ -371,5 +376,45 @@ class PrestamoController extends Controller
         return redirect()
             ->route('bib.prestamos.edit', $prestamo)
             ->with('success', 'Préstamo entregado correctamente.');
+    }
+
+    public function renovar(Prestamo $prestamo)
+    {
+        $estadoPrestado = $this->estadoPorCodigo('PRESTADO');
+
+        if ((int) $prestamo->id_estado_prestamo !== (int) $estadoPrestado->id_estado_prestamo) {
+            return back()->with('error', 'Solo puedes renovar préstamos que están entregados.');
+        }
+
+        if ($prestamo->fecha_devolucion) {
+            return back()->with('error', 'No puedes renovar un préstamo ya devuelto.');
+        }
+
+        if ((int) $prestamo->renovaciones_usadas >= (int) $prestamo->renovaciones_maximas) {
+            return back()->with('error', 'Este préstamo ya alcanzó el máximo de renovaciones permitidas.');
+        }
+
+        DB::transaction(function () use ($prestamo) {
+            $dias = max((int) $prestamo->dias_autorizados, 1);
+
+            $prestamo->update([
+                'fecha_vencimiento' => $prestamo->fecha_vencimiento
+                    ? $prestamo->fecha_vencimiento->copy()->addDays($dias)->toDateString()
+                    : now()->addDays($dias)->toDateString(),
+                'renovaciones_usadas' => ((int) $prestamo->renovaciones_usadas) + 1,
+            ]);
+
+            $prestamo->refresh();
+
+            $this->registrarHistorial(
+                $prestamo,
+                'RENOVACION',
+                'Renovación del préstamo por ' . $dias . ' días adicionales.'
+            );
+        });
+
+        return redirect()
+            ->route('bib.prestamos.edit', $prestamo)
+            ->with('success', 'Préstamo renovado correctamente.');
     }
 }

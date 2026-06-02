@@ -116,7 +116,6 @@ class DatabaseSeeder extends Seeder
             TipoRecursoBibliotecaSeeder::class,
             PoliticaPrestamoBibliotecaSeeder::class,
             TipoAdquisicionBibliotecaSeeder::class,
-            TipoAdquisicionBibliotecaSeeder::class,
             TipoAccesoBibliotecaSeeder::class,
             EtiquetaBibliotecaSeeder::class,
             DisponibilidadBibliotecaSeeder::class,

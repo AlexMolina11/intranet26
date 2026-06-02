@@ -29,24 +29,22 @@
             @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_DEVOLVER') && !$prestamo->fecha_devolucion && $prestamo->estadoPrestamo?->codigo === 'PRESTADO')
                 <button
                     type="submit"
+                    formaction="{{ route('bib.prestamos.renovar', $prestamo) }}"
+                    formmethod="POST"
+                    class="btn btn-secondary"
+                    onclick="return confirm('¿Deseas renovar este préstamo?');"
+                >
+                    Renovar préstamo
+                </button>
+
+                <button
+                    type="submit"
                     formaction="{{ route('bib.prestamos.devolver', $prestamo) }}"
                     formmethod="POST"
                     class="btn btn-success"
                     onclick="return confirm('¿Deseas registrar la devolución de este préstamo?');"
                 >
                     Registrar devolución
-                </button>
-            @endif
-            
-            @if(!$prestamo->fecha_devolucion)
-                <button
-                    type="submit"
-                    formaction="{{ route('bib.prestamos.devolver', $prestamo) }}"
-                    formmethod="POST"
-                    class="btn btn-success"
-                    onclick="return confirm('¿Registrar devolución?')"
-                >
-                    Devolver libro
                 </button>
             @endif
         </form>
