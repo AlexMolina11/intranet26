@@ -10,6 +10,9 @@
         </div>
 
         <div class="page-header-actions">
+            <a href="{{ route('bib.reportes.multas.exportar', request()->query()) }}" class="btn btn-success">
+                Exportar CSV
+            </a>
             <a href="{{ route('bib.reportes.index') }}" class="btn btn-secondary">Volver</a>
         </div>
     </div>

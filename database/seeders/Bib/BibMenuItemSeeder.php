@@ -119,6 +119,15 @@ class BibMenuItemSeeder extends Seeder
             ],
 
             [
+                'id_menu' => $menuOperacion,
+                'nombre' => 'Reportes',
+                'ruta' => 'bib.reportes.index',
+                'icono' => 'fa-solid fa-chart-column',
+                'orden' => 10,
+                'permiso_requerido' => 'BIB_REPORTES_VER',
+            ],
+
+            [
                 'id_menu' => $menuConfiguracion,
                 'nombre' => 'Autores',
                 'ruta' => 'bib.config.autores.index',

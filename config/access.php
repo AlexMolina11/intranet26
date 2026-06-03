@@ -320,5 +320,8 @@ return [
         'bib.reportes.prestamos' => 'BIB_REPORTES_VER',
         'bib.reportes.multas' => 'BIB_REPORTES_VER',
         'bib.reportes.recursos-mas-prestados' => 'BIB_REPORTES_VER',
+        'bib.reportes.prestamos.exportar' => 'BIB_REPORTES_VER',
+        'bib.reportes.multas.exportar' => 'BIB_REPORTES_VER',
+        'bib.reportes.recursos-mas-prestados.exportar' => 'BIB_REPORTES_VER',
     ],
 ];

@@ -221,4 +221,7 @@ Route::middleware(['auth', 'route.access'])
         Route::get('/reportes/prestamos', [ReporteController::class, 'prestamos'])->name('reportes.prestamos');
         Route::get('/reportes/multas', [ReporteController::class, 'multas'])->name('reportes.multas');
         Route::get('/reportes/recursos-mas-prestados', [ReporteController::class, 'recursosMasPrestados'])->name('reportes.recursos-mas-prestados');
+        Route::get('/reportes/prestamos/exportar', [ReporteController::class, 'exportarPrestamos'])->name('reportes.prestamos.exportar');
+        Route::get('/reportes/multas/exportar', [ReporteController::class, 'exportarMultas'])->name('reportes.multas.exportar');
+        Route::get('/reportes/recursos-mas-prestados/exportar', [ReporteController::class, 'exportarRecursosMasPrestados'])->name('reportes.recursos-mas-prestados.exportar');
     });
