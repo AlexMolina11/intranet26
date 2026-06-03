@@ -180,6 +180,10 @@ Route::middleware(['auth', 'route.access'])
         Route::get('/solicitudes/{solicitud}/editar', [SolicitudController::class, 'edit'])->name('solicitudes.edit');
         Route::put('/solicitudes/{solicitud}', [SolicitudController::class, 'update'])->name('solicitudes.update');
 
+        Route::post('/solicitudes/{solicitud}/aprobar', [SolicitudController::class, 'aprobar'])->name('solicitudes.aprobar');
+        Route::post('/solicitudes/{solicitud}/rechazar', [SolicitudController::class, 'rechazar'])->name('solicitudes.rechazar');
+        Route::post('/solicitudes/{solicitud}/generar-prestamo', [SolicitudController::class, 'generarPrestamo'])->name('solicitudes.generar-prestamo');
+
         /*
         |--------------------------------------------------------------------------
         | Préstamos

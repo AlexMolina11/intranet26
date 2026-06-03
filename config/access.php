@@ -206,6 +206,9 @@ return [
         'bib.solicitudes.store' => ['BIB_SOLICITUDES_CREAR'],
         'bib.solicitudes.edit' => ['BIB_SOLICITUDES_GESTIONAR'],
         'bib.solicitudes.update' => ['BIB_SOLICITUDES_GESTIONAR'],
+        'bib.solicitudes.aprobar' => 'BIB_SOLICITUDES_GESTIONAR',
+        'bib.solicitudes.rechazar' => 'BIB_SOLICITUDES_GESTIONAR',
+        'bib.solicitudes.generar-prestamo' => 'BIB_SOLICITUDES_GESTIONAR',
 
         'bib.prestamos.index' => ['BIB_PRESTAMOS_VER'],
         'bib.prestamos.create' => ['BIB_PRESTAMOS_CREAR'],
