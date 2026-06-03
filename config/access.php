@@ -315,5 +315,10 @@ return [
         'bib.config.estados-solicitud.update' => 'BIB_CATALOGOS_EDITAR',
 
         'bib.consulta.index' => 'BIB_CONSULTA_VER',
+
+        'bib.reportes.index' => 'BIB_REPORTES_VER',
+        'bib.reportes.prestamos' => 'BIB_REPORTES_VER',
+        'bib.reportes.multas' => 'BIB_REPORTES_VER',
+        'bib.reportes.recursos-mas-prestados' => 'BIB_REPORTES_VER',
     ],
 ];

@@ -24,6 +24,7 @@ use App\Modules\Bib\Controllers\RecursoController;
 use App\Modules\Bib\Controllers\SolicitudController;
 use App\Modules\Bib\Controllers\ConsultaController;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Bib\Controllers\ReporteController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('bib')
@@ -210,4 +211,14 @@ Route::middleware(['auth', 'route.access'])
         Route::post('/multas', [MultaController::class, 'store'])->name('multas.store');
         Route::get('/multas/{multa}/editar', [MultaController::class, 'edit'])->name('multas.edit');
         Route::put('/multas/{multa}', [MultaController::class, 'update'])->name('multas.update');
+        /*
+        |--------------------------------------------------------------------------
+        | Reportes
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+        Route::get('/reportes/prestamos', [ReporteController::class, 'prestamos'])->name('reportes.prestamos');
+        Route::get('/reportes/multas', [ReporteController::class, 'multas'])->name('reportes.multas');
+        Route::get('/reportes/recursos-mas-prestados', [ReporteController::class, 'recursosMasPrestados'])->name('reportes.recursos-mas-prestados');
     });
