@@ -310,5 +310,7 @@ return [
         'bib.config.estados-solicitud.store' => 'BIB_CATALOGOS_CREAR',
         'bib.config.estados-solicitud.edit' => 'BIB_CATALOGOS_EDITAR',
         'bib.config.estados-solicitud.update' => 'BIB_CATALOGOS_EDITAR',
+
+        'bib.consulta.index' => 'BIB_CONSULTA_VER',
     ],
 ];

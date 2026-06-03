@@ -22,6 +22,7 @@ use App\Modules\Bib\Controllers\PoliticaPrestamoController;
 use App\Modules\Bib\Controllers\PrestamoController;
 use App\Modules\Bib\Controllers\RecursoController;
 use App\Modules\Bib\Controllers\SolicitudController;
+use App\Modules\Bib\Controllers\ConsultaController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'route.access'])
@@ -30,6 +31,7 @@ Route::middleware(['auth', 'route.access'])
     ->group(function () {
 
         Route::get('/dashboard', [BibDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/consulta', [ConsultaController::class, 'index'])->name('consulta.index');
 
         /*
         |--------------------------------------------------------------------------
