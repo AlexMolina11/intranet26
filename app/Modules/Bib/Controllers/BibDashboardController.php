@@ -33,15 +33,25 @@ class BibDashboardController extends Controller
             ->count();
 
         $prestamosActivos = Prestamo::query()
-            ->whereNull('fecha_devolucion')
             ->whereHas('estadoPrestamo', function ($query) {
-                $query->whereIn('codigo', ['ENTREGADO', 'VENCIDO']);
+                $query->where('codigo', 'ENTREGADO');
             })
+            ->whereNull('fecha_devolucion')
             ->count();
 
         $prestamosVencidos = Prestamo::query()
+            ->whereHas('estadoPrestamo', function ($query) {
+                $query->where('codigo', 'ENTREGADO');
+            })
             ->whereNull('fecha_devolucion')
             ->whereDate('fecha_vencimiento', '<', now()->toDateString())
+            ->count();
+
+        $prestamosPendientesEntrega = Prestamo::query()
+            ->whereHas('estadoPrestamo', function ($query) {
+                $query->where('codigo', 'PENDIENTE_ENTREGA');
+            })
+            ->whereNull('fecha_devolucion')
             ->count();
 
         $multasPendientes = Multa::query()
@@ -113,6 +123,7 @@ class BibDashboardController extends Controller
             'solicitudesPendientes',
             'prestamosActivos',
             'prestamosVencidos',
+            'prestamosPendientesEntrega',
             'multasPendientes',
             'prestamosRecientes',
             'accesosRapidos'
