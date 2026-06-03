@@ -17,6 +17,7 @@ use App\Modules\Bib\Requests\UpdateSolicitudRequest;
 use App\Modules\Seg\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Modules\Bib\Services\CirculacionService;
 
 class SolicitudController extends Controller
 {
@@ -207,73 +208,83 @@ class SolicitudController extends Controller
             return back()->with('error', 'Debes seleccionar un ejemplar antes de generar el préstamo.');
         }
 
-        DB::transaction(function () use ($solicitud) {
-            $ejemplar = Ejemplar::query()
-                ->with('disponibilidad')
-                ->lockForUpdate()
-                ->findOrFail($solicitud->id_ejemplar);
+        try {
+            DB::transaction(function () use ($solicitud) {
+                $ejemplar = Ejemplar::query()
+                    ->with('disponibilidad')
+                    ->lockForUpdate()
+                    ->findOrFail($solicitud->id_ejemplar);
 
-            $disponible = Disponibilidad::query()
-                ->where('codigo', 'DISPONIBLE')
-                ->firstOrFail();
+                $disponible = Disponibilidad::query()
+                    ->where('codigo', 'DISPONIBLE')
+                    ->firstOrFail();
 
-            if ((int) $ejemplar->id_disponibilidad !== (int) $disponible->id_disponibilidad) {
-                throw new \RuntimeException('El ejemplar seleccionado no está disponible.');
-            }
+                if ((int) $ejemplar->id_disponibilidad !== (int) $disponible->id_disponibilidad) {
+                    throw new \RuntimeException('El ejemplar seleccionado no está disponible.');
+                }
 
-            $recurso = Recurso::query()->findOrFail($solicitud->id_recurso);
+                $recurso = Recurso::query()->findOrFail($solicitud->id_recurso);
+                $usuario = Usuario::query()->findOrFail($solicitud->id_usuario);
 
-            $estadoPendienteEntrega = EstadoPrestamo::query()
-                ->where('codigo', 'PENDIENTE_ENTREGA')
-                ->firstOrFail();
+                app(CirculacionService::class)->validarUsuarioPuedePrestar($usuario, $recurso);
+                app(CirculacionService::class)->validarEjemplarPuedePrestar($ejemplar);
 
-            $politica = PoliticaPrestamo::query()
-                ->where('id_tipo_recurso', $recurso->id_tipo_recurso)
-                ->where('activo', true)
-                ->first();
+                $estadoPendienteEntrega = EstadoPrestamo::query()
+                    ->where('codigo', 'PENDIENTE_ENTREGA')
+                    ->firstOrFail();
 
-            $diasAutorizados = $politica?->dias_prestamo ?? 8;
-            $renovacionesMaximas = $politica?->max_renovaciones ?? 1;
-            $multaDiaria = $politica?->multa_diaria ?? 0;
+                $politica = PoliticaPrestamo::query()
+                    ->where('id_tipo_recurso', $recurso->id_tipo_recurso)
+                    ->where('activo', true)
+                    ->first();
 
-            $prestamo = Prestamo::create([
-                'id_usuario' => $solicitud->id_usuario,
-                'id_recurso' => $solicitud->id_recurso,
-                'id_ejemplar' => $solicitud->id_ejemplar,
-                'id_estado_prestamo' => $estadoPendienteEntrega->id_estado_prestamo,
-                'fecha_prestamo' => now()->toDateString(),
-                'fecha_vencimiento' => now()->addDays((int) $diasAutorizados)->toDateString(),
-                'fecha_devolucion' => null,
-                'dias_autorizados' => $diasAutorizados,
-                'renovaciones_usadas' => 0,
-                'renovaciones_maximas' => $renovacionesMaximas,
-                'multa_diaria' => $multaDiaria,
-                'multa_acumulada' => 0,
-                'id_usuario_entrega' => null,
-                'id_usuario_recibe' => null,
-                'activo' => true,
-            ]);
+                $diasAutorizados = $politica?->dias_prestamo ?? 8;
+                $renovacionesMaximas = $politica?->max_renovaciones ?? 1;
+                $multaDiaria = $politica?->multa_diaria ?? 0;
 
-            HistorialPrestamo::create([
-                'id_prestamo' => $prestamo->id_prestamo,
-                'id_estado_prestamo' => $prestamo->id_estado_prestamo,
-                'id_usuario_accion' => auth()->id(),
-                'tipo_movimiento' => 'CREACION',
-                'fecha_movimiento' => now()->toDateString(),
-                'fecha_vencimiento' => $prestamo->fecha_vencimiento,
-                'fecha_devolucion' => null,
-                'multa_acumulada' => 0,
-                'observaciones' => 'Préstamo generado desde solicitud aprobada.',
-                'activo' => true,
-            ]);
+                $prestamo = Prestamo::create([
+                    'id_usuario' => $solicitud->id_usuario,
+                    'id_recurso' => $solicitud->id_recurso,
+                    'id_ejemplar' => $solicitud->id_ejemplar,
+                    'id_estado_prestamo' => $estadoPendienteEntrega->id_estado_prestamo,
+                    'fecha_prestamo' => now()->toDateString(),
+                    'fecha_vencimiento' => now()->addDays((int) $diasAutorizados)->toDateString(),
+                    'fecha_devolucion' => null,
+                    'dias_autorizados' => $diasAutorizados,
+                    'renovaciones_usadas' => 0,
+                    'renovaciones_maximas' => $renovacionesMaximas,
+                    'multa_diaria' => $multaDiaria,
+                    'multa_acumulada' => 0,
+                    'id_usuario_entrega' => null,
+                    'id_usuario_recibe' => null,
+                    'activo' => true,
+                ]);
 
-            $solicitud->update([
-                'id_estado_solicitud' => $this->estadoSolicitudPorCodigo('ATENDIDA')->id_estado_solicitud,
-                'fecha_atencion' => now()->toDateString(),
-                'id_usuario_atiende' => auth()->id(),
-                'observaciones_internas' => trim(($solicitud->observaciones_internas ?? '') . "\nPréstamo generado: #{$prestamo->id_prestamo}"),
-            ]);
-        });
+                HistorialPrestamo::create([
+                    'id_prestamo' => $prestamo->id_prestamo,
+                    'id_estado_prestamo' => $prestamo->id_estado_prestamo,
+                    'id_usuario_accion' => auth()->id(),
+                    'tipo_movimiento' => 'CREACION',
+                    'fecha_movimiento' => now()->toDateString(),
+                    'fecha_vencimiento' => $prestamo->fecha_vencimiento,
+                    'fecha_devolucion' => null,
+                    'multa_acumulada' => 0,
+                    'observaciones' => 'Préstamo generado desde solicitud aprobada.',
+                    'activo' => true,
+                ]);
+
+                $solicitud->update([
+                    'id_estado_solicitud' => $this->estadoSolicitudPorCodigo('ATENDIDA')->id_estado_solicitud,
+                    'fecha_atencion' => now()->toDateString(),
+                    'id_usuario_atiende' => auth()->id(),
+                    'observaciones_internas' => trim(($solicitud->observaciones_internas ?? '') . "\nPréstamo generado: #{$prestamo->id_prestamo}"),
+                ]);
+            });
+        } catch (\RuntimeException $exception) {
+            return back()
+                ->withInput()
+                ->with('error', $exception->getMessage());
+        }
 
         return redirect()
             ->route('bib.solicitudes.edit', $solicitud)

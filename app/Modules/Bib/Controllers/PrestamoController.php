@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Modules\Bib\Models\Disponibilidad;
 use App\Modules\Bib\Models\Multa;
 use Illuminate\Support\Facades\DB;
+use App\Modules\Bib\Services\CirculacionService;
 
 class PrestamoController extends Controller
 {
@@ -117,6 +118,21 @@ class PrestamoController extends Controller
     public function store(StorePrestamoRequest $request)
     {
         $data = $request->validated();
+
+        $usuario = Usuario::query()->findOrFail($data['id_usuario']);
+        $recurso = Recurso::query()->findOrFail($data['id_recurso']);
+        $ejemplar = Ejemplar::query()
+            ->with(['disponibilidad', 'estado'])
+            ->findOrFail($data['id_ejemplar']);
+
+        try {
+            app(CirculacionService::class)->validarUsuarioPuedePrestar($usuario, $recurso);
+            app(CirculacionService::class)->validarEjemplarPuedePrestar($ejemplar);
+        } catch (\RuntimeException $exception) {
+            return back()
+                ->withInput()
+                ->with('error', $exception->getMessage());
+        }
 
         $estadoPendiente = $this->estadoPorCodigo('PENDIENTE_ENTREGA');
 

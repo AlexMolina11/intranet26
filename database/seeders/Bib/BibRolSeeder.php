@@ -41,6 +41,11 @@ class BibRolSeeder extends Seeder
                 'descripcion' => 'Consulta catálogos, recursos y disponibilidad bibliográfica',
                 'activo' => 1,
             ],
+            [
+                'nombre' => 'Usuario Biblioteca',
+                'descripcion' => 'Usuario interno que puede consultar recursos bibliográficos y crear solicitudes de préstamo.',
+                'activo' => 1,
+            ],
         ];
 
         foreach ($roles as $rol) {

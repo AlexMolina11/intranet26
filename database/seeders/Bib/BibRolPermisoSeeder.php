@@ -91,6 +91,14 @@ class BibRolPermisoSeeder extends Seeder
                 'BIB_POLITICAS_VER',
                 'BIB_CONSULTA_VER',
             ],
+
+            'Usuario Biblioteca' => [
+                'BIB_VER',
+                'BIB_DASHBOARD_VER',
+                'BIB_CONSULTA_VER',
+                'BIB_SOLICITUDES_VER',
+                'BIB_SOLICITUDES_CREAR',
+            ],
         ];
 
         foreach ($mapa as $nombreRol => $codigosPermiso) {
