@@ -11,7 +11,7 @@
 
         <div class="page-header-actions">
             <a href="{{ route('bib.reportes.prestamos.exportar', request()->query()) }}" class="btn btn-success">
-                Exportar CSV
+                Exportar Excel
             </a>
             <a href="{{ route('bib.reportes.index') }}" class="btn btn-secondary">Volver</a>
         </div>
