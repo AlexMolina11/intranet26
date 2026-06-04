@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Modules\Bib\Console\Commands\BibActualizarPrestamosVencidos;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Request;
@@ -34,5 +35,11 @@ class AppServiceProvider extends ServiceProvider
             $view->with('navigation', $navigation)
                 ->with('activeSystemCode', $activeSystemCode);
         });
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                BibActualizarPrestamosVencidos::class,
+            ]);
+        }
     }
 }

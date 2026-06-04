@@ -33,7 +33,11 @@
                 </form>
             @endif
 
-            @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_DEVOLVER') && !$prestamo->fecha_devolucion && $prestamo->estadoPrestamo?->codigo === 'ENTREGADO')
+            @if(
+                auth()->user()->tienePermiso('BIB_PRESTAMOS_DEVOLVER')
+                && !$prestamo->fecha_devolucion
+                && $prestamo->estadoPrestamo?->codigo === 'ENTREGADO'
+            )
                 <form method="POST" action="{{ route('bib.prestamos.renovar', $prestamo) }}" style="display:inline-block;">
                     @csrf
                     <button
@@ -44,7 +48,13 @@
                         Renovar préstamo
                     </button>
                 </form>
+            @endif
 
+            @if(
+                auth()->user()->tienePermiso('BIB_PRESTAMOS_DEVOLVER')
+                && !$prestamo->fecha_devolucion
+                && in_array($prestamo->estadoPrestamo?->codigo, ['ENTREGADO', 'VENCIDO'], true)
+            )
                 <form method="POST" action="{{ route('bib.prestamos.devolver', $prestamo) }}" style="display:inline-block;">
                     @csrf
                     <button

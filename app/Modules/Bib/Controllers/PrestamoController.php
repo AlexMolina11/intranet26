@@ -271,9 +271,13 @@ class PrestamoController extends Controller
     public function devolver(Prestamo $prestamo)
     {
         $estadoEntregado = $this->estadoPorCodigo('ENTREGADO');
+        $estadoVencido = $this->estadoPorCodigo('VENCIDO');
 
-        if ((int) $prestamo->id_estado_prestamo !== (int) $estadoEntregado->id_estado_prestamo) {
-            return back()->with('error', 'Solo puedes devolver préstamos entregados.');
+        if (!in_array((int) $prestamo->id_estado_prestamo, [
+            (int) $estadoEntregado->id_estado_prestamo,
+            (int) $estadoVencido->id_estado_prestamo,
+        ], true)) {
+            return back()->with('error', 'Solo puedes devolver préstamos entregados o vencidos.');
         }
 
         if ($prestamo->fecha_devolucion) {
