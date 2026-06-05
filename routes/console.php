@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('bib:actualizar-prestamos-vencidos')->dailyAt('06:00');
+Schedule::command('bib:generar-recordatorios-prestamos')->dailyAt('06:10');

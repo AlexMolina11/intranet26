@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Http\Request;
 use App\Modules\Seg\Services\NavigationService;
 use App\Modules\Seg\Support\ActiveSystemResolver;
+use App\Modules\Bib\Console\Commands\BibGenerarRecordatoriosPrestamos;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,9 +37,14 @@ class AppServiceProvider extends ServiceProvider
                 ->with('activeSystemCode', $activeSystemCode);
         });
 
+        $this->loadMigrationsFrom([
+            database_path('migrations/bib'),
+        ]);
+
         if ($this->app->runningInConsole()) {
             $this->commands([
                 BibActualizarPrestamosVencidos::class,
+                BibGenerarRecordatoriosPrestamos::class,
             ]);
         }
     }
