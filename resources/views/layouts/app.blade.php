@@ -352,6 +352,126 @@
             color: rgba(255,255,255,0.82);
         }
 
+
+
+        .notification-toggle-btn {
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: transparent;
+            color: var(--color-white);
+            width: 42px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .notification-toggle-btn:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            border-radius: 999px;
+            background: var(--color-accent);
+            color: var(--color-black);
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .notification-panel-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .35);
+            z-index: 1400;
+            display: none;
+        }
+
+        .notification-panel-backdrop.open {
+            display: block;
+        }
+
+        .notification-panel {
+            position: fixed;
+            top: 0;
+            right: -430px;
+            width: 430px;
+            max-width: 92vw;
+            height: 100vh;
+            background: var(--color-surface);
+            z-index: 1500;
+            box-shadow: -8px 0 24px rgba(0,0,0,.18);
+            transition: right .25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notification-panel.open {
+            right: 0;
+        }
+
+        .notification-panel-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .notification-panel-header h3 {
+            margin: 0;
+            color: var(--color-primary-dark);
+            font-size: 20px;
+        }
+
+        .notification-panel-header small {
+            color: var(--color-text-soft);
+        }
+
+        .notification-panel-body {
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: #fbfcf7;
+        }
+
+        .notification-item-title {
+            font-weight: bold;
+            color: var(--color-primary-dark);
+            margin-bottom: 4px;
+        }
+
+        .notification-item-message {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--color-text);
+        }
+
+        .notification-item-meta {
+            font-size: 12px;
+            color: var(--color-text-soft);
+            margin-bottom: 10px;
+        }
+
         .app-shell {
             display: flex;
             min-height: calc(100vh - var(--topbar-height));
@@ -1106,6 +1226,16 @@
 
         <div class="topbar-right">
             @auth
+                <button type="button" class="notification-toggle-btn" id="notificationToggle" title="Notificaciones">
+                    <i class="fa-solid fa-bell"></i>
+
+                    @if(($notificacionesGlobalesPendientes ?? 0) > 0)
+                        <span class="notification-badge">
+                            {{ $notificacionesGlobalesPendientes > 99 ? '99+' : $notificacionesGlobalesPendientes }}
+                        </span>
+                    @endif
+                </button>
+
                 <div class="user-menu" id="userMenu" data-dropdown-group>
                     <button type="button" class="user-trigger" onclick="toggleDropdown('userMenu')">
                         <span class="user-avatar">{{ $userInitials }}</span>
@@ -1162,6 +1292,55 @@
             @endauth
         </div>
     </header>
+
+    @auth
+        <div class="notification-panel-backdrop" id="notificationPanelBackdrop"></div>
+
+        <aside class="notification-panel" id="notificationPanel">
+            <div class="notification-panel-header">
+                <div>
+                    <h3>Notificaciones</h3>
+                    <small>{{ $notificacionesGlobalesPendientes ?? 0 }} pendiente(s)</small>
+                </div>
+
+                <button type="button" class="btn btn-secondary" id="notificationPanelClose">
+                    Cerrar
+                </button>
+            </div>
+
+            <div class="notification-panel-body">
+                @forelse(($notificacionesGlobales ?? collect()) as $notificacion)
+                    <div class="notification-item">
+                        <div class="notification-item-title">
+                            {{ $notificacion->titulo }}
+                        </div>
+
+                        <div class="notification-item-message">
+                            {{ $notificacion->mensaje }}
+                        </div>
+
+                        <div class="notification-item-meta">
+                            {{ optional($notificacion->fecha_notificacion)->format('d/m/Y') }}
+                            · {{ str_replace('_', ' ', $notificacion->tipo) }}
+                        </div>
+
+                        @if(Route::has('bib.notificaciones.marcar-leida'))
+                            <form method="POST" action="{{ route('bib.notificaciones.marcar-leida', $notificacion) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-primary">
+                                    Marcar como leída
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @empty
+                    <div class="alert alert-success">
+                        No tienes notificaciones pendientes.
+                    </div>
+                @endforelse
+            </div>
+        </aside>
+    @endauth
 
     <div class="app-shell">
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
@@ -1423,6 +1602,30 @@
                     closeAllDropdowns();
                 }
             });
+
+            // ── Panel global de notificaciones ────────────────────────
+            const notificationButton = document.getElementById('notificationToggle');
+            const notificationPanel = document.getElementById('notificationPanel');
+            const notificationBackdrop = document.getElementById('notificationPanelBackdrop');
+            const notificationClose = document.getElementById('notificationPanelClose');
+
+            function openNotifications() {
+                if (notificationPanel && notificationBackdrop) {
+                    notificationPanel.classList.add('open');
+                    notificationBackdrop.classList.add('open');
+                }
+            }
+
+            function closeNotifications() {
+                if (notificationPanel && notificationBackdrop) {
+                    notificationPanel.classList.remove('open');
+                    notificationBackdrop.classList.remove('open');
+                }
+            }
+
+            if (notificationButton) notificationButton.addEventListener('click', openNotifications);
+            if (notificationClose) notificationClose.addEventListener('click', closeNotifications);
+            if (notificationBackdrop) notificationBackdrop.addEventListener('click', closeNotifications);
 
         })();
         </script>
