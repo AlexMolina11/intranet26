@@ -10,6 +10,7 @@ use App\Modules\Bib\Models\Recurso;
 use App\Modules\Bib\Models\Solicitud;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Bib\Models\NotificacionBiblioteca;
 
 class BibDashboardController extends Controller
 {
@@ -160,6 +161,15 @@ class BibDashboardController extends Controller
             return $item['can'] && Route::has($item['route']);
         })->values();
 
+        $notificaciones = NotificacionBiblioteca::query()
+            ->with(['prestamo.recurso'])
+            ->where('activo', true)
+            ->where('id_usuario', $usuario->id_usuario)
+            ->where('leida', false)
+            ->latest('id_notificacion')
+            ->limit(5)
+            ->get();
+
         return view('bib.dashboard', compact(
             'usuario',
             'totalRecursos',
@@ -174,7 +184,8 @@ class BibDashboardController extends Controller
             'prestamosRecientes',
             'solicitudesRecientes',
             'multasRecientes',
-            'accesosRapidos'
+            'accesosRapidos',
+            'notificaciones'
         ));
     }
 }

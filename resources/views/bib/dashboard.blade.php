@@ -16,6 +16,47 @@
         </div>
     </div>
 
+    @if($notificaciones->isNotEmpty())
+        <div class="card" style="margin-bottom:20px;">
+            <div class="page-header" style="margin-bottom:16px;">
+                <div class="page-header-text">
+                    <h2 style="margin:0; font-size:20px;">Avisos de Biblioteca</h2>
+                    <p class="page-subtitle">Recordatorios pendientes relacionados con tus préstamos.</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Mensaje</th>
+                            <th>Fecha</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($notificaciones as $notificacion)
+                            <tr>
+                                <td>{{ $notificacion->titulo }}</td>
+                                <td>{{ $notificacion->mensaje }}</td>
+                                <td>{{ optional($notificacion->fecha_notificacion)->format('d/m/Y') }}</td>
+                                <td>
+                                    <form method="POST" action="{{ route('bib.notificaciones.marcar-leida', $notificacion) }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-secondary">
+                                            Marcar como leída
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
+
     @if($accesosRapidos->isNotEmpty())
         <div class="card" style="margin-bottom:20px;">
             <div class="page-header" style="margin-bottom:16px;">

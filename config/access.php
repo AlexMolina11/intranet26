@@ -323,5 +323,7 @@ return [
         'bib.reportes.prestamos.exportar' => 'BIB_REPORTES_VER',
         'bib.reportes.multas.exportar' => 'BIB_REPORTES_VER',
         'bib.reportes.recursos-mas-prestados.exportar' => 'BIB_REPORTES_VER',
+
+        'bib.notificaciones.marcar-leida' => 'BIB_VER',
     ],
 ];

@@ -25,6 +25,7 @@ use App\Modules\Bib\Controllers\SolicitudController;
 use App\Modules\Bib\Controllers\ConsultaController;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Bib\Controllers\ReporteController;
+use App\Modules\Bib\Controllers\NotificacionBibliotecaController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('bib')
@@ -33,6 +34,7 @@ Route::middleware(['auth', 'route.access'])
 
         Route::get('/dashboard', [BibDashboardController::class, 'index'])->name('dashboard');
         Route::get('/consulta', [ConsultaController::class, 'index'])->name('consulta.index');
+        Route::post('/notificaciones/{notificacion}/marcar-leida', [NotificacionBibliotecaController::class, 'marcarLeida'])->name('notificaciones.marcar-leida');
 
         /*
         |--------------------------------------------------------------------------
