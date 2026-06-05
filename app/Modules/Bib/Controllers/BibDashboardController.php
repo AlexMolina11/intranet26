@@ -11,6 +11,9 @@ use App\Modules\Bib\Models\Solicitud;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Bib\Models\NotificacionBiblioteca;
+use Illuminate\Support\Facades\DB;
+use App\Modules\Bib\Models\HistorialPrestamo;
+use Carbon\Carbon;
 
 class BibDashboardController extends Controller
 {
@@ -170,6 +173,83 @@ class BibDashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $topRecursosMasPrestados = Recurso::query()
+            ->select([
+                'bib_recursos.id_recurso',
+                'bib_recursos.codigo',
+                'bib_recursos.titulo',
+                DB::raw('COUNT(bib_prestamos.id_prestamo) AS total_prestamos'),
+            ])
+            ->leftJoin('bib_prestamos', 'bib_prestamos.id_recurso', '=', 'bib_recursos.id_recurso')
+            ->whereNull('bib_recursos.deleted_at')
+            ->groupBy('bib_recursos.id_recurso', 'bib_recursos.codigo', 'bib_recursos.titulo')
+            ->orderByDesc('total_prestamos')
+            ->limit(5)
+            ->get();
+
+        $usuariosConMultasPendientes = Multa::query()
+            ->select([
+                'seg_usuarios.id_usuario',
+                'seg_usuarios.nombres',
+                'seg_usuarios.apellidos',
+                DB::raw('COUNT(bib_multas.id_multa) AS total_multas'),
+                DB::raw('SUM(bib_multas.monto - bib_multas.monto_pagado) AS total_pendiente'),
+            ])
+            ->join('seg_usuarios', 'seg_usuarios.id_usuario', '=', 'bib_multas.id_usuario')
+            ->where('bib_multas.activo', true)
+            ->where('bib_multas.pagada', false)
+            ->whereNull('bib_multas.deleted_at')
+            ->groupBy('seg_usuarios.id_usuario', 'seg_usuarios.nombres', 'seg_usuarios.apellidos')
+            ->orderByDesc('total_pendiente')
+            ->limit(5)
+            ->get();
+
+        $ultimosMovimientos = HistorialPrestamo::query()
+            ->with([
+                'prestamo.usuario:id_usuario,nombres,apellidos',
+                'prestamo.recurso:id_recurso,titulo',
+                'estadoPrestamo:id_estado_prestamo,codigo,nombre',
+                'usuarioAccion:id_usuario,nombres,apellidos',
+            ])
+            ->latest('id_historial_prestamo')
+            ->limit(8)
+            ->get();
+
+        $prestamosPorMesRaw = Prestamo::query()
+            ->selectRaw("DATE_FORMAT(fecha_prestamo, '%Y-%m') AS mes, COUNT(*) AS total")
+            ->whereNotNull('fecha_prestamo')
+            ->whereDate('fecha_prestamo', '>=', now()->subMonths(5)->startOfMonth())
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->pluck('total', 'mes');
+
+        $prestamosPorMesLabels = [];
+        $prestamosPorMesData = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $mes = Carbon::now()->subMonths($i);
+            $clave = $mes->format('Y-m');
+
+            $prestamosPorMesLabels[] = ucfirst($mes->translatedFormat('M Y'));
+            $prestamosPorMesData[] = (int) ($prestamosPorMesRaw[$clave] ?? 0);
+        }
+
+        $prestamosPorEstado = Prestamo::query()
+            ->select([
+                'bib_estados_prestamo.nombre',
+                DB::raw('COUNT(bib_prestamos.id_prestamo) AS total'),
+            ])
+            ->join('bib_estados_prestamo', 'bib_estados_prestamo.id_estado_prestamo', '=', 'bib_prestamos.id_estado_prestamo')
+            ->groupBy('bib_estados_prestamo.nombre')
+            ->orderByDesc('total')
+            ->get();
+
+        $prestamosPorEstadoLabels = $prestamosPorEstado->pluck('nombre')->toArray();
+        $prestamosPorEstadoData = $prestamosPorEstado->pluck('total')->map(fn ($total) => (int) $total)->toArray();
+
+        $topRecursosLabels = $topRecursosMasPrestados->pluck('titulo')->toArray();
+        $topRecursosData = $topRecursosMasPrestados->pluck('total_prestamos')->map(fn ($total) => (int) $total)->toArray();
+
         return view('bib.dashboard', compact(
             'usuario',
             'totalRecursos',
@@ -185,7 +265,16 @@ class BibDashboardController extends Controller
             'solicitudesRecientes',
             'multasRecientes',
             'accesosRapidos',
-            'notificaciones'
+            'notificaciones',
+            'topRecursosMasPrestados',
+            'usuariosConMultasPendientes',
+            'ultimosMovimientos',
+            'prestamosPorMesLabels',
+            'prestamosPorMesData',
+            'prestamosPorEstadoLabels',
+            'prestamosPorEstadoData',
+            'topRecursosLabels',
+            'topRecursosData',
         ));
     }
 }

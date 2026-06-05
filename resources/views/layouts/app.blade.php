@@ -1096,6 +1096,7 @@
             }
         }
     </style>
+    @stack('styles')
 </head>
 <body>
     @php
@@ -1629,5 +1630,6 @@
 
         })();
         </script>
+    @stack('scripts')
 </body>
 </html>

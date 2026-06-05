@@ -1,6 +1,41 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard Biblioteca')
+@section('page-title', 'Dashboard Biblioteca')
+@section('page-subtitle', 'Resumen operativo, analítico y administrativo del módulo Biblioteca')
+
+@push('styles')
+    <style>
+        .dashboard-charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .dashboard-wide {
+            grid-column: 1 / -1;
+        }
+
+        .chart-box {
+            height: 300px;
+        }
+
+        .chart-box-wide {
+            height: 340px;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-wide {
+                grid-column: auto;
+            }
+        }
+    </style>
+@endpush
 
 @section('content')
     <div class="page-header">
@@ -15,47 +50,6 @@
             Bienvenido, <strong>{{ $usuario->nombre_completo }}</strong>. Aquí tienes el estado actual del módulo Biblioteca.
         </div>
     </div>
-
-    @if($notificaciones->isNotEmpty())
-        <div class="card" style="margin-bottom:20px;">
-            <div class="page-header" style="margin-bottom:16px;">
-                <div class="page-header-text">
-                    <h2 style="margin:0; font-size:20px;">Avisos de Biblioteca</h2>
-                    <p class="page-subtitle">Recordatorios pendientes relacionados con tus préstamos.</p>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Mensaje</th>
-                            <th>Fecha</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($notificaciones as $notificacion)
-                            <tr>
-                                <td>{{ $notificacion->titulo }}</td>
-                                <td>{{ $notificacion->mensaje }}</td>
-                                <td>{{ optional($notificacion->fecha_notificacion)->format('d/m/Y') }}</td>
-                                <td>
-                                    <form method="POST" action="{{ route('bib.notificaciones.marcar-leida', $notificacion) }}">
-                                        @csrf
-                                        <button type="submit" class="btn btn-secondary">
-                                            Marcar como leída
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    @endif
 
     @if($accesosRapidos->isNotEmpty())
         <div class="card" style="margin-bottom:20px;">
@@ -121,6 +115,162 @@
         <div class="stat-card">
             <div class="stat-title">Multas pendientes</div>
             <div class="stat-value">{{ $multasPendientes }}</div>
+        </div>
+    </div>
+
+    <div class="dashboard-charts-grid">
+        <div class="card">
+            <div class="page-header" style="margin-bottom:16px;">
+                <div class="page-header-text">
+                    <h2 style="margin:0; font-size:20px;">Préstamos por mes</h2>
+                    <p class="page-subtitle">Últimos 6 meses.</p>
+                </div>
+            </div>
+
+            <div class="chart-box">
+                <canvas id="prestamosPorMesChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="page-header" style="margin-bottom:16px;">
+                <div class="page-header-text">
+                    <h2 style="margin:0; font-size:20px;">Préstamos por estado</h2>
+                    <p class="page-subtitle">Distribución actual de préstamos.</p>
+                </div>
+            </div>
+
+            <div class="chart-box">
+                <canvas id="prestamosPorEstadoChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card dashboard-wide">
+            <div class="page-header" style="margin-bottom:16px;">
+                <div class="page-header-text">
+                    <h2 style="margin:0; font-size:20px;">Top recursos más prestados</h2>
+                    <p class="page-subtitle">Recursos con mayor circulación dentro de Biblioteca.</p>
+                </div>
+
+                <div class="page-header-actions">
+                    @if(Route::has('bib.reportes.recursos-mas-prestados'))
+                        <a href="{{ route('bib.reportes.recursos-mas-prestados') }}" class="btn btn-secondary">
+                            Ver reporte
+                        </a>
+                    @endif
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Posición</th>
+                            <th>Código</th>
+                            <th>Recurso</th>
+                            <th>Total préstamos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($topRecursosMasPrestados as $index => $recurso)
+                            <tr>
+                                <td>#{{ $index + 1 }}</td>
+                                <td>{{ $recurso->codigo }}</td>
+                                <td>{{ $recurso->titulo }}</td>
+                                <td>{{ $recurso->total_prestamos }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4">No hay préstamos registrados todavía.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <div class="page-header" style="margin-bottom:16px;">
+            <div class="page-header-text">
+                <h2 style="margin:0; font-size:20px;">Usuarios con multas pendientes</h2>
+                <p class="page-subtitle">Usuarios con saldos pendientes por atraso en devolución.</p>
+            </div>
+
+            <div class="page-header-actions">
+                @if(Route::has('bib.reportes.multas'))
+                    <a href="{{ route('bib.reportes.multas', ['pagada' => 0]) }}" class="btn btn-secondary">
+                        Ver reporte
+                    </a>
+                @endif
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Multas pendientes</th>
+                        <th>Total pendiente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($usuariosConMultasPendientes as $usuarioMulta)
+                        <tr>
+                            <td>{{ trim($usuarioMulta->nombres . ' ' . $usuarioMulta->apellidos) }}</td>
+                            <td>{{ $usuarioMulta->total_multas }}</td>
+                            <td>${{ number_format((float) $usuarioMulta->total_pendiente, 2) }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3">No hay usuarios con multas pendientes.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <div class="page-header" style="margin-bottom:16px;">
+            <div class="page-header-text">
+                <h2 style="margin:0; font-size:20px;">Últimos movimientos</h2>
+                <p class="page-subtitle">Actividad reciente dentro del flujo de circulación bibliográfica.</p>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Movimiento</th>
+                        <th>Usuario préstamo</th>
+                        <th>Recurso</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Acción realizada por</th>
+                        <th>Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($ultimosMovimientos as $movimiento)
+                        <tr>
+                            <td>{{ $movimiento->tipo_movimiento }}</td>
+                            <td>{{ $movimiento->prestamo?->usuario?->nombre_completo ?? '-' }}</td>
+                            <td>{{ $movimiento->prestamo?->recurso?->titulo ?? '-' }}</td>
+                            <td>{{ $movimiento->estadoPrestamo?->nombre ?? '-' }}</td>
+                            <td>{{ optional($movimiento->fecha_movimiento)->format('d/m/Y') ?? '-' }}</td>
+                            <td>{{ $movimiento->usuarioAccion?->nombre_completo ?? 'Sistema' }}</td>
+                            <td>{{ $movimiento->observaciones ?? '-' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7">No hay movimientos registrados todavía.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -297,3 +447,81 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            };
+
+            const prestamosPorMesEl = document.getElementById('prestamosPorMesChart');
+            if (prestamosPorMesEl) {
+                new Chart(prestamosPorMesEl, {
+                    type: 'line',
+                    data: {
+                        labels: @json($prestamosPorMesLabels ?? []),
+                        datasets: [{
+                            label: 'Préstamos',
+                            data: @json($prestamosPorMesData ?? []),
+                            tension: 0.35,
+                            fill: true
+                        }]
+                    },
+                    options: chartOptions
+                });
+            }
+
+            const prestamosPorEstadoEl = document.getElementById('prestamosPorEstadoChart');
+            if (prestamosPorEstadoEl) {
+                new Chart(prestamosPorEstadoEl, {
+                    type: 'doughnut',
+                    data: {
+                        labels: @json($prestamosPorEstadoLabels ?? []),
+                        datasets: [{
+                            label: 'Estados',
+                            data: @json($prestamosPorEstadoData ?? [])
+                        }]
+                    },
+                    options: chartOptions
+                });
+            }
+
+            const topRecursosEl = document.getElementById('topRecursosChart');
+            if (topRecursosEl) {
+                new Chart(topRecursosEl, {
+                    type: 'bar',
+                    data: {
+                        labels: @json($topRecursosLabels ?? []),
+                        datasets: [{
+                            label: 'Total préstamos',
+                            data: @json($topRecursosData ?? []),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        ...chartOptions,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0,
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+@endpush
