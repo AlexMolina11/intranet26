@@ -55,6 +55,7 @@ use Database\Seeders\Bib\Catalogos\EstadoEjemplarBibliotecaSeeder;
 use Database\Seeders\Bib\Catalogos\EstadoPrestamoBibliotecaSeeder;
 use Database\Seeders\Bib\Catalogos\EstadoSolicitudBibliotecaSeeder;
 use Database\Seeders\Bib\Catalogos\PoliticaPrestamoBibliotecaSeeder;
+use Database\Seeders\Seg\UsuariosPruebaSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -106,6 +107,8 @@ class DatabaseSeeder extends Seeder
             BibMenuSeeder::class,
             BibMenuItemSeeder::class,
 
+            UsuariosPruebaSeeder::class,
+
             AutorSeeder::class,
             EditorialSeeder::class,
             ClasificacionSeeder::class,
@@ -115,7 +118,6 @@ class DatabaseSeeder extends Seeder
             NivelBibliograficoSeeder::class,
             TipoRecursoBibliotecaSeeder::class,
             PoliticaPrestamoBibliotecaSeeder::class,
-            TipoAdquisicionBibliotecaSeeder::class,
             TipoAdquisicionBibliotecaSeeder::class,
             TipoAccesoBibliotecaSeeder::class,
             EtiquetaBibliotecaSeeder::class,

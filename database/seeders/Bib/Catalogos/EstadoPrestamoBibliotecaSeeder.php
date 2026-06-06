@@ -11,13 +11,23 @@ class EstadoPrestamoBibliotecaSeeder extends Seeder
     {
         $items = [
             [
-                'codigo' => 'ENTREGADO',
-                'nombre' => 'Entregado',
-                'descripcion' => 'Préstamo entregado al usuario.',
+                'codigo' => 'PENDIENTE_ENTREGA',
+                'nombre' => 'Pendiente de entrega',
+                'descripcion' => 'Préstamo registrado administrativamente, pero aún no entregado al usuario.',
                 'es_inicial' => true,
                 'es_final' => false,
                 'genera_multa' => false,
                 'orden' => 1,
+                'activo' => true,
+            ],
+            [
+                'codigo' => 'ENTREGADO',
+                'nombre' => 'Entregado',
+                'descripcion' => 'Préstamo entregado al usuario.',
+                'es_inicial' => false,
+                'es_final' => false,
+                'genera_multa' => false,
+                'orden' => 2,
                 'activo' => true,
             ],
             [
@@ -27,7 +37,7 @@ class EstadoPrestamoBibliotecaSeeder extends Seeder
                 'es_inicial' => false,
                 'es_final' => false,
                 'genera_multa' => true,
-                'orden' => 2,
+                'orden' => 3,
                 'activo' => true,
             ],
             [
@@ -37,7 +47,7 @@ class EstadoPrestamoBibliotecaSeeder extends Seeder
                 'es_inicial' => false,
                 'es_final' => true,
                 'genera_multa' => false,
-                'orden' => 3,
+                'orden' => 4,
                 'activo' => true,
             ],
             [
@@ -47,7 +57,7 @@ class EstadoPrestamoBibliotecaSeeder extends Seeder
                 'es_inicial' => false,
                 'es_final' => true,
                 'genera_multa' => false,
-                'orden' => 4,
+                'orden' => 5,
                 'activo' => true,
             ],
         ];

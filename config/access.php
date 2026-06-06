@@ -206,6 +206,9 @@ return [
         'bib.solicitudes.store' => ['BIB_SOLICITUDES_CREAR'],
         'bib.solicitudes.edit' => ['BIB_SOLICITUDES_GESTIONAR'],
         'bib.solicitudes.update' => ['BIB_SOLICITUDES_GESTIONAR'],
+        'bib.solicitudes.aprobar' => 'BIB_SOLICITUDES_GESTIONAR',
+        'bib.solicitudes.rechazar' => 'BIB_SOLICITUDES_GESTIONAR',
+        'bib.solicitudes.generar-prestamo' => 'BIB_SOLICITUDES_GESTIONAR',
 
         'bib.prestamos.index' => ['BIB_PRESTAMOS_VER'],
         'bib.prestamos.create' => ['BIB_PRESTAMOS_CREAR'],
@@ -310,5 +313,17 @@ return [
         'bib.config.estados-solicitud.store' => 'BIB_CATALOGOS_CREAR',
         'bib.config.estados-solicitud.edit' => 'BIB_CATALOGOS_EDITAR',
         'bib.config.estados-solicitud.update' => 'BIB_CATALOGOS_EDITAR',
+
+        'bib.consulta.index' => 'BIB_CONSULTA_VER',
+
+        'bib.reportes.index' => 'BIB_REPORTES_VER',
+        'bib.reportes.prestamos' => 'BIB_REPORTES_VER',
+        'bib.reportes.multas' => 'BIB_REPORTES_VER',
+        'bib.reportes.recursos-mas-prestados' => 'BIB_REPORTES_VER',
+        'bib.reportes.prestamos.exportar' => 'BIB_REPORTES_VER',
+        'bib.reportes.multas.exportar' => 'BIB_REPORTES_VER',
+        'bib.reportes.recursos-mas-prestados.exportar' => 'BIB_REPORTES_VER',
+
+        'bib.notificaciones.marcar-leida' => 'BIB_VER',
     ],
 ];

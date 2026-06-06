@@ -51,6 +51,7 @@ class PermisoBibliotecaSeeder extends Seeder
             ['codigo' => 'BIB_POLITICAS_EDITAR', 'nombre' => 'Editar políticas de préstamo'],
 
             ['codigo' => 'BIB_CONSULTA_VER', 'nombre' => 'Realizar consulta bibliográfica'],
+            ['codigo' => 'BIB_REPORTES_VER', 'nombre' => 'Ver reportes de Biblioteca'],
         ];
 
         foreach ($permisos as $permiso) {

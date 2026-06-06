@@ -10,7 +10,7 @@
         </div>
 
         <div class="page-header-actions">
-            @if(auth()->user()->tienePermiso('BIB_MULTAS_VER'))
+            @if(auth()->user()->tienePermiso('BIB_MULTAS_GESTIONAR'))
                 <a href="{{ route('bib.multas.create') }}" class="btn btn-primary">Nueva multa</a>
             @endif
         </div>

@@ -56,6 +56,7 @@ class BibRolPermisoSeeder extends Seeder
                 'BIB_POLITICAS_VER',
                 'BIB_POLITICAS_EDITAR',
                 'BIB_CONSULTA_VER',
+                'BIB_REPORTES_VER',
             ],
 
             'Bibliotecario' => [
@@ -77,6 +78,7 @@ class BibRolPermisoSeeder extends Seeder
                 'BIB_MULTAS_VER',
                 'BIB_POLITICAS_VER',
                 'BIB_CONSULTA_VER',
+                'BIB_REPORTES_VER',
             ],
 
             'Consulta Biblioteca' => [
@@ -90,6 +92,14 @@ class BibRolPermisoSeeder extends Seeder
                 'BIB_MULTAS_VER',
                 'BIB_POLITICAS_VER',
                 'BIB_CONSULTA_VER',
+            ],
+
+            'Usuario Biblioteca' => [
+                'BIB_VER',
+                'BIB_DASHBOARD_VER',
+                'BIB_CONSULTA_VER',
+                'BIB_SOLICITUDES_VER',
+                'BIB_SOLICITUDES_CREAR',
             ],
         ];
 

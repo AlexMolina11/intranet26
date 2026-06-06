@@ -22,7 +22,10 @@ use App\Modules\Bib\Controllers\PoliticaPrestamoController;
 use App\Modules\Bib\Controllers\PrestamoController;
 use App\Modules\Bib\Controllers\RecursoController;
 use App\Modules\Bib\Controllers\SolicitudController;
+use App\Modules\Bib\Controllers\ConsultaController;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Bib\Controllers\ReporteController;
+use App\Modules\Bib\Controllers\NotificacionBibliotecaController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('bib')
@@ -30,6 +33,8 @@ Route::middleware(['auth', 'route.access'])
     ->group(function () {
 
         Route::get('/dashboard', [BibDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/consulta', [ConsultaController::class, 'index'])->name('consulta.index');
+        Route::post('/notificaciones/{notificacion}/marcar-leida', [NotificacionBibliotecaController::class, 'marcarLeida'])->name('notificaciones.marcar-leida');
 
         /*
         |--------------------------------------------------------------------------
@@ -178,6 +183,10 @@ Route::middleware(['auth', 'route.access'])
         Route::get('/solicitudes/{solicitud}/editar', [SolicitudController::class, 'edit'])->name('solicitudes.edit');
         Route::put('/solicitudes/{solicitud}', [SolicitudController::class, 'update'])->name('solicitudes.update');
 
+        Route::post('/solicitudes/{solicitud}/aprobar', [SolicitudController::class, 'aprobar'])->name('solicitudes.aprobar');
+        Route::post('/solicitudes/{solicitud}/rechazar', [SolicitudController::class, 'rechazar'])->name('solicitudes.rechazar');
+        Route::post('/solicitudes/{solicitud}/generar-prestamo', [SolicitudController::class, 'generarPrestamo'])->name('solicitudes.generar-prestamo');
+
         /*
         |--------------------------------------------------------------------------
         | Préstamos
@@ -192,6 +201,7 @@ Route::middleware(['auth', 'route.access'])
 
         Route::post('/prestamos/{prestamo}/entregar', [PrestamoController::class, 'entregar'])->name('prestamos.entregar');
         Route::post('/prestamos/{prestamo}/devolver', [PrestamoController::class, 'devolver'])->name('prestamos.devolver');
+        Route::post('/prestamos/{prestamo}/renovar', [PrestamoController::class, 'renovar'])->name('prestamos.renovar');
         /*
         |--------------------------------------------------------------------------
         | Multas
@@ -203,4 +213,17 @@ Route::middleware(['auth', 'route.access'])
         Route::post('/multas', [MultaController::class, 'store'])->name('multas.store');
         Route::get('/multas/{multa}/editar', [MultaController::class, 'edit'])->name('multas.edit');
         Route::put('/multas/{multa}', [MultaController::class, 'update'])->name('multas.update');
+        /*
+        |--------------------------------------------------------------------------
+        | Reportes
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+        Route::get('/reportes/prestamos', [ReporteController::class, 'prestamos'])->name('reportes.prestamos');
+        Route::get('/reportes/multas', [ReporteController::class, 'multas'])->name('reportes.multas');
+        Route::get('/reportes/recursos-mas-prestados', [ReporteController::class, 'recursosMasPrestados'])->name('reportes.recursos-mas-prestados');
+        Route::get('/reportes/prestamos/exportar', [ReporteController::class, 'exportarPrestamos'])->name('reportes.prestamos.exportar');
+        Route::get('/reportes/multas/exportar', [ReporteController::class, 'exportarMultas'])->name('reportes.multas.exportar');
+        Route::get('/reportes/recursos-mas-prestados/exportar', [ReporteController::class, 'exportarRecursosMasPrestados'])->name('reportes.recursos-mas-prestados.exportar');
     });
