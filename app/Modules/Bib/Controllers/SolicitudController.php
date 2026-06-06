@@ -75,8 +75,11 @@ class SolicitudController extends Controller
         return view('bib.solicitudes.index', compact('solicitudes', 'estadosSolicitud'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $usuario = $request->user();
+        $puedeGestionar = $usuario->tienePermiso('BIB_SOLICITUDES_GESTIONAR');
+
         $usuarios = Usuario::query()
             ->where('activo', true)
             ->orderBy('nombres')
@@ -104,13 +107,26 @@ class SolicitudController extends Controller
             'usuarios',
             'recursos',
             'ejemplares',
-            'estadosSolicitud'
+            'estadosSolicitud',
+            'puedeGestionar'
         ));
     }
 
     public function store(StoreSolicitudRequest $request)
     {
         $data = $request->validated();
+        $usuario = $request->user();
+
+        if (!$usuario->tienePermiso('BIB_SOLICITUDES_GESTIONAR')) {
+            $data['id_usuario'] = $usuario->id_usuario;
+            $data['id_ejemplar'] = null;
+            $data['id_estado_solicitud'] = $this->estadoSolicitudPorCodigo('PENDIENTE')->id_estado_solicitud;
+            $data['fecha_solicitud'] = now()->toDateString();
+            $data['fecha_atencion'] = null;
+            $data['id_usuario_atiende'] = null;
+            $data['observaciones_internas'] = null;
+            $data['activo'] = true;
+        }
 
         if (empty($data['id_estado_solicitud'])) {
             $data['id_estado_solicitud'] = $this->estadoSolicitudPorCodigo('PENDIENTE')->id_estado_solicitud;
@@ -123,7 +139,7 @@ class SolicitudController extends Controller
             ->with('success', 'Solicitud registrada correctamente.');
     }
 
-    public function edit(Solicitud $solicitud)
+    public function edit(Request $request, Solicitud $solicitud)
     {
         $usuarios = Usuario::query()
             ->where('activo', true)
@@ -148,12 +164,19 @@ class SolicitudController extends Controller
             ->orderBy('nombre')
             ->get();
 
+        $puedeGestionar = $request->user()->tienePermiso('BIB_SOLICITUDES_GESTIONAR');
+
+        if (!$puedeGestionar && (int) $solicitud->id_usuario !== (int) $request->user()->id_usuario) {
+            abort(403);
+        }
+
         return view('bib.solicitudes.edit', [
             'solicitud' => $solicitud->load(['usuario', 'recurso', 'ejemplar', 'estadoSolicitud', 'usuarioAtiende']),
             'usuarios' => $usuarios,
             'recursos' => $recursos,
             'ejemplares' => $ejemplares,
             'estadosSolicitud' => $estadosSolicitud,
+            'puedeGestionar' => $puedeGestionar,
         ]);
     }
 

@@ -41,11 +41,11 @@ class StoreSolicitudRequest extends FormRequest
                 Rule::exists('bib_ejemplares', 'id_ejemplar')->whereNull('deleted_at'),
             ],
             'id_estado_solicitud' => [
-                'required',
+                'nullable',
                 'integer',
                 Rule::exists('bib_estados_solicitud', 'id_estado_solicitud')->whereNull('deleted_at'),
             ],
-            'fecha_solicitud' => ['required', 'date'],
+            'fecha_solicitud' => ['nullable', 'date'],
             'fecha_requerida' => ['nullable', 'date', 'after_or_equal:fecha_solicitud'],
             'fecha_atencion' => ['nullable', 'date', 'after_or_equal:fecha_solicitud'],
             'motivo' => ['nullable', 'string'],

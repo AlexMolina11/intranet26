@@ -142,6 +142,7 @@ class PrestamoController extends Controller
         $data['id_usuario_recibe'] = null;
         $data['renovaciones_usadas'] = 0;
         $data['multa_acumulada'] = 0;
+        $data['activo'] = true;
 
         $recurso = Recurso::query()->find($data['id_recurso']);
 
@@ -227,11 +228,16 @@ class PrestamoController extends Controller
 
         unset(
             $data['id_estado_prestamo'],
+            $data['fecha_vencimiento'],
             $data['fecha_devolucion'],
             $data['id_usuario_entrega'],
             $data['id_usuario_recibe'],
+            $data['dias_autorizados'],
             $data['renovaciones_usadas'],
-            $data['multa_acumulada']
+            $data['renovaciones_maximas'],
+            $data['multa_diaria'],
+            $data['multa_acumulada'],
+            $data['activo']
         );
 
         $prestamo->update($data);

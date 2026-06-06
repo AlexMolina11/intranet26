@@ -36,18 +36,6 @@
     </div>
 
     <div class="form-group">
-        <label class="form-label" for="id_estado_prestamo">Estado del préstamo</label>
-        <select name="id_estado_prestamo" id="id_estado_prestamo" class="form-control" required>
-            <option value="">Seleccione</option>
-            @foreach($estadosPrestamo as $estado)
-                <option value="{{ $estado->id_estado_prestamo }}" {{ (string) old('id_estado_prestamo', $prestamo->id_estado_prestamo ?? '') === (string) $estado->id_estado_prestamo ? 'selected' : '' }}>
-                    {{ $estado->nombre }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-
-    <div class="form-group">
         <label class="form-label" for="id_solicitud">Solicitud relacionada</label>
         <select name="id_solicitud" id="id_solicitud" class="form-control">
             <option value="">No aplica</option>
@@ -61,89 +49,74 @@
 
     <div class="form-group">
         <label class="form-label" for="fecha_prestamo">Fecha de préstamo</label>
-        <input type="date" name="fecha_prestamo" id="fecha_prestamo" class="form-control"
-            value="{{ old('fecha_prestamo', isset($prestamo?->fecha_prestamo) ? $prestamo->fecha_prestamo->format('Y-m-d') : now()->format('Y-m-d')) }}" required>
-    </div>
-
-    <div class="form-group">
-        <label class="form-label" for="fecha_vencimiento">Fecha de vencimiento</label>
-        <input type="date" name="fecha_vencimiento" id="fecha_vencimiento" class="form-control"
-            value="{{ old('fecha_vencimiento', isset($prestamo?->fecha_vencimiento) ? $prestamo->fecha_vencimiento->format('Y-m-d') : now()->addDays(7)->format('Y-m-d')) }}" required>
-    </div>
-
-    <div class="form-group">
-        <label class="form-label" for="fecha_devolucion">Fecha de devolución</label>
-        <input type="date" name="fecha_devolucion" id="fecha_devolucion" class="form-control"
-            value="{{ old('fecha_devolucion', isset($prestamo?->fecha_devolucion) ? $prestamo->fecha_devolucion->format('Y-m-d') : '') }}">
-    </div>
-
-    <div class="form-group">
-        <label class="form-label" for="id_usuario_entrega">Usuario que entrega</label>
-        <select name="id_usuario_entrega" id="id_usuario_entrega" class="form-control">
-            <option value="">No asignado</option>
-            @foreach($usuarios as $usuario)
-                <option value="{{ $usuario->id_usuario }}" {{ (string) old('id_usuario_entrega', $prestamo->id_usuario_entrega ?? '') === (string) $usuario->id_usuario ? 'selected' : '' }}>
-                    {{ $usuario->nombre_completo }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label class="form-label" for="id_usuario_recibe">Usuario que recibe devolución</label>
-        <select name="id_usuario_recibe" id="id_usuario_recibe" class="form-control">
-            <option value="">No asignado</option>
-            @foreach($usuarios as $usuario)
-                <option value="{{ $usuario->id_usuario }}" {{ (string) old('id_usuario_recibe', $prestamo->id_usuario_recibe ?? '') === (string) $usuario->id_usuario ? 'selected' : '' }}>
-                    {{ $usuario->nombre_completo }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label class="form-label" for="dias_autorizados">Días autorizados</label>
-        <input type="number" name="dias_autorizados" id="dias_autorizados" class="form-control"
-            value="{{ old('dias_autorizados', $prestamo->dias_autorizados ?? 0) }}" min="0" required
-            {{ ($soloLecturaPolitica ?? false) ? 'readonly' : '' }}>
-    </div>
-
-    <div class="form-group">
-        <label class="form-label" for="renovaciones_usadas">Renovaciones usadas</label>
-        <input type="number" name="renovaciones_usadas" id="renovaciones_usadas" class="form-control"
-            value="{{ old('renovaciones_usadas', $prestamo->renovaciones_usadas ?? 0) }}" min="0" required>
-    </div>
-
-    <div class="form-group">
-        <label class="form-label" for="renovaciones_maximas">Renovaciones máximas</label>
-        <input type="number" name="renovaciones_maximas" id="renovaciones_maximas" class="form-control"
-            value="{{ old('renovaciones_maximas', $prestamo->renovaciones_maximas ?? 0) }}" min="0" required
-            {{ ($soloLecturaPolitica ?? false) ? 'readonly' : '' }}>
-    </div>
-
-    <div class="form-group">
-        <label class="form-label" for="multa_diaria">Multa diaria</label>
-        <input type="number" step="0.01" name="multa_diaria" id="multa_diaria" class="form-control"
-            value="{{ old('multa_diaria', $prestamo->multa_diaria ?? 0) }}" min="0" required
-            {{ ($soloLecturaPolitica ?? false) ? 'readonly' : '' }}>
-    </div>
-
-    <div class="form-group">
-        <label class="form-label" for="multa_acumulada">Multa acumulada</label>
-        <input type="number" step="0.01" name="multa_acumulada" id="multa_acumulada" class="form-control"
-            value="{{ old('multa_acumulada', $prestamo->multa_acumulada ?? 0) }}" min="0" required>
-    </div>
-
-    <div class="form-group">
-        <label class="form-label" for="activo">Estado del registro</label>
-        <select name="activo" id="activo" class="form-control">
-            <option value="1" {{ (string) old('activo', $prestamo->activo ?? 1) === '1' ? 'selected' : '' }}>Activo</option>
-            <option value="0" {{ (string) old('activo', $prestamo->activo ?? 1) === '0' ? 'selected' : '' }}>Inactivo</option>
-        </select>
+        <input
+            type="date"
+            name="fecha_prestamo"
+            id="fecha_prestamo"
+            class="form-control"
+            value="{{ old('fecha_prestamo', isset($prestamo?->fecha_prestamo) ? $prestamo->fecha_prestamo->format('Y-m-d') : now()->format('Y-m-d')) }}"
+            required
+        >
+        <small class="form-text">Al guardar, el sistema calculará el vencimiento según la política del tipo de recurso.</small>
     </div>
 
     <div class="form-group" style="grid-column: 1 / -1;">
         <label class="form-label" for="observaciones">Observaciones</label>
         <textarea name="observaciones" id="observaciones" class="form-control" rows="4">{{ old('observaciones', $prestamo->observaciones ?? '') }}</textarea>
     </div>
+
+    @if(isset($prestamo) && $prestamo->exists)
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <div class="card" style="background:#f8fafc;">
+                <h3 style="margin-top:0;">Información automática del préstamo</h3>
+
+                <div class="form-grid">
+                    <div>
+                        <strong>Estado:</strong><br>
+                        {{ $prestamo->estadoPrestamo?->nombre ?? 'Pendiente' }}
+                    </div>
+
+                    <div>
+                        <strong>Vencimiento:</strong><br>
+                        {{ optional($prestamo->fecha_vencimiento)->format('d/m/Y') ?? 'Pendiente' }}
+                    </div>
+
+                    <div>
+                        <strong>Fecha devolución:</strong><br>
+                        {{ optional($prestamo->fecha_devolucion)->format('d/m/Y') ?? 'Sin devolución' }}
+                    </div>
+
+                    <div>
+                        <strong>Días autorizados:</strong><br>
+                        {{ $prestamo->dias_autorizados ?? 0 }}
+                    </div>
+
+                    <div>
+                        <strong>Renovaciones:</strong><br>
+                        {{ $prestamo->renovaciones_usadas ?? 0 }} / {{ $prestamo->renovaciones_maximas ?? 0 }}
+                    </div>
+
+                    <div>
+                        <strong>Multa diaria:</strong><br>
+                        ${{ number_format((float) ($prestamo->multa_diaria ?? 0), 2) }}
+                    </div>
+
+                    <div>
+                        <strong>Multa acumulada:</strong><br>
+                        ${{ number_format((float) ($prestamo->multa_acumulada ?? 0), 2) }}
+                    </div>
+
+                    <div>
+                        <strong>Entregado por:</strong><br>
+                        {{ $prestamo->usuarioEntrega?->nombre_completo ?? 'Pendiente' }}
+                    </div>
+
+                    <div>
+                        <strong>Recibido por:</strong><br>
+                        {{ $prestamo->usuarioRecibe?->nombre_completo ?? 'Pendiente' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
