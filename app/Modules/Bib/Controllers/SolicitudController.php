@@ -32,6 +32,12 @@ class SolicitudController extends Controller
                 'usuarioAtiende',
             ]);
 
+        $usuario = $request->user();
+
+        if (!$usuario->tienePermiso('BIB_SOLICITUDES_GESTIONAR')) {
+            $query->where('id_usuario', $usuario->id_usuario);
+        }
+
         if ($request->filled('q')) {
             $search = trim($request->q);
 

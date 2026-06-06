@@ -36,6 +36,15 @@ class BibMenuItemSeeder extends Seeder
         $items = [
             [
                 'id_menu' => $menuInicio,
+                'nombre' => 'Mi Biblioteca',
+                'ruta' => 'bib.perfil',
+                'icono' => 'fa-solid fa-user-check',
+                'orden' => 0,
+                'permiso_requerido' => 'BIB_PERFIL_VER',
+            ],
+            
+            [
+                'id_menu' => $menuInicio,
                 'nombre' => 'Dashboard Biblioteca',
                 'ruta' => 'bib.dashboard',
                 'icono' => 'fa-solid fa-book-open',

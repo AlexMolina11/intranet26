@@ -26,16 +26,18 @@ use App\Modules\Bib\Controllers\ConsultaController;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Bib\Controllers\ReporteController;
 use App\Modules\Bib\Controllers\NotificacionBibliotecaController;
+use App\Modules\Bib\Controllers\PerfilBibliotecaController;
 
 Route::middleware(['auth', 'route.access'])
     ->prefix('bib')
     ->name('bib.')
     ->group(function () {
 
+        Route::get('/perfil', [PerfilBibliotecaController::class, 'index'])->name('perfil');
         Route::get('/dashboard', [BibDashboardController::class, 'index'])->name('dashboard');
         Route::get('/consulta', [ConsultaController::class, 'index'])->name('consulta.index');
         Route::post('/notificaciones/{notificacion}/marcar-leida', [NotificacionBibliotecaController::class, 'marcarLeida'])->name('notificaciones.marcar-leida');
-
+        
         /*
         |--------------------------------------------------------------------------
         | Configuración

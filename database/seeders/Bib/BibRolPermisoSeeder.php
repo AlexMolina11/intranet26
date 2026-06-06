@@ -96,7 +96,7 @@ class BibRolPermisoSeeder extends Seeder
 
             'Usuario Biblioteca' => [
                 'BIB_VER',
-                'BIB_DASHBOARD_VER',
+                'BIB_PERFIL_VER',
                 'BIB_CONSULTA_VER',
                 'BIB_SOLICITUDES_VER',
                 'BIB_SOLICITUDES_CREAR',

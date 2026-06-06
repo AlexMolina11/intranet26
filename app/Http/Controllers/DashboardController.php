@@ -18,12 +18,19 @@ class DashboardController extends Controller
             ->orderBy('orden')
             ->get();
 
+        $usuario = auth()->user();
+
         $tarjetasSistema = collect($sistemasAutorizados)
-            ->map(function ($sistema) {
+            ->map(function ($sistema) use ($usuario) {
                 $route = match ($sistema->codigo) {
                     'TIK' => \Route::has('tik.dashboard') ? route('tik.dashboard') : null,
-                    'BIB' => \Route::has('bib.dashboard') ? route('bib.dashboard') : null,
+
+                    'BIB' => $usuario->tienePermiso('BIB_DASHBOARD_VER') && \Route::has('bib.dashboard')
+                        ? route('bib.dashboard')
+                        : (\Route::has('bib.perfil') ? route('bib.perfil') : null),
+
                     'INTRANET' => \Route::has('seg.dashboard') ? route('seg.dashboard') : route('dashboard'),
+
                     default => null,
                 };
 
