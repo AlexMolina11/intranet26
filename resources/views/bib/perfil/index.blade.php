@@ -4,6 +4,27 @@
 @section('page-title', 'Mi Biblioteca')
 @section('page-subtitle', 'Resumen personal de préstamos, solicitudes y multas')
 
+@if($prestamosPorVencer > 0)
+    <div class="alert alert-warning" style="margin-bottom: 12px;">
+        <strong>Próximos a vencer:</strong>
+        Tienes {{ $prestamosPorVencer }} préstamo(s) próximos a vencer.
+    </div>
+@endif
+
+@if($prestamosVencidos > 0)
+    <div class="alert alert-danger" style="margin-bottom: 12px;">
+        <strong>Préstamos vencidos:</strong>
+        Tienes {{ $prestamosVencidos }} préstamo(s) vencidos.
+    </div>
+@endif
+
+@if($multasPendientesCantidad > 0)
+    <div class="alert alert-danger" style="margin-bottom: 12px;">
+        <strong>Multas pendientes:</strong>
+        Tienes multas pendientes de pago.
+    </div>
+@endif
+
 @section('content')
     <div class="page-header">
         <div class="page-header-text">

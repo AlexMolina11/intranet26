@@ -19,6 +19,7 @@ use App\Modules\Bib\Models\Disponibilidad;
 use App\Modules\Bib\Models\Multa;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Bib\Services\CirculacionService;
+use App\Modules\Bib\Services\NotificacionBibliotecaService;
 
 class PrestamoController extends Controller
 {
@@ -160,6 +161,16 @@ class PrestamoController extends Controller
         }
 
         $prestamo = Prestamo::create($data);
+
+        $prestamo->load('recurso');
+
+        app(NotificacionBibliotecaService::class)->crearParaUsuario(
+            $prestamo->id_usuario,
+            'PRESTAMO_PENDIENTE_ENTREGA',
+            'Préstamo pendiente de entrega',
+            'Se registró un préstamo del recurso "' . ($prestamo->recurso?->titulo ?? 'N/D') . '". Está pendiente de entrega.',
+            $prestamo->id_prestamo
+        );
 
         $this->registrarHistorial(
             $prestamo,
@@ -341,6 +352,16 @@ class PrestamoController extends Controller
                     ? "Devolución con {$diasAtraso} días de atraso."
                     : 'Devolución sin atraso.'
             );
+
+            app(NotificacionBibliotecaService::class)->crearParaUsuario(
+                $prestamo->id_usuario,
+                'PRESTAMO_DEVUELTO',
+                'Préstamo devuelto',
+                $diasAtraso > 0
+                    ? 'Tu préstamo del recurso "' . ($prestamo->recurso?->titulo ?? 'N/D') . '" fue devuelto con ' . $diasAtraso . ' día(s) de atraso.'
+                    : 'Tu préstamo del recurso "' . ($prestamo->recurso?->titulo ?? 'N/D') . '" fue devuelto correctamente.',
+                $prestamo->id_prestamo
+            );
         });
 
         return redirect()
@@ -421,6 +442,14 @@ class PrestamoController extends Controller
                 'ENTREGA',
                 'Entrega del ejemplar al usuario y salida efectiva de circulación.'
             );
+
+            app(NotificacionBibliotecaService::class)->crearParaUsuario(
+                $prestamo->id_usuario,
+                'PRESTAMO_ENTREGADO',
+                'Préstamo entregado',
+                'Ya fue entregado el recurso "' . ($prestamo->recurso?->titulo ?? 'N/D') . '". Fecha de vencimiento: ' . optional($prestamo->fecha_vencimiento)->format('d/m/Y') . '.',
+                $prestamo->id_prestamo
+            );
         });
 
         return redirect()
@@ -460,6 +489,14 @@ class PrestamoController extends Controller
                 $prestamo,
                 'RENOVACION',
                 'Renovación del préstamo por ' . $dias . ' días adicionales.'
+            );
+
+            app(NotificacionBibliotecaService::class)->crearParaUsuario(
+                $prestamo->id_usuario,
+                'PRESTAMO_RENOVADO',
+                'Préstamo renovado',
+                'Tu préstamo del recurso "' . ($prestamo->recurso?->titulo ?? 'N/D') . '" fue renovado. Nueva fecha de vencimiento: ' . optional($prestamo->fecha_vencimiento)->format('d/m/Y') . '.',
+                $prestamo->id_prestamo
             );
         });
 

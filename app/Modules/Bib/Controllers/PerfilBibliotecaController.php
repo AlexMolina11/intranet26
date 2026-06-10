@@ -40,12 +40,33 @@ class PerfilBibliotecaController extends Controller
             ->latest('id_multa')
             ->get();
 
+        $prestamosPorVencer = Prestamo::query()
+            ->where('id_usuario', $usuario->id_usuario)
+            ->whereNull('fecha_devolucion')
+            ->whereDate('fecha_vencimiento', '>=', today())
+            ->whereDate('fecha_vencimiento', '<=', today()->addDays(2))
+            ->count();
+
+        $prestamosVencidos = Prestamo::query()
+            ->where('id_usuario', $usuario->id_usuario)
+            ->whereNull('fecha_devolucion')
+            ->whereDate('fecha_vencimiento', '<', today())
+            ->count();
+
+        $multasPendientesCantidad = Multa::query()
+            ->where('id_usuario', $usuario->id_usuario)
+            ->where('pagada', false)
+            ->count();
+
         return view('bib.perfil.index', compact(
             'usuario',
             'prestamosActivos',
             'historialPrestamos',
             'solicitudes',
-            'multasPendientes'
+            'multasPendientes',
+            'prestamosPorVencer',
+            'prestamosVencidos',
+            'multasPendientesCantidad',
         ));
     }
 }

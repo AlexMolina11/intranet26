@@ -45,6 +45,97 @@
         </div>
     </div>
 
+    <div class="card" style="margin-bottom: 20px;">
+        <div class="page-header" style="margin-bottom: 12px;">
+            <div class="page-header-text">
+                <h2 style="margin:0; font-size:18px;">Alertas de Biblioteca</h2>
+                <p class="page-subtitle">Situaciones que requieren atención operativa o administrativa.</p>
+            </div>
+        </div>
+
+        <div style="display:grid; gap:12px;">
+            @if($solicitudesPendientes > 0)
+                <div class="alert alert-warning" style="margin:0;">
+                    <strong>Solicitudes pendientes:</strong>
+                    Hay {{ $solicitudesPendientes }} solicitud(es) pendientes por atender.
+                </div>
+            @endif
+
+            @if($solicitudesAprobadasPendientesEntrega > 0)
+                <div class="alert alert-info" style="margin:0;">
+                    <strong>Solicitudes aprobadas:</strong>
+                    Hay {{ $solicitudesAprobadasPendientesEntrega }} solicitud(es) aprobadas pendientes de entrega.
+                </div>
+            @endif
+
+            @if($prestamosPendientesEntrega > 0)
+                <div class="alert alert-info" style="margin:0;">
+                    <strong>Préstamos pendientes:</strong>
+                    Hay {{ $prestamosPendientesEntrega }} préstamo(s) pendientes de entregar.
+                </div>
+            @endif
+
+            @if($prestamosVencidos > 0)
+                <div class="alert alert-danger" style="margin:0;">
+                    <strong>Préstamos vencidos:</strong>
+                    Hay {{ $prestamosVencidos }} préstamo(s) vencidos que requieren seguimiento.
+                </div>
+            @endif
+
+            @if($prestamosVencenHoy > 0)
+                <div class="alert alert-warning" style="margin:0;">
+                    <strong>Vencen hoy:</strong>
+                    Hay {{ $prestamosVencenHoy }} préstamo(s) que vencen hoy.
+                </div>
+            @endif
+
+            @if($prestamosPorVencer > 0)
+                <div class="alert alert-warning" style="margin:0;">
+                    <strong>Próximos a vencer:</strong>
+                    Hay {{ $prestamosPorVencer }} préstamo(s) que vencen en los próximos 2 días.
+                </div>
+            @endif
+
+            @if($multasPendientes > 0)
+                <div class="alert alert-danger" style="margin:0;">
+                    <strong>Multas pendientes:</strong>
+                    Hay {{ $multasPendientes }} multa(s) pendientes por un monto aproximado de
+                    ${{ number_format((float) $montoMultasPendientes, 2) }}.
+                </div>
+            @endif
+
+            @if(auth()->user()->tienePermiso('BIB_RECURSOS_VER') && $recursosSinEjemplares > 0)
+                <div class="alert alert-warning" style="margin:0;">
+                    <strong>Recursos sin ejemplares:</strong>
+                    Hay {{ $recursosSinEjemplares }} recurso(s) registrados sin ejemplares.
+                </div>
+            @endif
+
+            @if(auth()->user()->tienePermiso('BIB_POLITICAS_VER') && $tiposRecursoSinPolitica > 0)
+                <div class="alert alert-danger" style="margin:0;">
+                    <strong>Políticas incompletas:</strong>
+                    Hay {{ $tiposRecursoSinPolitica }} tipo(s) de recurso sin política de préstamo configurada.
+                </div>
+            @endif
+
+            @if(
+                $solicitudesPendientes === 0 &&
+                $solicitudesAprobadasPendientesEntrega === 0 &&
+                $prestamosPendientesEntrega === 0 &&
+                $prestamosVencidos === 0 &&
+                $prestamosVencenHoy === 0 &&
+                $prestamosPorVencer === 0 &&
+                $multasPendientes === 0 &&
+                $recursosSinEjemplares === 0 &&
+                $tiposRecursoSinPolitica === 0
+            )
+                <div class="alert alert-success" style="margin:0;">
+                    No hay alertas pendientes en este momento.
+                </div>
+            @endif
+        </div>
+    </div>
+
     <div class="card" style="margin-bottom:20px;">
         <div class="alert alert-info" style="margin:0;">
             Bienvenido, <strong>{{ $usuario->nombre_completo }}</strong>. Aquí tienes el estado actual del módulo Biblioteca.

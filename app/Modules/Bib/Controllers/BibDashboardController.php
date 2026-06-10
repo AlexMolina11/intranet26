@@ -4,16 +4,17 @@ namespace App\Modules\Bib\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Bib\Models\Ejemplar;
+use App\Modules\Bib\Models\HistorialPrestamo;
 use App\Modules\Bib\Models\Multa;
+use App\Modules\Bib\Models\NotificacionBiblioteca;
 use App\Modules\Bib\Models\Prestamo;
 use App\Modules\Bib\Models\Recurso;
 use App\Modules\Bib\Models\Solicitud;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Modules\Bib\Models\NotificacionBiblioteca;
-use Illuminate\Support\Facades\DB;
-use App\Modules\Bib\Models\HistorialPrestamo;
+use App\Modules\Bib\Models\TipoRecurso;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 
 class BibDashboardController extends Controller
 {
@@ -50,6 +51,13 @@ class BibDashboardController extends Controller
             })
             ->count();
 
+        $solicitudesAprobadasPendientesEntrega = Solicitud::query()
+            ->where('activo', true)
+            ->whereHas('estadoSolicitud', function ($query) {
+                $query->where('codigo', 'APROBADA');
+            })
+            ->count();
+
         $prestamosPendientesEntrega = Prestamo::query()
             ->where('activo', true)
             ->whereNull('fecha_devolucion')
@@ -75,9 +83,44 @@ class BibDashboardController extends Controller
             ->whereDate('fecha_vencimiento', '<', now()->toDateString())
             ->count();
 
+        $prestamosVencenHoy = Prestamo::query()
+            ->where('activo', true)
+            ->whereNull('fecha_devolucion')
+            ->whereHas('estadoPrestamo', function ($query) {
+                $query->where('codigo', 'ENTREGADO');
+            })
+            ->whereDate('fecha_vencimiento', now()->toDateString())
+            ->count();
+
+        $prestamosPorVencer = Prestamo::query()
+            ->where('activo', true)
+            ->whereNull('fecha_devolucion')
+            ->whereHas('estadoPrestamo', function ($query) {
+                $query->where('codigo', 'ENTREGADO');
+            })
+            ->whereDate('fecha_vencimiento', '>', now()->toDateString())
+            ->whereDate('fecha_vencimiento', '<=', now()->addDays(2)->toDateString())
+            ->count();
+
         $multasPendientes = Multa::query()
             ->where('activo', true)
             ->where('pagada', false)
+            ->count();
+
+        $montoMultasPendientes = Multa::query()
+            ->where('activo', true)
+            ->where('pagada', false)
+            ->selectRaw('SUM(monto - monto_pagado) as total')
+            ->value('total') ?? 0;
+
+        $recursosSinEjemplares = Recurso::query()
+            ->where('activo', true)
+            ->whereDoesntHave('ejemplares')
+            ->count();
+
+        $tiposRecursoSinPolitica = TipoRecurso::query()
+            ->where('activo', true)
+            ->whereDoesntHave('politicaPrestamo')
             ->count();
 
         $prestamosRecientes = Prestamo::query()
@@ -257,10 +300,16 @@ class BibDashboardController extends Controller
             'ejemplaresDisponibles',
             'ejemplaresPrestados',
             'solicitudesPendientes',
+            'solicitudesAprobadasPendientesEntrega',
             'prestamosPendientesEntrega',
             'prestamosActivos',
             'prestamosVencidos',
+            'prestamosVencenHoy',
+            'prestamosPorVencer',
             'multasPendientes',
+            'montoMultasPendientes',
+            'recursosSinEjemplares',
+            'tiposRecursoSinPolitica',
             'prestamosRecientes',
             'solicitudesRecientes',
             'multasRecientes',

@@ -18,6 +18,7 @@ use App\Modules\Seg\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Bib\Services\CirculacionService;
+use App\Modules\Bib\Services\NotificacionBibliotecaService;
 
 class SolicitudController extends Controller
 {
@@ -132,7 +133,13 @@ class SolicitudController extends Controller
             $data['id_estado_solicitud'] = $this->estadoSolicitudPorCodigo('PENDIENTE')->id_estado_solicitud;
         }
 
-        Solicitud::create($data);
+        $solicitud = Solicitud::create($data);
+
+        app(NotificacionBibliotecaService::class)->crearParaBibliotecarios(
+            'SOLICITUD_PENDIENTE',
+            'Nueva solicitud de Biblioteca',
+            'Hay una nueva solicitud pendiente para el recurso "' . ($solicitud->recurso?->titulo ?? 'N/D') . '".'
+        );
 
         return redirect()
             ->route('bib.solicitudes.index')
@@ -205,6 +212,15 @@ class SolicitudController extends Controller
             'id_usuario_atiende' => auth()->id(),
         ]);
 
+        $solicitud->load('recurso');
+
+        app(NotificacionBibliotecaService::class)->crearParaUsuario(
+            $solicitud->id_usuario,
+            'SOLICITUD_APROBADA',
+            'Solicitud aprobada',
+            'Tu solicitud del recurso "' . ($solicitud->recurso?->titulo ?? 'N/D') . '" fue aprobada. Puedes esperar la entrega del recurso.'
+        );
+
         return redirect()
             ->route('bib.solicitudes.edit', $solicitud)
             ->with('success', 'Solicitud aprobada correctamente. Ahora puedes generar el préstamo.');
@@ -221,6 +237,15 @@ class SolicitudController extends Controller
             'fecha_atencion' => now()->toDateString(),
             'id_usuario_atiende' => auth()->id(),
         ]);
+
+        $solicitud->load('recurso');
+
+        app(NotificacionBibliotecaService::class)->crearParaUsuario(
+            $solicitud->id_usuario,
+            'SOLICITUD_RECHAZADA',
+            'Solicitud rechazada',
+            'Tu solicitud del recurso "' . ($solicitud->recurso?->titulo ?? 'N/D') . '" fue rechazada.'
+        );
 
         return redirect()
             ->route('bib.solicitudes.edit', $solicitud)
