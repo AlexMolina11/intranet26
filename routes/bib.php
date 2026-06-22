@@ -28,6 +28,7 @@ use App\Modules\Bib\Controllers\ReporteController;
 use App\Modules\Bib\Controllers\NotificacionBibliotecaController;
 use App\Modules\Bib\Controllers\PerfilBibliotecaController;
 use App\Modules\Bib\Controllers\OperacionBibliotecaController;
+use App\Modules\Bib\Controllers\MostradorController;
 
 Route::middleware(['auth'])
     ->prefix('bib')
@@ -49,6 +50,9 @@ Route::middleware(['auth', 'route.access'])
 
         Route::get('/operacion', [OperacionBibliotecaController::class, 'index'])
             ->name('operacion.index');
+
+        Route::get('/mostrador', [MostradorController::class, 'index'])
+            ->name('mostrador.index');
         
         /*
         |--------------------------------------------------------------------------
