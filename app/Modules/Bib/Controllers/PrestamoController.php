@@ -3,23 +3,23 @@
 namespace App\Modules\Bib\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Bib\Models\Disponibilidad;
 use App\Modules\Bib\Models\Ejemplar;
 use App\Modules\Bib\Models\EstadoPrestamo;
+use App\Modules\Bib\Models\HistorialPrestamo;
+use App\Modules\Bib\Models\Multa;
 use App\Modules\Bib\Models\PoliticaPrestamo;
 use App\Modules\Bib\Models\Prestamo;
 use App\Modules\Bib\Models\Recurso;
 use App\Modules\Bib\Models\Solicitud;
 use App\Modules\Bib\Requests\StorePrestamoRequest;
 use App\Modules\Bib\Requests\UpdatePrestamoRequest;
-use App\Modules\Seg\Models\Usuario;
-use Illuminate\Http\Request;
-use App\Modules\Bib\Models\HistorialPrestamo;
-use Illuminate\Support\Facades\Auth;
-use App\Modules\Bib\Models\Disponibilidad;
-use App\Modules\Bib\Models\Multa;
-use Illuminate\Support\Facades\DB;
 use App\Modules\Bib\Services\CirculacionService;
 use App\Modules\Bib\Services\NotificacionBibliotecaService;
+use App\Modules\Seg\Models\Usuario;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PrestamoController extends Controller
 {
@@ -135,52 +135,71 @@ class PrestamoController extends Controller
                 ->with('error', $exception->getMessage());
         }
 
-        $estadoPendiente = $this->estadoPorCodigo('PENDIENTE_ENTREGA');
+        $politica = PoliticaPrestamo::query()
+            ->where('id_tipo_recurso', $recurso->id_tipo_recurso)
+            ->first();
 
-        $data['id_estado_prestamo'] = $estadoPendiente->id_estado_prestamo;
-        $data['fecha_devolucion'] = null;
-        $data['id_usuario_entrega'] = null;
-        $data['id_usuario_recibe'] = null;
-        $data['renovaciones_usadas'] = 0;
-        $data['multa_acumulada'] = 0;
-        $data['activo'] = true;
-
-        $recurso = Recurso::query()->find($data['id_recurso']);
-
-        if ($recurso) {
-            $politica = PoliticaPrestamo::query()
-                ->where('id_tipo_recurso', $recurso->id_tipo_recurso)
-                ->first();
-
-            if ($politica) {
-                $data['dias_autorizados'] = $politica->dias_prestamo;
-                $data['renovaciones_maximas'] = $politica->max_renovaciones;
-                $data['multa_diaria'] = $politica->multa_diaria;
-                $data['fecha_vencimiento'] = now()->addDays((int) $politica->dias_prestamo)->toDateString();
-            }
+        if ($politica) {
+            $data['dias_autorizados'] = $politica->dias_prestamo;
+            $data['renovaciones_maximas'] = $politica->max_renovaciones;
+            $data['multa_diaria'] = $politica->multa_diaria;
+            $data['fecha_vencimiento'] = now()->addDays((int) $politica->dias_prestamo)->toDateString();
         }
 
-        $prestamo = Prestamo::create($data);
+        $prestamo = DB::transaction(function () use ($data, $ejemplar) {
+            $estadoEntregado = $this->estadoPorCodigo('ENTREGADO');
+            $disponibilidadPrestado = $this->disponibilidadPorCodigo('PRESTADO');
 
-        $prestamo->load('recurso');
+            $data['id_estado_prestamo'] = $estadoEntregado->id_estado_prestamo;
+            $data['fecha_prestamo'] = $data['fecha_prestamo'] ?? now()->toDateString();
+            $data['fecha_devolucion'] = null;
+            $data['id_usuario_entrega'] = auth()->id();
+            $data['id_usuario_recibe'] = null;
+            $data['renovaciones_usadas'] = 0;
+            $data['multa_acumulada'] = 0;
+            $data['activo'] = true;
 
-        app(NotificacionBibliotecaService::class)->crearParaUsuario(
-            $prestamo->id_usuario,
-            'PRESTAMO_PENDIENTE_ENTREGA',
-            'Préstamo pendiente de entrega',
-            'Se registró un préstamo del recurso "' . ($prestamo->recurso?->titulo ?? 'N/D') . '". Está pendiente de entrega.',
-            $prestamo->id_prestamo
-        );
+            $prestamo = Prestamo::create($data);
 
-        $this->registrarHistorial(
-            $prestamo,
-            'CREACION',
-            'Registro administrativo del préstamo pendiente de entrega.'
-        );
+            $ejemplarBloqueado = Ejemplar::query()
+                ->lockForUpdate()
+                ->findOrFail($ejemplar->id_ejemplar);
+
+            $ejemplarBloqueado->update([
+                'id_disponibilidad' => $disponibilidadPrestado->id_disponibilidad,
+            ]);
+
+            $prestamo->load('recurso');
+
+            $this->registrarHistorial(
+                $prestamo,
+                'CREACION',
+                'Registro administrativo del préstamo directo desde mostrador.'
+            );
+
+            $this->registrarHistorial(
+                $prestamo,
+                'ENTREGA',
+                'Préstamo directo entregado inmediatamente desde mostrador.'
+            );
+
+            app(NotificacionBibliotecaService::class)->crearParaUsuario(
+                $prestamo->id_usuario,
+                'PRESTAMO_ENTREGADO',
+                'Préstamo entregado',
+                'Se ha registrado y entregado tu préstamo del recurso "' .
+                    ($prestamo->recurso?->titulo ?? 'N/D') .
+                    '". Fecha de vencimiento: ' .
+                    optional($prestamo->fecha_vencimiento)->format('d/m/Y') . '.',
+                $prestamo->id_prestamo
+            );
+
+            return $prestamo;
+        });
 
         return redirect()
             ->route('bib.prestamos.edit', $prestamo)
-            ->with('success', 'Préstamo registrado correctamente. Ahora puedes entregarlo.');
+            ->with('success', 'Préstamo directo registrado y entregado correctamente.');
     }
 
     public function edit(Prestamo $prestamo)
@@ -265,26 +284,6 @@ class PrestamoController extends Controller
             ->with('success', 'Préstamo actualizado correctamente.');
     }
 
-    private function registrarHistorial(Prestamo $prestamo, string $tipoMovimiento, ?string $observaciones = null): void
-    {
-        HistorialPrestamo::create([
-            'id_prestamo' => $prestamo->id_prestamo,
-            'id_estado_prestamo' => $prestamo->id_estado_prestamo,
-            'id_usuario_accion' => Auth::id(),
-            'tipo_movimiento' => $tipoMovimiento,
-            'fecha_movimiento' => now()->toDateString(),
-            'fecha_prestamo' => optional($prestamo->fecha_prestamo)?->format('Y-m-d'),
-            'fecha_vencimiento' => optional($prestamo->fecha_vencimiento)?->format('Y-m-d'),
-            'fecha_devolucion' => optional($prestamo->fecha_devolucion)?->format('Y-m-d'),
-            'dias_autorizados' => $prestamo->dias_autorizados,
-            'renovaciones_usadas' => $prestamo->renovaciones_usadas,
-            'renovaciones_maximas' => $prestamo->renovaciones_maximas,
-            'multa_diaria' => $prestamo->multa_diaria,
-            'multa_acumulada' => $prestamo->multa_acumulada,
-            'observaciones' => $observaciones ?? $prestamo->observaciones,
-        ]);
-    }
-
     public function devolver(Prestamo $prestamo)
     {
         $estadoEntregado = $this->estadoPorCodigo('ENTREGADO');
@@ -325,15 +324,13 @@ class PrestamoController extends Controller
             }
 
             if ($diasAtraso > 0) {
-                $monto = $diasAtraso * (float) $prestamo->multa_diaria;
-
                 Multa::create([
                     'id_prestamo' => $prestamo->id_prestamo,
                     'id_usuario' => $prestamo->id_usuario,
                     'id_usuario_registra' => auth()->id(),
                     'fecha_multa' => $fechaHoy->toDateString(),
                     'dias_atraso' => $diasAtraso,
-                    'monto' => $monto,
+                    'monto' => $diasAtraso * (float) $prestamo->multa_diaria,
                     'monto_pagado' => 0,
                     'pagada' => false,
                     'motivo' => 'Devolución con atraso',
@@ -369,31 +366,6 @@ class PrestamoController extends Controller
             ->with('success', 'Devolución registrada correctamente.');
     }
 
-    private function estadoPorCodigo(string $codigo)
-    {
-        return EstadoPrestamo::where('codigo', $codigo)
-            ->where('activo', true)
-            ->firstOrFail();
-    }
-
-    private function disponibilidadPorCodigo(string $codigo)
-    {
-        return Disponibilidad::where('codigo', $codigo)
-            ->where('activo', true)
-            ->firstOrFail();
-    }
-
-    private function recalcularMulta(Prestamo $prestamo)
-    {
-        $total = $prestamo->multas()
-            ->where('activo', true)
-            ->sum('monto');
-
-        $prestamo->update([
-            'multa_acumulada' => $total,
-        ]);
-    }
-
     public function entregar(Prestamo $prestamo)
     {
         $estadoPendiente = $this->estadoPorCodigo('PENDIENTE_ENTREGA');
@@ -410,47 +382,55 @@ class PrestamoController extends Controller
             return back()->with('error', 'El préstamo no tiene un ejemplar asociado.');
         }
 
-        DB::transaction(function () use ($prestamo) {
-            $estadoEntregado = $this->estadoPorCodigo('ENTREGADO');
-            $disponibilidadPrestado = $this->disponibilidadPorCodigo('PRESTADO');
-            $disponibilidadDisponible = $this->disponibilidadPorCodigo('DISPONIBLE');
+        try {
+            DB::transaction(function () use ($prestamo) {
+                $estadoEntregado = $this->estadoPorCodigo('ENTREGADO');
+                $disponibilidadPrestado = $this->disponibilidadPorCodigo('PRESTADO');
+                $disponibilidadDisponible = $this->disponibilidadPorCodigo('DISPONIBLE');
+                $disponibilidadReservado = $this->disponibilidadPorCodigo('RESERVADO');
 
-            $ejemplar = $prestamo->ejemplar()->lockForUpdate()->first();
+                $ejemplar = $prestamo->ejemplar()->lockForUpdate()->first();
 
-            if (!$ejemplar) {
-                abort(404, 'No se encontró el ejemplar asociado al préstamo.');
-            }
+                if (!$ejemplar) {
+                    abort(404, 'No se encontró el ejemplar asociado al préstamo.');
+                }
 
-            if ((int) $ejemplar->id_disponibilidad !== (int) $disponibilidadDisponible->id_disponibilidad) {
-                throw new \RuntimeException('El ejemplar no está disponible para préstamo.');
-            }
+                if (!in_array((int) $ejemplar->id_disponibilidad, [
+                    (int) $disponibilidadDisponible->id_disponibilidad,
+                    (int) $disponibilidadReservado->id_disponibilidad,
+                ], true)) {
+                    throw new \RuntimeException('El ejemplar no está disponible o reservado para este préstamo.');
+                }
 
-            $prestamo->update([
-                'id_estado_prestamo' => $estadoEntregado->id_estado_prestamo,
-                'fecha_prestamo' => now()->toDateString(),
-                'id_usuario_entrega' => auth()->id(),
-            ]);
+                $prestamo->update([
+                    'id_estado_prestamo' => $estadoEntregado->id_estado_prestamo,
+                    'fecha_prestamo' => now()->toDateString(),
+                    'id_usuario_entrega' => auth()->id(),
+                ]);
 
-            $ejemplar->update([
-                'id_disponibilidad' => $disponibilidadPrestado->id_disponibilidad,
-            ]);
+                $ejemplar->update([
+                    'id_disponibilidad' => $disponibilidadPrestado->id_disponibilidad,
+                ]);
 
-            $prestamo->refresh();
+                $prestamo->refresh();
 
-            $this->registrarHistorial(
-                $prestamo,
-                'ENTREGA',
-                'Entrega del ejemplar al usuario y salida efectiva de circulación.'
-            );
+                $this->registrarHistorial(
+                    $prestamo,
+                    'ENTREGA',
+                    'Entrega del ejemplar al usuario y salida efectiva de circulación.'
+                );
 
-            app(NotificacionBibliotecaService::class)->crearParaUsuario(
-                $prestamo->id_usuario,
-                'PRESTAMO_ENTREGADO',
-                'Préstamo entregado',
-                'Ya fue entregado el recurso "' . ($prestamo->recurso?->titulo ?? 'N/D') . '". Fecha de vencimiento: ' . optional($prestamo->fecha_vencimiento)->format('d/m/Y') . '.',
-                $prestamo->id_prestamo
-            );
-        });
+                app(NotificacionBibliotecaService::class)->crearParaUsuario(
+                    $prestamo->id_usuario,
+                    'PRESTAMO_ENTREGADO',
+                    'Préstamo entregado',
+                    'Ya fue entregado el recurso "' . ($prestamo->recurso?->titulo ?? 'N/D') . '". Fecha de vencimiento: ' . optional($prestamo->fecha_vencimiento)->format('d/m/Y') . '.',
+                    $prestamo->id_prestamo
+                );
+            });
+        } catch (\RuntimeException $exception) {
+            return back()->with('error', $exception->getMessage());
+        }
 
         return redirect()
             ->route('bib.prestamos.edit', $prestamo)
@@ -511,5 +491,50 @@ class PrestamoController extends Controller
         return redirect()
             ->route('bib.prestamos.edit', $prestamo)
             ->with('success', 'Préstamo renovado correctamente.');
+    }
+
+    private function registrarHistorial(Prestamo $prestamo, string $tipoMovimiento, ?string $observaciones = null): void
+    {
+        HistorialPrestamo::create([
+            'id_prestamo' => $prestamo->id_prestamo,
+            'id_estado_prestamo' => $prestamo->id_estado_prestamo,
+            'id_usuario_accion' => Auth::id(),
+            'tipo_movimiento' => $tipoMovimiento,
+            'fecha_movimiento' => now()->toDateString(),
+            'fecha_prestamo' => optional($prestamo->fecha_prestamo)?->format('Y-m-d'),
+            'fecha_vencimiento' => optional($prestamo->fecha_vencimiento)?->format('Y-m-d'),
+            'fecha_devolucion' => optional($prestamo->fecha_devolucion)?->format('Y-m-d'),
+            'dias_autorizados' => $prestamo->dias_autorizados,
+            'renovaciones_usadas' => $prestamo->renovaciones_usadas,
+            'renovaciones_maximas' => $prestamo->renovaciones_maximas,
+            'multa_diaria' => $prestamo->multa_diaria,
+            'multa_acumulada' => $prestamo->multa_acumulada,
+            'observaciones' => $observaciones ?? $prestamo->observaciones,
+        ]);
+    }
+
+    private function estadoPorCodigo(string $codigo)
+    {
+        return EstadoPrestamo::where('codigo', $codigo)
+            ->where('activo', true)
+            ->firstOrFail();
+    }
+
+    private function disponibilidadPorCodigo(string $codigo)
+    {
+        return Disponibilidad::where('codigo', $codigo)
+            ->where('activo', true)
+            ->firstOrFail();
+    }
+
+    private function recalcularMulta(Prestamo $prestamo)
+    {
+        $total = $prestamo->multas()
+            ->where('activo', true)
+            ->sum('monto');
+
+        $prestamo->update([
+            'multa_acumulada' => $total,
+        ]);
     }
 }

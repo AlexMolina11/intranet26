@@ -263,7 +263,7 @@ class SolicitudController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($solicitud) {
+            $prestamo = DB::transaction(function () use ($solicitud) {
                 $ejemplar = Ejemplar::query()
                     ->with('disponibilidad')
                     ->lockForUpdate()
@@ -271,6 +271,10 @@ class SolicitudController extends Controller
 
                 $disponible = Disponibilidad::query()
                     ->where('codigo', 'DISPONIBLE')
+                    ->firstOrFail();
+
+                $reservado = Disponibilidad::query()
+                    ->where('codigo', 'RESERVADO')
                     ->firstOrFail();
 
                 if ((int) $ejemplar->id_disponibilidad !== (int) $disponible->id_disponibilidad) {
@@ -315,6 +319,10 @@ class SolicitudController extends Controller
                     'activo' => true,
                 ]);
 
+                $ejemplar->update([
+                    'id_disponibilidad' => $reservado->id_disponibilidad,
+                ]);
+
                 HistorialPrestamo::create([
                     'id_prestamo' => $prestamo->id_prestamo,
                     'id_estado_prestamo' => $prestamo->id_estado_prestamo,
@@ -324,7 +332,7 @@ class SolicitudController extends Controller
                     'fecha_vencimiento' => $prestamo->fecha_vencimiento,
                     'fecha_devolucion' => null,
                     'multa_acumulada' => 0,
-                    'observaciones' => 'Préstamo generado desde solicitud aprobada.',
+                    'observaciones' => 'Préstamo generado desde solicitud aprobada. Ejemplar reservado para entrega.',
                     'activo' => true,
                 ]);
 
@@ -332,9 +340,22 @@ class SolicitudController extends Controller
                     'id_estado_solicitud' => $this->estadoSolicitudPorCodigo('ATENDIDA')->id_estado_solicitud,
                     'fecha_atencion' => now()->toDateString(),
                     'id_usuario_atiende' => auth()->id(),
-                    'observaciones_internas' => trim(($solicitud->observaciones_internas ?? '') . "\nPréstamo generado: #{$prestamo->id_prestamo}"),
+                    'observaciones_internas' => trim(($solicitud->observaciones_internas ?? '') . "\nPréstamo generado: #{$prestamo->id_prestamo}. Ejemplar reservado."),
                 ]);
+
+                return $prestamo;
             });
+
+            $prestamo->load('recurso');
+
+            app(NotificacionBibliotecaService::class)->crearParaUsuario(
+                $prestamo->id_usuario,
+                'PRESTAMO_PENDIENTE_ENTREGA',
+                'Préstamo pendiente de entrega',
+                'Tu solicitud del recurso "' . ($prestamo->recurso?->titulo ?? 'N/D') . '" fue atendida. El ejemplar quedó reservado y está pendiente de entrega.',
+                $prestamo->id_prestamo
+            );
+
         } catch (\RuntimeException $exception) {
             return back()
                 ->withInput()
@@ -343,7 +364,7 @@ class SolicitudController extends Controller
 
         return redirect()
             ->route('bib.solicitudes.edit', $solicitud)
-            ->with('success', 'Préstamo generado correctamente. La solicitud quedó atendida.');
+            ->with('success', 'Préstamo generado correctamente. El ejemplar quedó reservado y la solicitud quedó atendida.');
     }
 
     private function estadoSolicitudPorCodigo(string $codigo): EstadoSolicitud
