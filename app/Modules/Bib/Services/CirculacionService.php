@@ -4,13 +4,14 @@ namespace App\Modules\Bib\Services;
 
 use App\Modules\Bib\Models\Ejemplar;
 use App\Modules\Bib\Models\Multa;
-use App\Modules\Bib\Models\PoliticaPrestamo;
 use App\Modules\Bib\Models\Prestamo;
 use App\Modules\Bib\Models\Recurso;
 use App\Modules\Seg\Models\Usuario;
 
 class CirculacionService
 {
+    private const MAX_PRESTAMOS_ACTIVOS_GLOBAL = 3;
+
     public function validarUsuarioPuedePrestar(Usuario $usuario, Recurso $recurso): void
     {
         if ($this->usuarioTieneMultasPendientes($usuario)) {
@@ -21,8 +22,15 @@ class CirculacionService
             throw new \RuntimeException('El usuario posee préstamos vencidos pendientes de devolución.');
         }
 
-        if ($this->usuarioSuperaLimitePrestamos($usuario, $recurso)) {
-            throw new \RuntimeException('El usuario alcanzó el máximo de préstamos activos permitidos para este tipo de recurso.');
+        if ($this->usuarioSuperaLimitePrestamos($usuario)) {
+            throw new \RuntimeException('El usuario alcanzó el máximo de 3 préstamos activos permitidos.');
+        }
+    }
+
+    public function validarUsuarioPuedeRenovar(Usuario $usuario): void
+    {
+        if ($this->usuarioTieneMultasPendientes($usuario)) {
+            throw new \RuntimeException('El usuario posee multas pendientes de pago y no puede renovar préstamos.');
         }
     }
 
@@ -52,34 +60,33 @@ class CirculacionService
             ->where('id_usuario', $usuario->id_usuario)
             ->where('activo', true)
             ->whereNull('fecha_devolucion')
-            ->whereDate('fecha_vencimiento', '<', now()->toDateString())
+            ->where(function ($query) {
+                $query->whereDate('fecha_vencimiento', '<', now()->toDateString())
+                    ->orWhereHas('estadoPrestamo', function ($subquery) {
+                        $subquery->where('codigo', 'VENCIDO');
+                    });
+            })
             ->whereHas('estadoPrestamo', function ($query) {
-                $query->where('codigo', 'ENTREGADO');
+                $query->whereIn('codigo', ['ENTREGADO', 'VENCIDO']);
             })
             ->exists();
     }
 
-    private function usuarioSuperaLimitePrestamos(Usuario $usuario, Recurso $recurso): bool
+    private function usuarioSuperaLimitePrestamos(Usuario $usuario): bool
     {
-        $politica = PoliticaPrestamo::query()
-            ->where('id_tipo_recurso', $recurso->id_tipo_recurso)
-            ->where('activo', true)
-            ->first();
-
-        $maximo = $politica?->max_prestamos_usuario ?? 3;
-
         $prestamosActivos = Prestamo::query()
             ->where('id_usuario', $usuario->id_usuario)
             ->where('activo', true)
             ->whereNull('fecha_devolucion')
             ->whereHas('estadoPrestamo', function ($query) {
-                $query->whereIn('codigo', ['PENDIENTE_ENTREGA', 'ENTREGADO']);
-            })
-            ->whereHas('recurso', function ($query) use ($recurso) {
-                $query->where('id_tipo_recurso', $recurso->id_tipo_recurso);
+                $query->whereIn('codigo', [
+                    'PENDIENTE_ENTREGA',
+                    'ENTREGADO',
+                    'VENCIDO',
+                ]);
             })
             ->count();
 
-        return $prestamosActivos >= $maximo;
+        return $prestamosActivos >= self::MAX_PRESTAMOS_ACTIVOS_GLOBAL;
     }
 }

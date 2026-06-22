@@ -4,27 +4,6 @@
 @section('page-title', 'Mi Biblioteca')
 @section('page-subtitle', 'Resumen personal de préstamos, solicitudes y multas')
 
-@if($prestamosPorVencer > 0)
-    <div class="alert alert-warning" style="margin-bottom: 12px;">
-        <strong>Próximos a vencer:</strong>
-        Tienes {{ $prestamosPorVencer }} préstamo(s) próximos a vencer.
-    </div>
-@endif
-
-@if($prestamosVencidos > 0)
-    <div class="alert alert-danger" style="margin-bottom: 12px;">
-        <strong>Préstamos vencidos:</strong>
-        Tienes {{ $prestamosVencidos }} préstamo(s) vencidos.
-    </div>
-@endif
-
-@if($multasPendientesCantidad > 0)
-    <div class="alert alert-danger" style="margin-bottom: 12px;">
-        <strong>Multas pendientes:</strong>
-        Tienes multas pendientes de pago.
-    </div>
-@endif
-
 @section('content')
     <div class="page-header">
         <div class="page-header-text">
@@ -50,6 +29,33 @@
             @endif
         </div>
     </div>
+
+    @if($prestamosPorVencer > 0 || $prestamosVencidos > 0 || $multasPendientesCantidad > 0)
+        <div class="card" style="margin-bottom:20px;">
+            <h2 style="margin-top:0; font-size:18px;">Alertas de mi biblioteca</h2>
+
+            @if($prestamosPorVencer > 0)
+                <div class="alert alert-warning">
+                    <strong>Próximos a vencer:</strong>
+                    Tienes {{ $prestamosPorVencer }} préstamo(s) próximos a vencer.
+                </div>
+            @endif
+
+            @if($prestamosVencidos > 0)
+                <div class="alert alert-danger">
+                    <strong>Préstamos vencidos:</strong>
+                    Tienes {{ $prestamosVencidos }} préstamo(s) vencidos.
+                </div>
+            @endif
+
+            @if($multasPendientesCantidad > 0)
+                <div class="alert alert-danger">
+                    <strong>Multas pendientes:</strong>
+                    Tienes multas pendientes de pago.
+                </div>
+            @endif
+        </div>
+    @endif
 
     <div class="stats-grid" style="margin-bottom:20px;">
         <div class="stat-card">
@@ -86,6 +92,7 @@
                         <th>Fecha préstamo</th>
                         <th>Fecha vencimiento</th>
                         <th>Renovaciones</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -101,10 +108,27 @@
                                 /
                                 {{ $prestamo->renovaciones_maximas ?? 0 }}
                             </td>
+                            <td>
+                                @if(
+                                    $prestamo->estadoPrestamo?->codigo === 'ENTREGADO'
+                                    && !$prestamo->fecha_devolucion
+                                    && (int) $prestamo->renovaciones_usadas < (int) $prestamo->renovaciones_maximas
+                                    && $multasPendientes->count() === 0
+                                )
+                                    <form method="POST" action="{{ route('bib.perfil.prestamos.renovar', $prestamo) }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary">
+                                            Renovar
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="text-muted">No disponible</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6">No tienes préstamos activos actualmente.</td>
+                            <td colspan="7">No tienes préstamos activos actualmente.</td>
                         </tr>
                     @endforelse
                 </tbody>

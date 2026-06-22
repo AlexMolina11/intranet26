@@ -300,6 +300,7 @@ class SolicitudController extends Controller
                     'id_usuario' => $solicitud->id_usuario,
                     'id_recurso' => $solicitud->id_recurso,
                     'id_ejemplar' => $solicitud->id_ejemplar,
+                    'id_solicitud' => $solicitud->id_solicitud,
                     'id_estado_prestamo' => $estadoPendienteEntrega->id_estado_prestamo,
                     'fecha_prestamo' => now()->toDateString(),
                     'fecha_vencimiento' => now()->addDays((int) $diasAutorizados)->toDateString(),

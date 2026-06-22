@@ -28,6 +28,14 @@ use App\Modules\Bib\Controllers\ReporteController;
 use App\Modules\Bib\Controllers\NotificacionBibliotecaController;
 use App\Modules\Bib\Controllers\PerfilBibliotecaController;
 
+Route::middleware(['auth'])
+    ->prefix('bib')
+    ->name('bib.')
+    ->group(function () {
+        Route::post('/mi-biblioteca/prestamos/{prestamo}/renovar', [PerfilBibliotecaController::class, 'renovar'])
+            ->name('perfil.prestamos.renovar');
+    });
+
 Route::middleware(['auth', 'route.access'])
     ->prefix('bib')
     ->name('bib.')

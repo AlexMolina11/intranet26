@@ -7,6 +7,7 @@ use App\Modules\Bib\Models\Multa;
 use App\Modules\Bib\Models\Prestamo;
 use App\Modules\Bib\Models\Solicitud;
 use Illuminate\Http\Request;
+use App\Modules\Bib\Controllers\PrestamoController;
 
 class PerfilBibliotecaController extends Controller
 {
@@ -68,5 +69,66 @@ class PerfilBibliotecaController extends Controller
             'prestamosVencidos',
             'multasPendientesCantidad',
         ));
+    }
+
+    public function renovar(Prestamo $prestamo)
+    {
+        if ((int) $prestamo->id_usuario !== (int) auth()->user()->id_usuario) {
+            abort(403, 'No puedes renovar préstamos de otro usuario.');
+        }
+
+        $estadoEntregado = \App\Modules\Bib\Models\EstadoPrestamo::where('codigo', 'ENTREGADO')->firstOrFail();
+
+        if ((int) $prestamo->id_estado_prestamo !== (int) $estadoEntregado->id_estado_prestamo) {
+            return redirect()
+                ->route('bib.perfil')
+                ->with('error', 'Solo puedes renovar préstamos entregados.');
+        }
+
+        if ($prestamo->fecha_devolucion) {
+            return redirect()
+                ->route('bib.perfil')
+                ->with('error', 'No puedes renovar un préstamo ya devuelto.');
+        }
+
+        if ((int) $prestamo->renovaciones_usadas >= (int) $prestamo->renovaciones_maximas) {
+            return redirect()
+                ->route('bib.perfil')
+                ->with('error', 'Este préstamo ya alcanzó el máximo de renovaciones permitidas.');
+        }
+
+        try {
+            app(\App\Modules\Bib\Services\CirculacionService::class)
+                ->validarUsuarioPuedeRenovar(auth()->user());
+        } catch (\RuntimeException $exception) {
+            return redirect()
+                ->route('bib.perfil')
+                ->with('error', $exception->getMessage());
+        }
+
+        \DB::transaction(function () use ($prestamo) {
+            $dias = max((int) $prestamo->dias_autorizados, 1);
+
+            $fechaBase = $prestamo->fecha_vencimiento
+                ? \Carbon\Carbon::parse($prestamo->fecha_vencimiento)
+                : now();
+
+            $prestamo->update([
+                'fecha_vencimiento' => $fechaBase->addDays($dias)->toDateString(),
+                'renovaciones_usadas' => ((int) $prestamo->renovaciones_usadas) + 1,
+            ]);
+
+            app(\App\Modules\Bib\Services\NotificacionBibliotecaService::class)->crearParaUsuario(
+                $prestamo->id_usuario,
+                'PRESTAMO_RENOVADO',
+                'Préstamo renovado',
+                'Tu préstamo del recurso "' . ($prestamo->recurso?->titulo ?? 'N/D') . '" fue renovado correctamente.',
+                $prestamo->id_prestamo
+            );
+        });
+
+        return redirect()
+            ->route('bib.perfil')
+            ->with('success', 'Préstamo renovado correctamente.');
     }
 }

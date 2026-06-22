@@ -473,6 +473,14 @@ class PrestamoController extends Controller
             return back()->with('error', 'Este préstamo ya alcanzó el máximo de renovaciones permitidas.');
         }
 
+        $prestamo->loadMissing('usuario');
+
+        try {
+            app(CirculacionService::class)->validarUsuarioPuedeRenovar($prestamo->usuario);
+        } catch (\RuntimeException $exception) {
+            return back()->with('error', $exception->getMessage());
+        }
+
         DB::transaction(function () use ($prestamo) {
             $dias = max((int) $prestamo->dias_autorizados, 1);
 
