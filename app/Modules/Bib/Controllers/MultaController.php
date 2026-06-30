@@ -38,6 +38,15 @@ class MultaController extends Controller
             });
         }
 
+        if ($request->filled('estado')) {
+            match ($request->estado) {
+                'pendientes' => $query->where('activo', true)->where('pagada', false),
+                'pagadas' => $query->where('activo', true)->where('pagada', true),
+                'anuladas' => $query->where('activo', false),
+                default => null,
+            };
+        }
+
         if ($request->filled('pagada') && $request->pagada !== '') {
             $query->where('pagada', (bool) $request->pagada);
         }

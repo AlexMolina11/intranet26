@@ -54,6 +54,13 @@ class PrestamoController extends Controller
             });
         }
 
+        if ($request->filled('estado')) {
+            $codigoEstado = strtoupper(trim($request->estado));
+            $query->whereHas('estadoPrestamo', function ($q) use ($codigoEstado) {
+                $q->where('codigo', $codigoEstado);
+            });
+        }
+
         if ($request->filled('id_estado_prestamo')) {
             $query->where('id_estado_prestamo', (int) $request->id_estado_prestamo);
         }

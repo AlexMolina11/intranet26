@@ -45,11 +45,11 @@ class BibMenuItemSeeder extends Seeder
             
             [
                 'id_menu' => $menuInicio,
-                'nombre' => 'Dashboard Biblioteca',
-                'ruta' => 'bib.dashboard',
+                'nombre' => 'Inicio Biblioteca',
+                'ruta' => 'bib.home',
                 'icono' => 'fa-solid fa-book-open',
                 'orden' => 1,
-                'permiso_requerido' => 'BIB_DASHBOARD_VER',
+                'permiso_requerido' => 'BIB_VER',
             ],
 
             [

@@ -32,6 +32,7 @@ use App\Modules\Bib\Controllers\MostradorController;
 use App\Modules\Bib\Controllers\SolicitudesPanelController;
 use App\Modules\Bib\Controllers\MultasPanelController;
 use App\Modules\Bib\Controllers\ConsultasPanelController;
+use App\Modules\Bib\Controllers\BibHomeController;
 
 Route::middleware(['auth'])
     ->prefix('bib')
@@ -54,6 +55,8 @@ Route::middleware(['auth', 'route.access'])
     ->prefix('bib')
     ->name('bib.')
     ->group(function () {
+
+        Route::get('/', BibHomeController::class)->name('home');
 
         Route::get('/perfil', [PerfilBibliotecaController::class, 'index'])->name('perfil');
         Route::get('/dashboard', [BibDashboardController::class, 'index'])->name('dashboard');

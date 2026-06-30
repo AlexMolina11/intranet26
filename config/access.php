@@ -180,7 +180,9 @@ return [
         'tik.config.servicios.update' => ['TIK_CATALOGOS_EDITAR'],
 
         //Accesos Sistema de Biblioteca
+        'bib.home' => ['BIB_VER'],
         'bib.dashboard' => ['BIB_DASHBOARD_VER'],
+        'bib.perfil' => ['BIB_PERFIL_VER'],
 
         'bib.recursos.index' => ['BIB_RECURSOS_VER'],
         'bib.recursos.show' => ['BIB_RECURSOS_VER'],
@@ -313,6 +315,13 @@ return [
         'bib.config.estados-solicitud.store' => 'BIB_CATALOGOS_CREAR',
         'bib.config.estados-solicitud.edit' => 'BIB_CATALOGOS_EDITAR',
         'bib.config.estados-solicitud.update' => 'BIB_CATALOGOS_EDITAR',
+
+        'bib.operacion.index' => ['BIB_OPERACION_VER', 'BIB_PRESTAMOS_CREAR', 'BIB_PRESTAMOS_DEVOLVER'],
+        'bib.mostrador.index' => ['BIB_MOSTRADOR_VER', 'BIB_PRESTAMOS_CREAR', 'BIB_PRESTAMOS_DEVOLVER'],
+        'bib.solicitudes.panel' => ['BIB_SOLICITUDES_PANEL_VER', 'BIB_SOLICITUDES_GESTIONAR'],
+        'bib.multas.panel' => ['BIB_MULTAS_PANEL_VER', 'BIB_MULTAS_VER'],
+        'bib.consultas.panel' => ['BIB_CONSULTAS_PANEL_VER', 'BIB_CONSULTA_VER'],
+        'bib.perfil.prestamos.renovar' => ['BIB_PERFIL_VER'],
 
         'bib.consulta.index' => 'BIB_CONSULTA_VER',
 

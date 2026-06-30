@@ -54,6 +54,13 @@ class SolicitudController extends Controller
             });
         }
 
+        if ($request->filled('estado')) {
+            $codigoEstado = strtoupper(trim($request->estado));
+            $query->whereHas('estadoSolicitud', function ($q) use ($codigoEstado) {
+                $q->where('codigo', $codigoEstado);
+            });
+        }
+
         if ($request->filled('id_estado_solicitud')) {
             $query->where('id_estado_solicitud', (int) $request->id_estado_solicitud);
         }

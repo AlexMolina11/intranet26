@@ -57,7 +57,12 @@ class PerfilBibliotecaController extends Controller
         $multasPendientesCantidad = Multa::query()
             ->where('id_usuario', $usuario->id_usuario)
             ->where('pagada', false)
+            ->where('activo', true)
             ->count();
+
+        $solicitudesPendientes = $solicitudes->filter(fn ($solicitud) => $solicitud->estadoSolicitud?->codigo === 'PENDIENTE')->count();
+        $solicitudesAprobadas = $solicitudes->filter(fn ($solicitud) => $solicitud->estadoSolicitud?->codigo === 'APROBADA')->count();
+        $montoMultasPendientes = $multasPendientes->sum(fn ($multa) => max((float) $multa->monto - (float) $multa->monto_pagado, 0));
 
         return view('bib.perfil.index', compact(
             'usuario',
@@ -68,6 +73,9 @@ class PerfilBibliotecaController extends Controller
             'prestamosPorVencer',
             'prestamosVencidos',
             'multasPendientesCantidad',
+            'solicitudesPendientes',
+            'solicitudesAprobadas',
+            'montoMultasPendientes',
         ));
     }
 

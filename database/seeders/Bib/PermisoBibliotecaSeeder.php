@@ -24,6 +24,9 @@ class PermisoBibliotecaSeeder extends Seeder
             ['codigo' => 'BIB_VER', 'nombre' => 'Acceso general al módulo Biblioteca'],
             ['codigo' => 'BIB_DASHBOARD_VER', 'nombre' => 'Ver dashboard de Biblioteca'],
             ['codigo' => 'BIB_PERFIL_VER', 'nombre' => 'Ver perfil personal de Biblioteca'],
+            ['codigo' => 'BIB_OPERACION_VER', 'nombre' => 'Ver landing de operación de Biblioteca'],
+            ['codigo' => 'BIB_MOSTRADOR_VER', 'nombre' => 'Usar panel de mostrador de Biblioteca'],
+            ['codigo' => 'BIB_CONSULTAS_PANEL_VER', 'nombre' => 'Ver panel operativo de consultas de Biblioteca'],
 
             ['codigo' => 'BIB_CATALOGOS_VER', 'nombre' => 'Ver catálogos de biblioteca'],
             ['codigo' => 'BIB_CATALOGOS_CREAR', 'nombre' => 'Crear catálogos de biblioteca'],

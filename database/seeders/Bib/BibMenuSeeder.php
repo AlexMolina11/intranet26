@@ -28,15 +28,33 @@ class BibMenuSeeder extends Seeder
                 'visible' => 1,
             ],
             [
-                'nombre' => 'Operación',
-                'icono' => 'fa-solid fa-book',
+                'nombre' => 'Atención al usuario',
+                'icono' => 'fa-solid fa-user-check',
                 'orden' => 2,
+                'visible' => 1,
+            ],
+            [
+                'nombre' => 'Gestión bibliográfica',
+                'icono' => 'fa-solid fa-book-open-reader',
+                'orden' => 3,
+                'visible' => 1,
+            ],
+            [
+                'nombre' => 'Operación',
+                'icono' => 'fa-solid fa-table-cells-large',
+                'orden' => 4,
+                'visible' => 1,
+            ],
+            [
+                'nombre' => 'Reportes',
+                'icono' => 'fa-solid fa-chart-column',
+                'orden' => 5,
                 'visible' => 1,
             ],
             [
                 'nombre' => 'Configuración',
                 'icono' => 'fa-solid fa-gear',
-                'orden' => 3,
+                'orden' => 6,
                 'visible' => 1,
             ],
         ];

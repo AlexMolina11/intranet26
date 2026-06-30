@@ -36,6 +36,9 @@ class BibRolPermisoSeeder extends Seeder
             'Administrador Biblioteca' => [
                 'BIB_VER',
                 'BIB_DASHBOARD_VER',
+                'BIB_OPERACION_VER',
+                'BIB_MOSTRADOR_VER',
+                'BIB_CONSULTAS_PANEL_VER',
                 'BIB_CATALOGOS_VER',
                 'BIB_CATALOGOS_CREAR',
                 'BIB_CATALOGOS_EDITAR',
@@ -62,6 +65,9 @@ class BibRolPermisoSeeder extends Seeder
             'Bibliotecario' => [
                 'BIB_VER',
                 'BIB_DASHBOARD_VER',
+                'BIB_OPERACION_VER',
+                'BIB_MOSTRADOR_VER',
+                'BIB_CONSULTAS_PANEL_VER',
                 'BIB_CATALOGOS_VER',
                 'BIB_RECURSOS_VER',
                 'BIB_RECURSOS_CREAR',
@@ -84,6 +90,7 @@ class BibRolPermisoSeeder extends Seeder
             'Consulta Biblioteca' => [
                 'BIB_VER',
                 'BIB_DASHBOARD_VER',
+                'BIB_CONSULTAS_PANEL_VER',
                 'BIB_CATALOGOS_VER',
                 'BIB_RECURSOS_VER',
                 'BIB_EJEMPLARES_VER',
