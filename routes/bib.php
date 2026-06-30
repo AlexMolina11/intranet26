@@ -29,6 +29,9 @@ use App\Modules\Bib\Controllers\NotificacionBibliotecaController;
 use App\Modules\Bib\Controllers\PerfilBibliotecaController;
 use App\Modules\Bib\Controllers\OperacionBibliotecaController;
 use App\Modules\Bib\Controllers\MostradorController;
+use App\Modules\Bib\Controllers\SolicitudesPanelController;
+use App\Modules\Bib\Controllers\MultasPanelController;
+use App\Modules\Bib\Controllers\ConsultasPanelController;
 
 Route::middleware(['auth'])
     ->prefix('bib')
@@ -36,6 +39,15 @@ Route::middleware(['auth'])
     ->group(function () {
         Route::post('/mi-biblioteca/prestamos/{prestamo}/renovar', [PerfilBibliotecaController::class, 'renovar'])
             ->name('perfil.prestamos.renovar');
+
+        Route::get('/solicitudes-panel', [SolicitudesPanelController::class, 'index'])
+            ->name('solicitudes.panel');
+
+        Route::get('/multas-panel', [MultasPanelController::class, 'index'])
+            ->name('multas.panel');
+        
+        Route::get('/consultas-panel', [ConsultasPanelController::class, 'index'])
+            ->name('consultas.panel');
     });
 
 Route::middleware(['auth', 'route.access'])

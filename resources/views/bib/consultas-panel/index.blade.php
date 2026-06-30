@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Mostrador Biblioteca')
+@section('title', 'Panel Consultas')
 
 @section('content')
 <style>
@@ -84,12 +84,17 @@
     .bib-alert-count {
         display: inline-block;
         margin-left: 6px;
-        background: #fee4e2;
-        color: #b42318;
+        background: #f1f5e8;
+        color: #385506;
         border-radius: 999px;
         padding: 3px 8px;
         font-size: 12px;
         font-weight: 800;
+    }
+
+    .bib-alert-danger {
+        background: #fee4e2;
+        color: #b42318;
     }
 </style>
 
@@ -101,70 +106,75 @@
                 ← Volver a Operación Biblioteca
             </a>
 
-            <h1 class="bib-mode-title">Mostrador</h1>
+            <h1 class="bib-mode-title">Consultas</h1>
             <div class="bib-mode-subtitle">
-                Atención directa de usuarios: préstamos, entregas, devoluciones y renovaciones.
+                Consulta bibliográfica, reportes básicos y seguimiento operativo.
             </div>
         </div>
 
         <div class="row">
 
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.prestamos.create') }}" class="bib-action-card">
-                    <div class="bib-action-icon">📗</div>
-                    <h2>Nuevo préstamo</h2>
-                    <p>Registrar préstamo directo para un usuario presente.</p>
-                    <div class="bib-action-footer">Registrar préstamo</div>
+                <a href="{{ route('bib.consulta.index') }}" class="bib-action-card">
+                    <div class="bib-action-icon">🔎</div>
+                    <h2>Consulta bibliográfica</h2>
+                    <p>Buscar recursos disponibles en el catálogo de biblioteca.</p>
+                    <div class="bib-action-footer">Buscar recursos</div>
                 </a>
             </div>
-
-            <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.prestamos.index', ['estado' => 'PENDIENTE_ENTREGA']) }}" class="bib-action-card">
-                    <div class="bib-action-icon">📦</div>
-                    <h2>Entregas</h2>
-                    <p>Gestionar préstamos aprobados que están pendientes de entrega.</p>
-                    <div class="bib-action-footer">
-                        Ver entregas
-                        @if($pendientesEntrega > 0)
-                            <span class="bib-alert-count">{{ $pendientesEntrega }}</span>
-                        @endif
-                    </div>
-                </a>
-            </div>
-
-            <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.prestamos.index', ['estado' => 'ENTREGADO']) }}" class="bib-action-card">
-                    <div class="bib-action-icon">↩️</div>
-                    <h2>Devoluciones</h2>
-                    <p>Buscar préstamos activos y registrar la devolución del ejemplar.</p>
-                    <div class="bib-action-footer">Registrar devolución</div>
-                </a>
-            </div>
-
-            <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.prestamos.index', ['estado' => 'ENTREGADO']) }}" class="bib-action-card">
-                    <div class="bib-action-icon">🔄</div>
-                    <h2>Renovaciones</h2>
-                    <p>Revisar préstamos activos y renovar si la política lo permite.</p>
-                    <div class="bib-action-footer">Gestionar renovaciones</div>
-                </a>
-            </div>
-
-        </div>
-
-        <div class="row">
 
             <div class="col-lg-3 col-md-6 mb-4">
                 <a href="{{ route('bib.prestamos.index') }}" class="bib-action-card">
                     <div class="bib-action-icon">📚</div>
-                    <h2>Préstamos activos</h2>
-                    <p>Consultar préstamos entregados, vencidos o pendientes de devolución.</p>
+                    <h2>Préstamos</h2>
+                    <p>Consultar préstamos registrados, activos, vencidos o devueltos.</p>
                     <div class="bib-action-footer">
                         Ver préstamos
-                        @if($prestamosActivos > 0)
-                            <span class="bib-alert-count">{{ $prestamosActivos }}</span>
+                        @if($recursosPrestados > 0)
+                            <span class="bib-alert-count">{{ $recursosPrestados }}</span>
                         @endif
                     </div>
+                </a>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <a href="{{ route('bib.multas.index') }}" class="bib-action-card">
+                    <div class="bib-action-icon">👤</div>
+                    <h2>Usuarios con multas</h2>
+                    <p>Consultar usuarios que mantienen multas pendientes de pago.</p>
+                    <div class="bib-action-footer">
+                        Ver usuarios
+                        @if($usuariosConMultas > 0)
+                            <span class="bib-alert-count bib-alert-danger">{{ $usuariosConMultas }}</span>
+                        @endif
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <a href="{{ route('bib.ejemplares.index') }}" class="bib-action-card">
+                    <div class="bib-action-icon">⚠️</div>
+                    <h2>Recursos dañados</h2>
+                    <p>Consultar ejemplares marcados como dañados o fuera de servicio.</p>
+                    <div class="bib-action-footer">
+                        Ver dañados
+                        @if($recursosDanados > 0)
+                            <span class="bib-alert-count bib-alert-danger">{{ $recursosDanados }}</span>
+                        @endif
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <a href="{{ route('bib.reportes.index') }}" class="bib-action-card">
+                    <div class="bib-action-icon">📊</div>
+                    <h2>Reportes</h2>
+                    <p>Acceder a reportes básicos de operación de biblioteca.</p>
+                    <div class="bib-action-footer">Ver reportes</div>
                 </a>
             </div>
 

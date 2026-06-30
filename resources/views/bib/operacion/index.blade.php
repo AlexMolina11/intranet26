@@ -113,7 +113,7 @@
         <div class="row">
 
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.prestamos.index') }}" class="bib-operation-card">
+                <a href="{{ route('bib.mostrador.index') }}" class="bib-operation-card">
                     <div class="bib-operation-icon">🏛️</div>
 
                     <h2>Mostrador</h2>
@@ -138,7 +138,7 @@
             </div>
 
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.solicitudes.index') }}" class="bib-operation-card">
+                <a href="{{ route('bib.solicitudes.panel') }}" class="bib-operation-card">
                     <div class="bib-operation-icon">📥</div>
 
                     <h2>Solicitudes</h2>
@@ -163,7 +163,7 @@
             </div>
 
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.multas.index') }}" class="bib-operation-card">
+                <a href="{{ route('bib.multas.panel') }}" class="bib-operation-card">
                     <div class="bib-operation-icon">💲</div>
 
                     <h2>Multas</h2>
@@ -188,7 +188,7 @@
             </div>
 
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.consulta.index') }}" class="bib-operation-card">
+                <a href="{{ route('bib.consultas.panel') }}" class="bib-operation-card">
                     <div class="bib-operation-icon">🔎</div>
 
                     <h2>Consultas</h2>

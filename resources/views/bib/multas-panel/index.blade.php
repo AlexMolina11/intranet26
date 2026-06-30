@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Mostrador Biblioteca')
+@section('title', 'Panel Multas')
 
 @section('content')
 <style>
@@ -101,73 +101,76 @@
                 ← Volver a Operación Biblioteca
             </a>
 
-            <h1 class="bib-mode-title">Mostrador</h1>
+            <h1 class="bib-mode-title">Multas</h1>
             <div class="bib-mode-subtitle">
-                Atención directa de usuarios: préstamos, entregas, devoluciones y renovaciones.
+                Gestión de multas pendientes, pagadas y anuladas.
             </div>
         </div>
 
         <div class="row">
 
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.prestamos.create') }}" class="bib-action-card">
-                    <div class="bib-action-icon">📗</div>
-                    <h2>Nuevo préstamo</h2>
-                    <p>Registrar préstamo directo para un usuario presente.</p>
-                    <div class="bib-action-footer">Registrar préstamo</div>
-                </a>
-            </div>
-
-            <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.prestamos.index', ['estado' => 'PENDIENTE_ENTREGA']) }}" class="bib-action-card">
-                    <div class="bib-action-icon">📦</div>
-                    <h2>Entregas</h2>
-                    <p>Gestionar préstamos aprobados que están pendientes de entrega.</p>
+                <a href="{{ route('bib.multas.index', ['estado' => 'pendientes']) }}" class="bib-action-card">
+                    <div class="bib-action-icon">💲</div>
+                    <h2>Pendientes</h2>
+                    <p>Multas activas que aún no han sido pagadas por el usuario.</p>
                     <div class="bib-action-footer">
-                        Ver entregas
-                        @if($pendientesEntrega > 0)
-                            <span class="bib-alert-count">{{ $pendientesEntrega }}</span>
+                        Revisar pendientes
+                        @if($pendientes > 0)
+                            <span class="bib-alert-count">{{ $pendientes }}</span>
                         @endif
                     </div>
                 </a>
             </div>
 
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.prestamos.index', ['estado' => 'ENTREGADO']) }}" class="bib-action-card">
-                    <div class="bib-action-icon">↩️</div>
-                    <h2>Devoluciones</h2>
-                    <p>Buscar préstamos activos y registrar la devolución del ejemplar.</p>
-                    <div class="bib-action-footer">Registrar devolución</div>
+                <a href="{{ route('bib.multas.index', ['estado' => 'pagadas']) }}" class="bib-action-card">
+                    <div class="bib-action-icon">✅</div>
+                    <h2>Pagadas</h2>
+                    <p>Multas que ya fueron registradas como pagadas.</p>
+                    <div class="bib-action-footer">
+                        Ver pagadas
+                        @if($pagadas > 0)
+                            <span class="bib-alert-count">{{ $pagadas }}</span>
+                        @endif
+                    </div>
                 </a>
             </div>
 
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.prestamos.index', ['estado' => 'ENTREGADO']) }}" class="bib-action-card">
-                    <div class="bib-action-icon">🔄</div>
-                    <h2>Renovaciones</h2>
-                    <p>Revisar préstamos activos y renovar si la política lo permite.</p>
-                    <div class="bib-action-footer">Gestionar renovaciones</div>
+                <a href="{{ route('bib.multas.index', ['estado' => 'anuladas']) }}" class="bib-action-card">
+                    <div class="bib-action-icon">🚫</div>
+                    <h2>Anuladas</h2>
+                    <p>Multas desactivadas o anuladas administrativamente.</p>
+                    <div class="bib-action-footer">
+                        Ver anuladas
+                        @if($anuladas > 0)
+                            <span class="bib-alert-count">{{ $anuladas }}</span>
+                        @endif
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <a href="{{ route('bib.multas.create') }}" class="bib-action-card">
+                    <div class="bib-action-icon">➕</div>
+                    <h2>Registrar multa</h2>
+                    <p>Registrar una multa manual cuando aplique según la operación.</p>
+                    <div class="bib-action-footer">Nueva multa</div>
                 </a>
             </div>
 
         </div>
 
         <div class="row">
-
             <div class="col-lg-3 col-md-6 mb-4">
-                <a href="{{ route('bib.prestamos.index') }}" class="bib-action-card">
-                    <div class="bib-action-icon">📚</div>
-                    <h2>Préstamos activos</h2>
-                    <p>Consultar préstamos entregados, vencidos o pendientes de devolución.</p>
-                    <div class="bib-action-footer">
-                        Ver préstamos
-                        @if($prestamosActivos > 0)
-                            <span class="bib-alert-count">{{ $prestamosActivos }}</span>
-                        @endif
-                    </div>
+                <a href="{{ route('bib.multas.index') }}" class="bib-action-card">
+                    <div class="bib-action-icon">📋</div>
+                    <h2>Todas</h2>
+                    <p>Consulta general de todas las multas registradas.</p>
+                    <div class="bib-action-footer">Ver todas</div>
                 </a>
             </div>
-
         </div>
 
     </div>
