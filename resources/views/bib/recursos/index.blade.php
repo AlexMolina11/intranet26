@@ -3,6 +3,10 @@
 @section('title', 'Recursos bibliográficos')
 
 @section('content')
+@php
+    $canCrear = $canCrear;
+    $canEditar = $canEditar;
+@endphp
     <div class="page-header">
         <div class="page-header-text">
             <h1 style="margin:0;">Recursos bibliográficos</h1>
@@ -10,7 +14,7 @@
         </div>
 
         <div class="page-header-actions">
-            @if(auth()->user()->tienePermiso('BIB_RECURSOS_CREAR'))
+            @if($canCrear)
                 <a href="{{ route('bib.recursos.create') }}" class="btn btn-primary">Nuevo recurso</a>
             @endif
         </div>
@@ -93,7 +97,7 @@
                             <td>
                                 <a href="{{ route('bib.recursos.show', $recurso) }}" class="btn btn-secondary">Ver</a>
 
-                                @if(auth()->user()->tienePermiso('BIB_RECURSOS_EDITAR'))
+                                @if($canEditar)
                                     <a href="{{ route('bib.recursos.edit', $recurso) }}" class="btn btn-secondary">Editar</a>
                                 @endif
                             </td>

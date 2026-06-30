@@ -3,6 +3,10 @@
 @section('title', 'Ejemplares')
 
 @section('content')
+@php
+    $canCrear = $canCrear;
+    $canEditar = $canEditar;
+@endphp
     <div class="page-header">
         <div class="page-header-text">
             <h1 style="margin:0;">Ejemplares</h1>
@@ -10,7 +14,7 @@
         </div>
 
         <div class="page-header-actions">
-            @if(auth()->user()->tienePermiso('BIB_EJEMPLARES_CREAR'))
+            @if($canCrear)
                 <a href="{{ route('bib.ejemplares.create') }}" class="btn btn-primary">Nuevo ejemplar</a>
             @endif
         </div>
@@ -109,7 +113,7 @@
                             <td>{{ $ejemplar->ubicacion ?: '-' }}</td>
                             <td>{{ $ejemplar->activo ? 'Sí' : 'No' }}</td>
                             <td>
-                                @if(auth()->user()->tienePermiso('BIB_EJEMPLARES_EDITAR'))
+                                @if($canEditar)
                                     <a href="{{ route('bib.ejemplares.edit', $ejemplar) }}" class="btn btn-secondary">Editar</a>
                                 @endif
                             </td>

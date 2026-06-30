@@ -3,6 +3,10 @@
 @section('title', 'Solicitudes')
 
 @section('content')
+@php
+    $canCrearSolicitud = auth()->user()->tienePermiso('BIB_SOLICITUDES_CREAR');
+    $canGestionarSolicitudes = auth()->user()->tienePermiso('BIB_SOLICITUDES_GESTIONAR');
+@endphp
     <div class="page-header">
         <div class="page-header-text">
             <h1 style="margin:0;">Solicitudes</h1>
@@ -10,7 +14,7 @@
         </div>
 
         <div class="page-header-actions">
-            @if(auth()->user()->tienePermiso('BIB_SOLICITUDES_CREAR'))
+            @if($canCrearSolicitud)
                 <a href="{{ route('bib.solicitudes.create') }}" class="btn btn-primary">Nueva solicitud</a>
             @endif
         </div>
@@ -91,8 +95,10 @@
                             <td>{{ $solicitud->usuarioAtiende?->nombre_completo ?? 'N/D' }}</td>
                             <td>{{ $solicitud->activo ? 'Activo' : 'Inactivo' }}</td>
                             <td>
-                                @if(auth()->user()->tienePermiso('BIB_SOLICITUDES_GESTIONAR'))
-                                    <a href="{{ route('bib.solicitudes.edit', $solicitud) }}" class="btn btn-secondary">Editar</a>
+                                @if($canGestionarSolicitudes)
+                                    <a href="{{ route('bib.solicitudes.edit', $solicitud) }}" class="btn btn-secondary">Gestionar</a>
+                                @else
+                                    <span class="text-muted">Solo lectura</span>
                                 @endif
                             </td>
                         </tr>

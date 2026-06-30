@@ -3,6 +3,10 @@
 @section('title', 'Préstamos')
 
 @section('content')
+@php
+    $canCrearPrestamo = auth()->user()->tienePermiso('BIB_PRESTAMOS_CREAR');
+    $canGestionarPrestamo = auth()->user()->tienePermiso('BIB_PRESTAMOS_DEVOLVER');
+@endphp
     <div class="page-header">
         <div class="page-header-text">
             <h1 style="margin:0;">Préstamos</h1>
@@ -10,7 +14,7 @@
         </div>
 
         <div class="page-header-actions">
-            @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_CREAR'))
+            @if($canCrearPrestamo)
                 <a href="{{ route('bib.prestamos.create') }}" class="btn btn-primary">Nuevo préstamo</a>
             @endif
         </div>
@@ -81,8 +85,12 @@
                             <td>{{ optional($prestamo->fecha_devolucion)->format('d/m/Y') ?? 'N/D' }}</td>
                             <td>{{ number_format((float) $prestamo->multa_acumulada, 2) }}</td>
                             <td>
-                                @if(auth()->user()->tienePermiso('BIB_PRESTAMOS_DEVOLVER'))
-                                    <a href="{{ route('bib.prestamos.edit', $prestamo) }}" class="btn btn-secondary">Editar</a>
+                                @if($canGestionarPrestamo)
+                                    @if($canGestionarPrestamo)
+                                    <a href="{{ route('bib.prestamos.edit', $prestamo) }}" class="btn btn-secondary">Gestionar</a>
+                                @else
+                                    <span class="text-muted">Solo lectura</span>
+                                @endif
                                 @endif
                             </td>
                         </tr>

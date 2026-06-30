@@ -3,6 +3,9 @@
 @section('title', 'Multas')
 
 @section('content')
+@php
+    $canGestionarMultas = auth()->user()->tienePermiso('BIB_MULTAS_GESTIONAR');
+@endphp
     <div class="page-header">
         <div class="page-header-text">
             <h1 style="margin:0;">Multas</h1>
@@ -10,7 +13,7 @@
         </div>
 
         <div class="page-header-actions">
-            @if(auth()->user()->tienePermiso('BIB_MULTAS_GESTIONAR'))
+            @if($canGestionarMultas)
                 <a href="{{ route('bib.multas.create') }}" class="btn btn-primary">Nueva multa</a>
             @endif
         </div>
@@ -85,7 +88,11 @@
                             <td>{{ number_format((float) $multa->monto_pagado, 2) }}</td>
                             <td>{{ $multa->pagada ? 'Sí' : 'No' }}</td>
                             <td>
-                                <a href="{{ route('bib.multas.edit', $multa) }}" class="btn btn-secondary">Editar</a>
+                                @if($canGestionarMultas)
+                                    <a href="{{ route('bib.multas.edit', $multa) }}" class="btn btn-secondary">Editar</a>
+                                @else
+                                    <span class="text-muted">Solo lectura</span>
+                                @endif
                             </td>
                         </tr>
                     @empty
